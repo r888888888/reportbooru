@@ -1,0 +1,5 @@
+/var/www/reportbooru/shared/log/*.log {
+  daily
+  rotate 3
+  copytruncate
+}

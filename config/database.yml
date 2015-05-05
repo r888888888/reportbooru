@@ -1,0 +1,17 @@
+development:
+  adapter: postgresql
+  database: danbooru_reporter
+  pool: 5
+  timeout: 5000
+
+test:
+  adapter: postgresql
+  database: danbooru_reporter_test
+  pool: 5
+  timeout: 5000
+
+production:
+  adapter: postgresql
+  database: danbooru_reporter
+  pool: 5
+  timeout: 5000
