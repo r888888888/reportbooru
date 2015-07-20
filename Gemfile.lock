@@ -53,8 +53,8 @@ GEM
     capistrano-rails (1.1.3)
       capistrano (~> 3.1)
       capistrano-bundler (~> 1.1)
-    capistrano-unicorn (0.1.10)
-      capistrano
+    capistrano3-unicorn (0.2.1)
+      capistrano (~> 3.1, >= 3.1.0)
     chronic (0.10.2)
     coffee-rails (4.1.0)
       coffee-script (>= 2.2.0)
@@ -127,6 +127,7 @@ GEM
     rake (10.4.2)
     rdoc (4.2.0)
       json (~> 1.4)
+    redis (3.2.1)
     ref (1.0.5)
     sass (3.4.13)
     sass-rails (5.0.3)
@@ -181,14 +182,16 @@ DEPENDENCIES
   bcrypt (~> 3.1.7)
   byebug
   capistrano
+  capistrano-bundler
   capistrano-rails
-  capistrano-unicorn
+  capistrano3-unicorn
   coffee-rails (~> 4.1.0)
   httpclient
   jbuilder (~> 2.0)
   jquery-rails
   pg
   rails (= 4.2.1)
+  redis
   sass-rails (~> 5.0)
   sdoc (~> 0.4.0)
   spring
@@ -198,3 +201,6 @@ DEPENDENCIES
   unicorn
   web-console (~> 2.0)
   whenever
+
+BUNDLED WITH
+   1.10.2

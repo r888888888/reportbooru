@@ -7,21 +7,20 @@ set :application, 'reportbooru'
 set :repo_url, 'git://github.com/r888888888/reportbooru.git'
 set :user, "danbooru"
 set :deploy_to, "/var/www/reportbooru"
-set :default_environment, {
-  "PATH" => '$HOME/.rbenv/shims:$HOME/.rbenv/bin:$PATH'
+set :default_env, {
+  "PATH" => '$HOME/.rbenv/shims:$HOME/.rbenv/bin:$PATH',
+  "RAILS_ENV" => "production"
 }
-set :whenever_command, "bundle exec whenever"
-require 'whenever/capistrano'
 
-namespace :deploy do
+require 'capistrano/bundler'
+set :bundle_bins, fetch(:bundle_bins, ["gem", "rake", "rails"]).push("unicorn")
+set :bundle_flags, "--deployment --quiet --binstubs --shebang ruby"
 
-  after :restart, :clear_cache do
-    on roles(:web), in: :groups, limit: 3, wait: 10 do
-      # Here we can do anything such as:
-      # within release_path do
-      #   execute :rake, 'cache:clear'
-      # end
-    end
-  end
+require 'capistrano3/unicorn'
+set :unicorn_roles, [:app]
+set :unicorn_pid, "/var/www/reportbooru/shared/pids/unicorn.pid"
+set :unicorn_config_path, -> { File.join(current_path, "config", "unicorn", "#{fetch(:stage)}.rb") }
+set :unicorn_rack_env, -> { fetch(:stage) == "development" ? "development" : "deployment" }
+set :unicorn_restart_sleep_time, 3
 
-end
+after 'deploy:publishing', 'unicorn:reload'

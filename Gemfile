@@ -24,20 +24,17 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 # Use ActiveModel has_secure_password
 gem 'bcrypt', '~> 3.1.7'
 
-# Use Unicorn as the app server
-gem 'unicorn'
-
-# Use Capistrano for deployment
-gem 'capistrano-rails', group: :development
-
 gem 'pg'
 gem 'whenever'
 gem 'httpclient'
 gem 'capistrano'
-# gem 'capistrano-ext'
+gem 'redis'
 
 group :production do
-  gem 'capistrano-unicorn', :require => false
+  gem 'unicorn', :platforms => :ruby
+  gem 'capistrano3-unicorn', :require => false
+  gem 'capistrano-bundler'
+  gem 'capistrano-rails'
 end
 
 group :development, :test do
