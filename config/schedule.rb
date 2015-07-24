@@ -1,3 +1,3 @@
-every 10.minutes do
-  command "bundle exec ruby /dev_exclusions/reportbooru/lib/commands/danbooru_sync.rb"
+every 1.day do
+  runner "HitCounter.clean_day(1.year.ago)"
 end

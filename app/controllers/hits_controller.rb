@@ -21,4 +21,19 @@ class HitsController < ApplicationController
       render nothing: true, status: 422
     end
   end
+
+  def popular_by_day
+    @date = Date.parse(params[:date])
+    render text: HitCounter.new.post_view_rank_day(@date, HitCounter::LIMIT).join(" ")
+  end
+
+  def popular_by_week
+    @date = Date.parse(params[:date])
+    render text: HitCounter.new.post_view_rank_week(@date, HitCounter::LIMIT).join(" ")
+  end
+
+  def popular_by_year
+    @date = Date.parse(params[:date])
+    render text: HitCounter.new.post_view_rank_year(@date, HitCounter::LIMIT).join(" ")
+  end
 end

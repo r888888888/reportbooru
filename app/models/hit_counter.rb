@@ -1,27 +1,29 @@
 class HitCounter
+  LIMIT = 100
+
   def post_view_count(post_id)
     client.pfcount("pv-#{post_id}")
   end
 
   def post_view_rank_day(date, limit)
     key = "pv-day-#{date.strftime('%Y%m%d')}"
-    Post.find(client.zrange(key, 0, limit))
+    client.zrevrange(key, 0, limit, with_scores: true)
   end
 
   def post_view_rank_week(date, limit)
     key = "pv-week-#{date.strftime('%Y%U')}"
-    Post.find(client.zrange(key, 0, limit))
+    client.zrevrange(key, 0, limit, with_scores: true)
   end
 
   def post_view_rank_year(date, limit)
     key = "pv-year-#{date.strftime('%Y')}"
-    Post.find(client.zrange(key, 0, limit))
+    client.zrevrange(key, 0, limit, with_scores: true)
   end
 
   def clean_day(date)
-    client.zremrangebyrank("pv-day-#{date.strftime("%Y%m%d")}", 40, -1)
-    client.zremrangebyrank("pv-week-#{date.strftime("%Y%U")}", 40, -1)
-    client.zremrangebyrank("pv-year-#{date.strftime("%Y")}", 40, -1)
+    client.zremrangebyrank("pv-day-#{date.strftime("%Y%m%d")}", 0, -LIMIT)
+    client.zremrangebyrank("pv-week-#{date.strftime("%Y%U")}", 0, -LIMIT)
+    client.zremrangebyrank("pv-year-#{date.strftime("%Y")}", 0, -LIMIT)
   end
 
   def count!(key, value, sig)
