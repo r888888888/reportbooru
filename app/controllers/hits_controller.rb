@@ -15,18 +15,24 @@ class HitsController < ApplicationController
     case params[:id]
     when "day"
       @date = Date.parse(params[:date])
-      render text: HitCounter.new.post_search_rank_day(@date, HitCounter::LIMIT).join(" ")
+      render text: to_text(HitCounter.new.post_search_rank_day(@date, HitCounter::LIMIT))
 
     when "week"
       @date = Date.parse(params[:date])
-      render text: HitCounter.new.post_search_rank_week(@date, HitCounter::LIMIT).join(" ")
+      render text: to_text(HitCounter.new.post_search_rank_week(@date, HitCounter::LIMIT))
 
     when "year"
       @date = Date.parse(params[:date])
-      render text: HitCounter.new.post_search_rank_year(@date, HitCounter::LIMIT).join(" ")
+      render text: to_text(HitCounter.new.post_search_rank_year(@date, HitCounter::LIMIT))
 
     else
       render nothing: true, status: 422
     end
+  end
+
+protected
+  
+  def to_text(results)
+    results.map {|x| x.join(" ")}.join("\n")
   end
 end
