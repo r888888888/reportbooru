@@ -1,5 +1,6 @@
 class HitCounter
   class VerificationError < SecurityError ; end
+  class UnknownKeyError < Exception ; end
 
   LIMIT = 100
 
