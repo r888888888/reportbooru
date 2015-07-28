@@ -13,27 +13,20 @@ class HitsController < ApplicationController
 
   def show
     case params[:id]
-    when /^pv-(\d+)/
-      count = HitCounter.new.post_view_count($1.to_i) + 1
-      render text: count
+    when "day"
+      @date = Date.parse(params[:date])
+      render text: HitCounter.new.post_search_rank_day(@date, HitCounter::LIMIT).join(" ")
+
+    when "week"
+      @date = Date.parse(params[:date])
+      render text: HitCounter.new.post_search_rank_week(@date, HitCounter::LIMIT).join(" ")
+
+    when "year"
+      @date = Date.parse(params[:date])
+      render text: HitCounter.new.post_search_rank_year(@date, HitCounter::LIMIT).join(" ")
 
     else
       render nothing: true, status: 422
     end
-  end
-
-  def popular_by_day
-    @date = Date.parse(params[:date])
-    render text: HitCounter.new.post_view_rank_day(@date, HitCounter::LIMIT).join(" ")
-  end
-
-  def popular_by_week
-    @date = Date.parse(params[:date])
-    render text: HitCounter.new.post_view_rank_week(@date, HitCounter::LIMIT).join(" ")
-  end
-
-  def popular_by_year
-    @date = Date.parse(params[:date])
-    render text: HitCounter.new.post_view_rank_year(@date, HitCounter::LIMIT).join(" ")
   end
 end

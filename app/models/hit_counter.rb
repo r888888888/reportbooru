@@ -1,37 +1,43 @@
 class HitCounter
+  class VerificationError < SecurityError ; end
+
   LIMIT = 100
 
-  def post_view_count(post_id)
-    client.pfcount("pv-#{post_id}")
+  def post_search_count(tags)
+    client.pfcount("ps-#{normalize_tags(tags)}")
   end
 
-  def post_view_rank_day(date, limit)
-    key = "pv-day-#{date.strftime('%Y%m%d')}"
+  def post_search_rank_day(date, limit)
+    key = "ps-day-#{date.strftime('%Y%m%d')}"
     client.zrevrange(key, 0, limit, with_scores: true)
   end
 
-  def post_view_rank_week(date, limit)
-    key = "pv-week-#{date.strftime('%Y%U')}"
+  def post_search_rank_week(date, limit)
+    key = "ps-week-#{date.strftime('%Y%U')}"
     client.zrevrange(key, 0, limit, with_scores: true)
   end
 
-  def post_view_rank_year(date, limit)
-    key = "pv-year-#{date.strftime('%Y')}"
+  def post_search_rank_year(date, limit)
+    key = "ps-year-#{date.strftime('%Y')}"
     client.zrevrange(key, 0, limit, with_scores: true)
   end
 
-  def clean_day(date)
-    client.zremrangebyrank("pv-day-#{date.strftime("%Y%m%d")}", 0, -LIMIT)
-    client.zremrangebyrank("pv-week-#{date.strftime("%Y%U")}", 0, -LIMIT)
-    client.zremrangebyrank("pv-year-#{date.strftime("%Y")}", 0, -LIMIT)
+  def prune!
+    yesterday = 1.day.ago
+    last_week = 1.week.ago
+    last_year = 1.year.ago
+
+    client.zremrangebyrank("ps-day-#{yesterday.strftime("%Y%m%d")}", 0, -LIMIT)
+    client.zremrangebyrank("ps-week-#{last_week.strftime("%Y%U")}", 0, -LIMIT)
+    client.zremrangebyrank("ps-year-#{last_year.strftime("%Y")}", 0, -LIMIT)
   end
 
   def count!(key, value, sig)
     validate!(key, value, sig)
 
     case key
-    when /^show-(\d+)/
-      increment_post_views($1, value)
+    when /^ps-(.+)/
+      increment_post_search_count($1, value)
 
     else
       raise UnknownKeyError.new
@@ -47,20 +53,25 @@ class HitCounter
     end
   end
 
-  def increment_post_views(post_id, session_id)
-    if client.pfadd("pv-#{post_id}", session_id)
+  def increment_post_search_count(tags, session_id)
+    tags = normalize_tags(tags)
+    if client.pfadd("ps-#{tags}", session_id)
       today = Time.now.strftime("%Y%m%d")
-      client.zincrby("pv-day-#{today}", 1, post_id)
+      client.zincrby("ps-day-#{today}", 1, tags)
 
       week = Time.now.strftime("%Y%U")
-      client.zincrby("pv-week-#{week}", 1, post_id)
+      client.zincrby("ps-week-#{week}", 1, tags)
 
       year = Time.now.strftime("%Y")
-      client.zincrby("pv-year-#{year}", 1, post_id)
+      client.zincrby("ps-year-#{year}", 1, tags)
     end
   end
 
   def client
     @client ||= Redis.new
+  end
+
+  def normalize_tags(tags)
+    tags.to_s.gsub(/\u3000/, " ").strip.scan(/\S+/).uniq.sort.join(" ")
   end
 end
