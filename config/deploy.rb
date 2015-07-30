@@ -23,4 +23,6 @@ set :unicorn_config_path, -> { File.join(current_path, "config", "unicorn", "#{f
 set :unicorn_rack_env, -> { fetch(:stage) == "development" ? "development" : "deployment" }
 set :unicorn_restart_sleep_time, 3
 
+require 'whenever/capistrano'
+
 after 'deploy:publishing', 'unicorn:reload'
