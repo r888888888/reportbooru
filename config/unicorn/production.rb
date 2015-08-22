@@ -19,7 +19,7 @@ ENV['RAILS_ENV'] = 'production'
 
 # Log everything to one file
 stderr_path "/var/log/unicorn.err.log"
-stdout_path "/var/log/unicorn.out.log"
+stdout_path "/dev/null"
 
 # Set master PID location
 pid "/var/www/reportbooru/shared/pids/unicorn.pid"
