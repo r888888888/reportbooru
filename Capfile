@@ -4,12 +4,12 @@ require 'capistrano/setup'
 # Include default deployment tasks
 require 'capistrano/deploy'
 
+# Include tasks from other gems included in your Gemfile
+require 'capistrano/rails'
 require 'whenever/capistrano'
-
-require 'capistrano/bundler'
-
 require 'capistrano3/unicorn'
-set :unicorn_pid, "/var/www/reportbooru/shared/pids/unicorn.pid"
 
 # Load custom tasks from `lib/capistrano/tasks` if you have any defined
-Dir.glob('lib/capistrano/tasks/*.rake').each { |r| import r }
+Dir.glob('lib/capistrano/tasks/*.cap').each { |r| import r }
+
+after "deploy:published", "unicorn:reload"
