@@ -1,6 +1,7 @@
 class HitsController < ApplicationController
   skip_before_filter :verify_authenticity_token
   before_filter :enable_cors
+  rescue_from HitCounter::VerificationError, :with => :render_verification_error
 
   def create
     if params[:key] && params[:value] && params[:sig]
@@ -31,6 +32,9 @@ class HitsController < ApplicationController
   end
 
 protected
+  def render_verification_error
+    render :text => "provided signature is invalid", :status => :forbidden
+  end
   
   def to_text(results)
     results.map {|x| x.join(" ")}.join("\n")
