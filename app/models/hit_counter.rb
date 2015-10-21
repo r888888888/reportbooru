@@ -1,12 +1,10 @@
+require "digest/md5"
+
 class HitCounter
   class VerificationError < SecurityError ; end
   class UnknownKeyError < Exception ; end
 
   LIMIT = 100
-
-  def post_search_count(tags)
-    client.pfcount("ps-#{normalize_tags(tags)}")
-  end
 
   def post_search_rank_day(date, limit)
     key = "ps-day-#{date.strftime('%Y%m%d')}"
@@ -18,19 +16,26 @@ class HitCounter
     client.zrevrange(key, 0, limit, with_scores: true)
   end
 
+  def post_search_rank_month(date, limit)
+    key = "ps-month-#{date.strftime('%Y%m')}"
+    client.zrevrange(key, 0, limit, with_scores: true)
+  end
+
   def post_search_rank_year(date, limit)
     key = "ps-year-#{date.strftime('%Y')}"
     client.zrevrange(key, 0, limit, with_scores: true)
   end
 
   def prune!
-    yesterday = 1.day.ago
-    last_week = 1.week.ago
-    last_year = 1.year.ago
+    yesterday = 1.day.ago.strftime("%Y%m%d")
+    last_week = 1.week.ago.strftime("%Y%U")
+    last_month = 1.month.ago.strftime("%Y%m")
+    last_year = 1.year.ago.strftime("%Y")
 
-    client.zremrangebyrank("ps-day-#{yesterday.strftime("%Y%m%d")}", 0, -LIMIT)
-    client.zremrangebyrank("ps-week-#{last_week.strftime("%Y%U")}", 0, -LIMIT)
-    client.zremrangebyrank("ps-year-#{last_year.strftime("%Y")}", 0, -LIMIT)
+    client.zremrangebyrank("ps-day-#{yesterday}", 0, -LIMIT)
+    client.zremrangebyrank("ps-week-#{last_week}", 0, -LIMIT)
+    client.zremrangebyrank("ps-month-#{last_month}", 0, -LIMIT)
+    client.zremrangebyrank("ps-year-#{last_year}", 0, -LIMIT)
   end
 
   def count!(key, value, sig)
@@ -56,15 +61,21 @@ class HitCounter
 
   def increment_post_search_count(tags, session_id)
     tags = normalize_tags(tags)
-    if client.pfadd("ps-#{tags}", session_id)
-      today = Time.now.strftime("%Y%m%d")
-      client.zincrby("ps-day-#{today}", 1, tags)
+    code = hash(tags)
+    today = Time.now.strftime("%Y%m%d")
 
+    if client.pfadd("ps-#{code}-#{today}", session_id)
       week = Time.now.strftime("%Y%U")
-      client.zincrby("ps-week-#{week}", 1, tags)
-
+      month = Time.now.strftime("%Y%m")
       year = Time.now.strftime("%Y")
-      client.zincrby("ps-year-#{year}", 1, tags)
+
+      client.pipelined do
+        client.expire("ps-#{code}-#{today}", 2.days)
+        client.zincrby("ps-day-#{today}", 1, tags)
+        client.zincrby("ps-week-#{week}", 1, tags)
+        client.zincrby("ps-month-#{month}", 1, tags)
+        client.zincrby("ps-year-#{year}", 1, tags)
+      end
     end
   end
 
@@ -72,7 +83,11 @@ class HitCounter
     @client ||= Redis.new
   end
 
+  def hash(string)
+    Digest::MD5.hexdigest(string)
+  end
+
   def normalize_tags(tags)
-    tags.to_s.gsub(/\u3000/, " ").strip.scan(/\S+/).uniq.sort.join(" ")
+    tags.to_s.gsub(/\u3000/, " ").downcase.strip.scan(/\S+/).uniq.sort.join(" ")
   end
 end
