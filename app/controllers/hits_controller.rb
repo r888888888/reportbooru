@@ -13,17 +13,19 @@ class HitsController < ApplicationController
   end
 
   def show
+    @date = Date.parse(params[:date])
+
     case params[:id]
     when "day"
-      @date = Date.parse(params[:date])
       render text: to_text(HitCounter.new.post_search_rank_day(@date, HitCounter::LIMIT))
 
     when "week"
-      @date = Date.parse(params[:date])
       render text: to_text(HitCounter.new.post_search_rank_week(@date, HitCounter::LIMIT))
 
+    when "month"
+      render text: to_text(HitCounter.new.post_search_rank_month(@date, HitCounter::LIMIT))
+
     when "year"
-      @date = Date.parse(params[:date])
       render text: to_text(HitCounter.new.post_search_rank_year(@date, HitCounter::LIMIT))
 
     else
