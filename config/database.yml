@@ -12,3 +12,13 @@ production:
   adapter: postgresql
   database: reportbooru
   pool: 5
+
+danbooru_development:
+  adapter: postgresql
+  database: danbooru2
+
+danbooru_production:
+  adapter: postgresql
+  database: danbooru2
+  username: danbooru_ro
+  host: yukinoshita

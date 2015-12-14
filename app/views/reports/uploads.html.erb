@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Danbooru</title>
+  <%= csrf_meta_tags %>
+
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  <script type="text/javascript">
+
+    // Load the Visualization API and the piechart package.
+    google.load('visualization', '1.0', {'packages':['corechart']});
+
+    // Set a callback to run when the Google Visualization API is loaded.
+    google.setOnLoadCallback(drawChart);
+
+    // Callback that creates and populates a data table,
+    // instantiates the pie chart, passes in the data and
+    // draws it.
+    function drawChart() {
+
+      // Create the data table.
+      var table = new google.visualization.DataTable();
+      table.addColumn('string', 'Date');
+      <% @report.queries.each do |query| %>
+        table.addColumn('number', '<%= j(query) %>');
+      <% end %>
+
+      var data = [];
+      <% @report.chart_data.each do |data_for_query| %>
+        data.addRows(<%= data_for_query.map {|dates, count| date = dates.to_date; "[new Date(#{date.year}, #{date.month - 1}, #{date.day}), #{count}]"}.join(", ") %>);
+      <% end %>
+
+      // Set chart options
+      var options = {
+        'title': 'Upload Trend',
+        'width': 900,
+        'height': 500,
+        'hAxis': {
+          format: "yy-mm-dd",
+          gridlines: {count: 15}
+        },
+        vAxis: {
+          gridLines: {color: "none"},
+          minValue: 0
+        }
+      };
+
+      // Instantiate and draw our chart, passing in some options.
+      var chart = new google.visualization.LineChart(document.getElementById('chart'));
+      chart.draw(data, options);
+    }
+  </script>
+</head>
+<body>
+  <div id="chart"></div>
+</body>
+</html>
+
