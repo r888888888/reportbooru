@@ -8,4 +8,8 @@ protected
   def enable_cors
     response.headers["Access-Control-Allow-Origin"] = "*"
   end
+
+  def render_422
+    render nothing: true, status: 422
+  end
 end

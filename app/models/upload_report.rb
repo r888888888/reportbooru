@@ -1,27 +1,37 @@
 class UploadReport
-  attr_reader :min_date, :max_date, :queries, :scale
+  class ReportError < RangeError ; end
+  class VerificationError < SecurityError ; end
 
-  def initialize(min_date, max_date, queries, scale)
+  attr_reader :min_date, :max_date, :queries
+
+  def validate_key(sig)
+    digest = OpenSSL::Digest.new("sha256")
+    string = "#{min_date},#{max_date},#{queries}"
+    calc_sig = OpenSSL::HMAC.hexdigest(digest, Rails.application.config.x.shared_remote_key, string)
+
+    if calc_sig != sig
+      raise VerificationError.new
+    end
+  end
+
+  def initialize(min_date, max_date, queries, sig)
     @min_date = min_date.to_date
     if max_date == "today"
       @max_date = Date.today
     else
       @max_date = max_date.to_date
     end
-    @queries = queries
-    @scale = scale
+    @queries = queries.split(/,/)
 
-    if scale == "week"
-      @min_date = 1.week.since(@min_date)
-      @max_date = 1.week.ago(@max_date)
-    end
+    validate_key(sig)
+    validate()
   end
 
   def chart_data
     hash = date_hash()
 
     queries.each.with_index do |query, i|
-      Post.raw_tag_match(query).partition(min_date, max_date, scale).each do |result|
+      Post.raw_tag_match(query).partition(min_date, max_date).each do |result|
         hash[result.date.strftime("%Y-%m-%d")][i] = result.post_count
       end
     end
@@ -30,10 +40,12 @@ class UploadReport
   end
 
   def date_hash
-    if scale == "day"
-      (min_date..max_date).to_a.inject({}) {|hash, x| hash[x.to_s] = Array.new(queries.size, 0); hash}
-    else
-      (min_date..max_date).to_a.select {|x| x.wday == 1}.inject({}) {|hash, x| hash[x.to_s] = Array.new(queries.size, 0); hash}
+    (min_date..max_date).to_a.inject({}) {|hash, x| hash[x.to_s] = Array.new(queries.size, 0); hash}
+  end
+
+  def validate
+    if max_date - min_date > 365
+      raise ReportError.new("Can only report up to 365 days")
     end
   end
 end
