@@ -6,7 +6,8 @@ class Post < DanbooruModel
     where("tag_index @@ to_tsquery('danbooru', E?)", escaped_tag)
   end
 
-  def self.partition(min_date, max_date)
-    where("created_at between ? and ?", min_date, max_date).group("date_trunc('day', created_at)").select("date_trunc('day', created_at) as date, count(*) as post_count").order("date_trunc('day', created_at)")
+  def self.partition(min_date, max_date, scale)
+    scale = "day" unless scale == "week"
+    where("created_at between ? and ?", min_date, max_date).group("date_trunc('#{scale}', created_at)").select("date_trunc('#{scale}', created_at) as date, count(*) as post_count").order("date_trunc('#{scale}', created_at)")
   end
 end

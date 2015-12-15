@@ -20,34 +20,35 @@
 
       // Create the data table.
       var table = new google.visualization.DataTable();
-      table.addColumn('string', 'Date');
+      table.addColumn('date', 'Date');
       <% @report.queries.each do |query| %>
         table.addColumn('number', '<%= j(query) %>');
       <% end %>
 
       var data = [];
-      <% @report.chart_data.each do |data_for_query| %>
-        data.addRows(<%= data_for_query.map {|dates, count| date = dates.to_date; "[new Date(#{date.year}, #{date.month - 1}, #{date.day}), #{count}]"}.join(", ") %>);
-      <% end %>
+      table.addRows([<%= @report.chart_data.map {|dates, counts| date = dates.to_date; "[new Date(#{date.year}, #{date.month - 1}, #{date.day}), " + counts.join(", ") + "]"}.join(", ") %>]);
 
       // Set chart options
       var options = {
-        'title': 'Upload Trend',
-        'width': 900,
-        'height': 500,
+        'title': 'Uploads',
+        'width': 1100,
+        'height': 600,
         'hAxis': {
-          format: "yy-mm-dd",
-          gridlines: {count: 15}
+          format: "MMM dd",
+          gridlines: {count: 16}
         },
-        vAxis: {
+        'vAxis': {
           gridLines: {color: "none"},
           minValue: 0
+        },
+        'legend': {
+          position: 'bottom'
         }
       };
 
       // Instantiate and draw our chart, passing in some options.
       var chart = new google.visualization.LineChart(document.getElementById('chart'));
-      chart.draw(data, options);
+      chart.draw(table, options);
     }
   </script>
 </head>
