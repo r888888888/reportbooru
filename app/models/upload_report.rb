@@ -4,16 +4,6 @@ class UploadReport
 
   attr_reader :min_date, :max_date, :queries
 
-  def validate_key(sig)
-    digest = OpenSSL::Digest.new("sha256")
-    string = "#{min_date},#{max_date},#{queries}"
-    calc_sig = OpenSSL::HMAC.hexdigest(digest, Rails.application.config.x.shared_remote_key, string)
-
-    if calc_sig != sig
-      raise VerificationError.new
-    end
-  end
-
   def initialize(min_date, max_date, queries, sig)
     @min_date = min_date.to_date
     if max_date == "today"
@@ -23,8 +13,7 @@ class UploadReport
     end
     @queries = queries.split(/,/)
 
-    validate_key(sig)
-    validate()
+    validate(sig)
   end
 
   def chart_data
@@ -43,9 +32,21 @@ class UploadReport
     (min_date..max_date).to_a.inject({}) {|hash, x| hash[x.to_s] = Array.new(queries.size, 0); hash}
   end
 
-  def validate
+  def validate(sig)
+    validate_key(sig)
+
     if max_date - min_date > 365
       raise ReportError.new("Can only report up to 365 days")
+    end
+  end
+
+  def validate_key(sig)
+    digest = OpenSSL::Digest.new("sha256")
+    string = "#{min_date},#{max_date},#{queries.join(',')}"
+    calc_sig = OpenSSL::HMAC.hexdigest(digest, Rails.application.config.x.shared_remote_key, string)
+
+    if calc_sig != sig
+      raise VerificationError.new
     end
   end
 end

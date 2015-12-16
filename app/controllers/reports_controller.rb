@@ -5,9 +5,13 @@ class ReportsController < ApplicationController
   layout false
 
   def uploads
-    params.require(:min, :max, :tags)
+    params.require(:min)
+    params.require(:max)
+    params.require(:tags)
 
     @report = UploadReport.new(params[:min], params[:max], params[:tags], params[:sig])
+
+    response.headers["X-Frame-Options"] = "ALLOWALL"
   end
 
 private
