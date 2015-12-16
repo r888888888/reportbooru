@@ -6,11 +6,7 @@ class UploadReport
 
   def initialize(min_date, max_date, queries, sig)
     @min_date = min_date.to_date
-    if max_date == "today"
-      @max_date = Date.today
-    else
-      @max_date = max_date.to_date
-    end
+    @max_date = max_date.to_date
     @queries = queries.split(/,/)
 
     validate(sig)

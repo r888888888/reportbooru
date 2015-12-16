@@ -5,19 +5,21 @@ class ReportsController < ApplicationController
   layout false
 
   def uploads
-    params.require(:min)
-    params.require(:max)
+    response.headers["X-Frame-Options"] = "ALLOWALL"
+
     params.require(:tags)
 
     @report = UploadReport.new(params[:min], params[:max], params[:tags], params[:sig])
-
-    response.headers["X-Frame-Options"] = "ALLOWALL"
   end
 
 private
 
   def render_error(e)
     render text: e.to_s, status: 422
+  end
+
+  def render_422
+    render text: "Tags missing"
   end
 
   def render_403
