@@ -1,0 +1,3 @@
+#!/bin/bash
+
+PGOPTIONS="-c statement_timeout=0" pg_dump -Fc -f /home/danbooru/pg_backups/db-`date +"%Y-%m-%d-%H-%M"`.dump danbooru2

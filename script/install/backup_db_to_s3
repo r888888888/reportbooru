@@ -1,0 +1,57 @@
+#!/usr/bin/env ruby
+
+require 'aws-sdk'
+
+MAX_BACKUPS = 30
+
+home = File.expand_path("~")
+
+if !File.exists?("#{home}/.s3/access_key")
+  STDERR.puts "Access key not found"
+  exit 1
+end
+
+if !File.exists?("#{home}/.s3/secret_access_key")
+  STDERR.puts "Secret access key not found"
+  exit 1
+end
+
+access_key = File.read("#{home}/.s3/access_key").strip
+secret_access_key = File.read("#{home}/.s3/secret_access_key").strip
+credentials = Aws::Credentials.new(access_key, secret_access_key)
+Aws.config.update({
+  region: "us-east-1",
+  credentials: credentials
+})
+
+client = Aws::S3::Client.new
+
+## upload postgresql
+bucket = "danbooru-backup"
+
+current_backups = client.list_objects(bucket: bucket).contents.map {|x| x.key}.select {|x| x =~ /^db-/}.sort.reverse
+
+if current_backups.size > MAX_BACKUPS
+  current_backups[MAX_BACKUPS..-1].each do |old_backup|
+    client.delete_object(bucket: bucket, key: old_backup)
+    puts "Deleted old backup #{old_backup}"
+  end
+end
+
+backup = Dir["/home/danbooru/pg_backups/db-*.dump"].sort.last
+data = File.open(backup, "rb")
+filename = data.mtime.strftime("db-%Y-%m-%d-%H-%M")
+tries = 0
+
+begin
+  client.put_object(bucket: bucket, key: filename, body: data, :acl => "private")
+rescue Errno::EPIPE
+  tries += 1
+  if tries > 3
+    raise
+  else
+    retry
+  end
+end
+
+puts "Uploaded #{backup} as #{filename}"
