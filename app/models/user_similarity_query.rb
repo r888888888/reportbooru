@@ -1,3 +1,5 @@
+require 'aws-sdk'
+
 class UserSimilarityQuery
   MIN_FAV_COUNT = 500
 
