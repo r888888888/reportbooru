@@ -12,6 +12,10 @@ class ReportsController < ApplicationController
     @report = UploadReport.new(params[:min], params[:max], params[:tags], params[:sig])
   end
 
+  def user_similarity
+    query = UserSimilarityQuery.new(params[:user_id])
+  end
+
 private
 
   def render_error(e)
