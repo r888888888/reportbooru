@@ -29,7 +29,7 @@ gem 'whenever'
 gem 'httpclient'
 gem 'capistrano'
 gem 'redis'
-gem 'postgresql_cursor'
+# gem 'postgresql_cursor'
 gem 'aws-sdk', '~> 2'
 
 group :production do

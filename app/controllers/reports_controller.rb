@@ -14,6 +14,7 @@ class ReportsController < ApplicationController
 
   def user_similarity
     query = UserSimilarityQuery.new(params[:user_id])
+    render text: query.results
   end
 
 private

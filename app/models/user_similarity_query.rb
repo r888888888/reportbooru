@@ -12,16 +12,16 @@ class UserSimilarityQuery
       sqs_client.send_message(message_body: redis_key)
       return "not ready"
     else
-      redis.zrevrange(redis_key, 0, 10)
+      redis.zrevrange(redis_key, 0, 10).join(" ")
     end
   end
 
   def calculate
     return if redis.zcard(redis_key) > 0
 
-    posts0 = Favorite.for_user(user_id).pluck_rows(:post_id)
-    User.where("fav_count > ?", MIN_FAV_COUNT).pluck_rows(:id).each do |row|
-      posts1 = Favorite.for_user(row["id"]).pluck_rows(:post_id)
+    posts0 = Favorite.for_user(user_id).pluck(:post_id)
+    User.where("fav_count > ?", MIN_FAV_COUNT).pluck(:id).each do |row|
+      posts1 = Favorite.for_user(row["id"]).pluck(:post_id)
       redis.zadd(redis_key, calculate_with_cosine(posts0, posts1), row["id"])
     end
     redis.zremrangebyrank(redis_key, 0, -11)
