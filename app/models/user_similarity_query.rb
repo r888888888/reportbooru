@@ -12,7 +12,16 @@ class UserSimilarityQuery
       sqs_client.send_message(message_body: redis_key)
       return "not ready"
     else
-      redis.zrevrange(redis_key, 0, 10)
+      redis.zrevrange(redis_key, 0, 25)
+    end
+  end
+
+  def results_text
+    ret = results()
+    if ret == "not ready"
+      return ret
+    else
+      return ret.join(" ")
     end
   end
 
@@ -24,7 +33,7 @@ class UserSimilarityQuery
       posts1 = Favorite.for_user(row["id"]).pluck_rows(:post_id)
       redis.zadd(redis_key, calculate_with_cosine(posts0, posts1), row["id"])
     end
-    redis.zremrangebyrank(redis_key, 0, -11)
+    redis.zremrangebyrank(redis_key, 0, -26)
     redis.expire(redis_key, 1.week.to_i)
   end
 

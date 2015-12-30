@@ -5,6 +5,13 @@ class ApplicationController < ActionController::Base
 
 protected
 
+  def check_key
+    if params[:key] != Rails.application.config.x.shared_remote_key
+      render nothing: true, status: 403
+      return false
+    end
+  end
+
   def enable_cors
     response.headers["Access-Control-Allow-Origin"] = "*"
   end

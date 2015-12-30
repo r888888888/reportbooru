@@ -3,6 +3,7 @@ class ReportsController < ApplicationController
   rescue_from UploadReport::ReportError, with: :render_error
   rescue_from UploadReport::VerificationError, with: :render_403
   layout false
+  before_filter :check_key, only: :user_similarity
 
   def uploads
     response.headers["X-Frame-Options"] = "ALLOWALL"
@@ -14,6 +15,7 @@ class ReportsController < ApplicationController
 
   def user_similarity
     query = UserSimilarityQuery.new(params[:user_id])
+    render text: query.results_text
   end
 
 private
