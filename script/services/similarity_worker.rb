@@ -18,11 +18,11 @@ $options = {
 }
 
 OptionParser.new do |opts|
-  opts.on("--pidfile") do |pidfile|
+  opts.on("--pidfile=PIDFILE") do |pidfile|
     $options[:pidfile] = pidfile
   end
 
-  opts.on("--logfile") do |logfile|
+  opts.on("--logfile=LOGFILE") do |logfile|
     $options[:logfile] = logfile
   end
 end.parse!
