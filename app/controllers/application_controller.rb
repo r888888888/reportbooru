@@ -7,7 +7,7 @@ protected
 
   def check_key
     if params[:key] != Rails.application.config.x.shared_remote_key
-      render nothing: true, status: 403
+      render text: "forbidden", status: 403
       return false
     end
   end
