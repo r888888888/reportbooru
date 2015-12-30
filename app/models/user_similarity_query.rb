@@ -34,9 +34,9 @@ class UserSimilarityQuery
     return if redis.zcard(redis_key) > 0
 
     posts0 = Favorite.for_user(user_id).pluck_rows(:post_id)
-    User.where("favorite_count > ?", MIN_FAV_COUNT).pluck_rows(:id).each do |row|
-      posts1 = Favorite.for_user(row["id"]).pluck_rows(:post_id)
-      redis.zadd(redis_key, calculate_with_cosine(posts0, posts1), row["id"])
+    User.where("favorite_count > ?", MIN_FAV_COUNT).pluck_rows(:id).each do |user_id|
+      posts1 = Favorite.for_user(user_id).pluck_rows(:post_id)
+      redis.zadd(redis_key, calculate_with_cosine(posts0, posts1), user_id)
     end
     redis.zremrangebyrank(redis_key, 0, -26)
     redis.expire(redis_key, 1.week.to_i)
