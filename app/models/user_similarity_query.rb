@@ -60,7 +60,12 @@ private
 
   def calculate_with_cosine(posts0, posts1)
     a = (posts0 & posts1).size
-    a / Math.sqrt(posts0.size * posts1.size)
+    div = Math.sqrt(posts0.size * posts1.size)
+    if div == 0
+      0
+    else
+      a / div
+    end
   end
 
   def calculate_with_mr_cosine(posts0, posts1)
