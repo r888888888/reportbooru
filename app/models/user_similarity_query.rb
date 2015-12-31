@@ -59,6 +59,8 @@ private
   end
 
   def calculate_with_cosine(posts0, posts1)
+    # when these are < 1 million in size this ends up
+    # being faster than trying to farm out to map reduce
     a = (posts0 & posts1).size
     div = Math.sqrt(posts0.size * posts1.size)
     if div == 0
