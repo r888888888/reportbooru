@@ -18,26 +18,26 @@ LOGFILE=/var/log/reportbooru/similarity_worker.log
 DESC="similarity worker"
 PIDFILE=/var/run/reportbooru/similarity_worker.pid
 ROOT_DIR=/var/www/reportbooru/current
-DAEMON=app/services/similarity_worker.rb
-DAEMON_CMD="bundle exec ruby $DAEMON --pidfile=$PIDFILE"
+DAEMON=script/services/similarity_worker.rb
+DAEMON_CMD="bundle exec ruby $DAEMON --pidfile=$PIDFILE >> $LOGFILE 2>&1"
 
 case "$1" in
     start)
 	echo -n "Starting daemon: "$NAME
-	start-stop-daemon --start --pidfile $PIDFILE --chuid $CHUID --chdir $ROOT_DIR --exec /bin/bash -- -l -c "$DAEMON_CMD" > $LOGFILE
+	start-stop-daemon --start --pidfile $PIDFILE --chuid $CHUID --chdir $ROOT_DIR --exec /bin/bash -- -l -c "$DAEMON_CMD"
 	echo "."
 	;;
 
     stop)
 	echo -n "Stopping daemon: "$NAME
-	start-stop-daemon --stop --pidfile $PIDFILE --oknodo --chuid $CHUID --remove-pidfile > $LOGFILE
+	start-stop-daemon --stop --pidfile $PIDFILE --oknodo --chuid $CHUID --remove-pidfile
 	echo "."
 	;;
 
     restart)
 	echo -n "Restarting daemon: "$NAME
 	start-stop-daemon --stop --retry 30 --pidfile $PIDFILE --oknodo --chuid $CHUID --remove-pidfile > $LOGFILE
-	start-stop-daemon --start --quiet --pidfile $PIDFILE --exec /bin/bash --chuid $CHUID --chdir $ROOT_DIR -- -l -c "$DAEMON_CMD" > $LOGFILE
+	start-stop-daemon --start --quiet --pidfile $PIDFILE --exec /bin/bash --chuid $CHUID --chdir $ROOT_DIR -- -l -c "$DAEMON_CMD"
 	echo "."
 	;;
 
