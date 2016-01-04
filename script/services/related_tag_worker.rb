@@ -57,7 +57,7 @@ while $running
       puts "processing #{tag_name}"
       calc = TagSimilarityCalculator.new(tag_name)
       calc.calculate
-      calc.update_danbooru
+      calc.update_danbooru if calc.results
     end
   end
 end
