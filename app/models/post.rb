@@ -1,9 +1,17 @@
 class Post < DanbooruModel
   attr_readonly *column_names
 
+  def self.escaped_for_tsquery(s)
+    "'#{s.gsub(/\0/, '').gsub(/'/, '\0\0').gsub(/\\/, '\0\0\0\0')}'"
+  end
+
   def self.raw_tag_match(tag)
-    escaped_tag = "'#{tag.gsub(/\0/, '').gsub(/'/, '\0\0').gsub(/\\/, '\0\0\0\0')}'"
-    where("tag_index @@ to_tsquery('danbooru', E?)", escaped_tag)
+    where("tag_index @@ to_tsquery('danbooru', E?)", escaped_for_tsquery(tag))
+  end
+
+  def self.raw_intersection_tag_match(tags)
+    escaped_tags = tags.map {|x| escaped_for_tsquery(x)}.join(" & ")
+    where("tag_index @@ to_tsquery('danbooru', E?)", escaped_tags)
   end
 
   def self.partition(min_date, max_date)

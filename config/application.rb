@@ -24,5 +24,6 @@ module Reportbooru
     config.active_record.raise_in_transactional_callbacks = true
     config.x.shared_remote_key = File.read(File.expand_path("~/.reportbooru/shared_remote_key"))
     config.x.aws_sqs_similarity_queue_url = File.read(File.expand_path("~/.reportbooru/sqs_url"))
+    config.x.aws_sqs_related_tag_queue_url = File.read(File.expand_path("~/.reportbooru/sqs_reltag_url"))
   end
 end
