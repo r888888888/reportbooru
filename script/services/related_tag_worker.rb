@@ -36,7 +36,7 @@ SQS_CLIENT = Aws::SQS::Client.new
 SQS_POLLER = Aws::SQS::QueuePoller.new(SQS_QUEUE_URL, client: SQS_CLIENT)
 CACHE = LruRedux::Cache.new(200)
 
-File.open($options[:pidfile], "a") do |f|
+File.open($options[:pidfile], "w") do |f|
   f.write(Process.pid)
 end
 
