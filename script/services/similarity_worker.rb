@@ -10,7 +10,7 @@ require File.expand_path("../../../config/environment", __FILE__)
 # AWS_SECRET_ACCESS_KEY
 
 Process.daemon
-Process.setpriority(Process::PRIO_USER, 0, 10)
+# Process.setpriority(Process::PRIO_USER, 0, 10)
 
 $running = true
 $options = {

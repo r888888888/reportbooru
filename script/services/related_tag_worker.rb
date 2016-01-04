@@ -10,7 +10,7 @@ require File.expand_path("../../../config/environment", __FILE__)
 # AWS_SECRET_ACCESS_KEY
 
 Process.daemon
-Process.setpriority(Process::PRIO_USER, 0, 10)
+# Process.setpriority(Process::PRIO_USER, 0, 10)
 
 $running = true
 $options = {
@@ -54,7 +54,7 @@ while $running
   SQS_POLLER.poll do |msg|
     if msg.body =~ /^calculate (.+)/
       tag_name = $1
-      LOGGER.info "processing #{tag_name}"
+      puts "processing #{tag_name}"
       calc = TagSimilarityCalculator.new(tag_name)
       calc.calculate
       calc.update_danbooru
