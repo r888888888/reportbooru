@@ -38,7 +38,7 @@ class TagSimilarityCalculator
       if ctag == tag_name
         similar_counts[ctag] = 1
       else
-        acount = Post.raw_intersection_tag_match([tag_name, ctag]).where("id >= ?", Post.estimate_post_id(date_constraint(post_count))).count
+        acount = Post.raw_intersection_tag_match([tag_name, ctag]).where("id >= ?", Post.estimate_post_id(date_constraint(tag.post_count))).count
         ctag_count = Tag.post_count(ctag)
         div = Math.sqrt(tag.post_count * ctag_count)
         if div != 0
