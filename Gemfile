@@ -31,6 +31,7 @@ gem 'capistrano'
 gem 'redis'
 gem 'postgresql_cursor'
 gem 'aws-sdk', '~> 2'
+gem 'lru_redux'
 
 group :production do
   gem 'unicorn', :platforms => :ruby
