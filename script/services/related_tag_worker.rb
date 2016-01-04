@@ -50,23 +50,40 @@ SQS_POLLER.before_request do
   end
 end
 
+def process_calculate(tag_name)
+  LOGGER.info "processing #{tag_name}"
+
+  if CACHE[tag_name]
+    LOGGER.info "  skipped"
+    return
+  end
+
+  begin
+    calc = TagSimilarityCalculator.new(tag_name)
+    calc.calculate
+
+    if calc.results
+      calc.update_danbooru 
+    else
+      LOGGER.info "  skipped"
+    end
+    
+  rescue Exception => e
+    LOGGER.error e.message
+    LOGERR.error e.backtrace.join("\n")
+  end
+
+  CACHE[tag_name] = true
+end
+
 while $running
   LOGGER.info "starting poll"
 
   SQS_POLLER.poll do |msg|
     if msg.body =~ /^calculate (.+)/
-      tag_name = $1
-      next if CACHE[tag_name]
-      LOGGER.info "processing #{tag_name}"
-      begin
-        calc = TagSimilarityCalculator.new(tag_name)
-        calc.calculate
-        calc.update_danbooru if calc.results
-      rescue Exception => e
-        LOGGER.error e.message
-        LOGERR.error e.backtrace.join("\n")
-      end
-      CACHE[tag_name] = true
+      process_calculate($1)
+    else
+      LOGGER.error "unknown message: #{msg.body}"
     end
   end
 end

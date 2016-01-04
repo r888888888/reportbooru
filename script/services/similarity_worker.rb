@@ -28,7 +28,9 @@ OptionParser.new do |opts|
   end
 end.parse!
 
-LOGGER = Logger.new(File.open($options[:logfile], "a"))
+logfile = File.open($options[:logfile], "a")
+logfile.sync = true
+LOGGER = Logger.new(logfile)
 REDIS = Redis.new
 SQS_QUEUE_URL = Rails.application.config.x.aws_sqs_similarity_queue_url
 SQS_CLIENT = Aws::SQS::Client.new
@@ -62,6 +64,8 @@ while $running
         LOGGER.error e.message
         LOGGER.error e.backtrace.join("\n")
       end
+    else
+      LOGGER.error "unknown message: #{msg.body}"
     end
   end
 end
