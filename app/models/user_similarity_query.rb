@@ -34,7 +34,7 @@ class UserSimilarityQuery
     return if redis.zcard(redis_key) > 0
 
     # we want to only look at the most recent 2 years
-    post_id = estimate_post_id(2.years.ago.to_date)
+    post_id = Post.estimate_post_id(2.years.ago.to_date)
 
     posts0 = Favorite.for_user(user_id).where("post_id > ?", post_id).pluck_rows(:post_id)
     User.where("id <> ? and favorite_count > ?", user_id, MIN_FAV_COUNT).pluck_rows(:id).each do |user_id|
@@ -43,28 +43,6 @@ class UserSimilarityQuery
     end
     redis.zremrangebyrank(redis_key, 0, -26)
     redis.expire(redis_key, 1.day.to_i)
-  end
-
-  def estimate_post_id(date)
-    # we don't have the timestamp from the favorites query so try to
-    # guess the uploaded post id based on the date
-
-    # 0  : 1
-    # 1  : 41854
-    # 2  : 122253
-    # 3  : 253308
-    # 4  : 459340
-    # 5  : 676576
-    # 6  : 922108
-    # 7  : 1172251
-    # 8  : 1425013
-    # 9  : 1693611
-    # 10 : 2020092
-    # y = 13303.93124x^2 + 75291.75128x - 43332.07692
-
-    base = Date.civil(2005, 5, 24)
-    x = (date - base) / 365.0
-    13303.93124 * x**2 + 75291.75128 * x - 43332.07692
   end
 
 private
