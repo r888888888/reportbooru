@@ -29,7 +29,9 @@ OptionParser.new do |opts|
   end
 end.parse!
 
-LOGGER = Logger.new(File.open($options[:logfile], "a"))
+logfile = File.open($options[:logfile], "a")
+logfile.sync = true
+LOGGER = Logger.new(logfile)
 REDIS = Redis.new
 SQS_QUEUE_URL = Rails.application.config.x.aws_sqs_related_tag_queue_url
 SQS_CLIENT = Aws::SQS::Client.new
