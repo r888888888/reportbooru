@@ -1,7 +1,7 @@
 require 'aws-sdk'
 
 class UserSimilarityQuery
-  MIN_FAV_COUNT = 300
+  MIN_FAV_COUNT = 200
 
   attr_reader :user_id
 
@@ -17,7 +17,7 @@ class UserSimilarityQuery
       )
       return "not ready"
     else
-      redis.zrevrange(redis_key, 0, 25, with_scores: true)
+      redis.zrevrange(redis_key, 0, 25)
     end
   end
 
@@ -26,7 +26,7 @@ class UserSimilarityQuery
     if ret == "not ready"
       return ret
     else
-      return ret.flatten.join(" ")
+      return ret.join(" ")
     end
   end
 
