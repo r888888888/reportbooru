@@ -81,11 +81,17 @@ end
 while $running
   LOGGER.info "starting poll"
 
-  SQS_POLLER.poll do |msg|
-    if msg.body =~ /^calculate (.+)/
-      process_calculate($1)
-    else
-      LOGGER.error "unknown message: #{msg.body}"
+  begin
+    SQS_POLLER.poll do |msg|
+      if msg.body =~ /^calculate (.+)/
+        process_calculate($1)
+      else
+        LOGGER.error "unknown message: #{msg.body}"
+      end
     end
+  rescue Exception => e
+    LOGGER.error "error: #{e}"
+    sleep(60)
+    retry
   end
 end
