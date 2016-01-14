@@ -18,6 +18,10 @@ class ReportsController < ApplicationController
     render text: query.results_text
   end
 
+  def status
+    report = StatusReport.new
+  end
+
 private
 
   def render_error(e)
