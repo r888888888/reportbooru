@@ -53,19 +53,26 @@ end
 while $running
   LOGGER.info "starting poll"
 
-  SQS_POLLER.poll do |msg|
-    if msg.body =~ /simusers-(\d+)/
-      user_id = $1
-      LOGGER.info "processing #{user_id}"
-      begin
-        query = UserSimilarityQuery.new(user_id)
-        query.calculate
-      rescue Exception => e
-        LOGGER.error e.message
-        LOGGER.error e.backtrace.join("\n")
+  begin
+    SQS_POLLER.poll do |msg|
+      if msg.body =~ /simusers-(\d+)/
+        user_id = $1
+        LOGGER.info "processing #{user_id}"
+        begin
+          query = UserSimilarityQuery.new(user_id)
+          query.calculate
+        rescue Exception => e
+          LOGGER.error e.message
+          LOGGER.error e.backtrace.join("\n")
+        end
+      else
+        LOGGER.error "unknown message: #{msg.body}"
       end
-    else
-      LOGGER.error "unknown message: #{msg.body}"
     end
+  rescue Exception => e
+    LOGGER.error e.message
+    LOGGER.error e.backtrace.join("\n")
+    sleep(60)
+    retry
   end
 end
