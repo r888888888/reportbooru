@@ -22,3 +22,4 @@ danbooru_production:
   database: danbooru2
   username: danbooru_ro
   host: yukinoshita
+  password: <%= ENV["DANBOORU_RO_PASSWORD"] %>
