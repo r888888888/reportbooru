@@ -33,16 +33,13 @@ class UserSimilarityQuery
   def calculate
     return if redis.zcard(redis_key) > 0
 
-    # we want to only look at the most recent 2 years
-    post_id = Post.estimate_post_id(2.years.ago.to_date)
-
-    posts0 = Favorite.for_user(user_id).where("post_id > ?", post_id).pluck_rows(:post_id)
-    User.where("id <> ? and favorite_count > ?", user_id, MIN_FAV_COUNT).pluck_rows(:id).each do |user_id|
-      posts1 = Favorite.for_user(user_id).where("post_id > ?", post_id).pluck_rows(:post_id)
-      redis.zadd(redis_key, calculate_with_cosine(posts0, posts1), user_id)
+    posts0 = Favorite.for_user(user_id).pluck_rows(:post_id)
+    User.where("id <> ? and favorite_count > ? and last_logged_in_at >= ?", user_id, MIN_FAV_COUNT, 1.year.ago).pluck_rows(:id).each do |user_id|
+      posts1 = Favorite.for_user(user_id).pluck_rows(:post_id)
+      redis.zadd(redis_key, calculate_with_weighted_cosine(posts0, posts1), user_id)
     end
     redis.zremrangebyrank(redis_key, 0, -26)
-    redis.expire(redis_key, 1.day.to_i)
+    redis.expire(redis_key, 36.hours.to_i)
   end
 
 private
@@ -65,6 +62,17 @@ private
     # when these are < 1 million in size this ends up
     # being faster than trying to farm out to map reduce
     a = (posts0 & posts1).size
+    div = Math.sqrt(posts0.size * posts1.size)
+    if div == 0
+      0
+    else
+      a / div
+    end
+  end
+
+  def calculate_with_weighted_cosine(posts0, posts1)
+    n = Post.maximum(:id).to_f
+    a = (posts0 & posts1).map {|x| x.to_f / n}.sum
     div = Math.sqrt(posts0.size * posts1.size)
     if div == 0
       0
