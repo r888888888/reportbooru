@@ -58,13 +58,8 @@ while $running
       if msg.body =~ /simusers-(\d+)/
         user_id = $1
         LOGGER.info "processing #{user_id}"
-        begin
-          query = UserSimilarityQuery.new(user_id)
-          query.calculate
-        rescue Exception => e
-          LOGGER.error e.message
-          LOGGER.error e.backtrace.join("\n")
-        end
+        query = UserSimilarityQuery.new(user_id)
+        query.calculate
       else
         LOGGER.error "unknown message: #{msg.body}"
       end

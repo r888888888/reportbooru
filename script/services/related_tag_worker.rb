@@ -60,19 +60,13 @@ def process_calculate(tag_name)
     return
   end
 
-  begin
-    calc = TagSimilarityCalculator.new(tag_name)
-    calc.calculate
+  calc = TagSimilarityCalculator.new(tag_name)
+  calc.calculate
 
-    if calc.results
-      calc.update_danbooru 
-    else
-      LOGGER.info "  skipped"
-    end
-    
-  rescue Exception => e
-    LOGGER.error e.message
-    LOGERR.error e.backtrace.join("\n")
+  if calc.results
+    calc.update_danbooru 
+  else
+    LOGGER.info "  skipped"
   end
 
   CACHE[tag_name] = true
