@@ -17,7 +17,7 @@ class UserSimilarityQuery
       )
       return "not ready"
     else
-      redis.zrevrange(redis_key, 0, 25)
+      redis.zrevrange(redis_key, 0, 25, with_scores: true)
     end
   end
 
