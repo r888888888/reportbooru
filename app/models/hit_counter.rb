@@ -22,20 +22,17 @@ class HitCounter
   end
 
   def post_search_rank_year(date, limit)
-    key = "ps-year-#{date.strftime('%Y')}"
-    client.zrevrange(key, 0, limit, with_scores: true)
+    []
   end
 
   def prune!
     yesterday = 1.day.ago.strftime("%Y%m%d")
     last_week = 1.week.ago.strftime("%Y%U")
     last_month = 1.month.ago.strftime("%Y%m")
-    last_year = 1.year.ago.strftime("%Y")
 
     client.zremrangebyrank("ps-day-#{yesterday}", 0, -LIMIT)
     client.zremrangebyrank("ps-week-#{last_week}", 0, -LIMIT)
     client.zremrangebyrank("ps-month-#{last_month}", 0, -LIMIT)
-    client.zremrangebyrank("ps-year-#{last_year}", 0, -LIMIT)
   end
 
   def count!(key, value, sig)
@@ -67,14 +64,12 @@ class HitCounter
     if client.pfadd("ps-#{code}-#{today}", session_id)
       week = Time.now.strftime("%Y%U")
       month = Time.now.strftime("%Y%m")
-      year = Time.now.strftime("%Y")
 
       client.pipelined do
         client.expire("ps-#{code}-#{today}", 2.days)
         client.zincrby("ps-day-#{today}", 1, tags)
         client.zincrby("ps-week-#{week}", 1, tags)
         client.zincrby("ps-month-#{month}", 1, tags)
-        client.zincrby("ps-year-#{year}", 1, tags)
       end
     end
   end
