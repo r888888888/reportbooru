@@ -1,7 +1,7 @@
 class HitsController < ApplicationController
   skip_before_filter :verify_authenticity_token
   before_filter :enable_cors
-  rescue_from HitCounter::VerificationError, :with => :render_verification_error
+  rescue_from Concerns::RedisCounter::VerificationError, :with => :render_verification_error
 
   def create
     if params[:key] && params[:value] && params[:sig]

@@ -1,6 +1,7 @@
 require "digest/md5"
 
 class HitCounter
+  include Concerns::RedisCounter
   class VerificationError < SecurityError ; end
   class UnknownKeyError < Exception ; end
 
@@ -47,15 +48,6 @@ class HitCounter
     end
   end
 
-  def validate!(key, value, sig)
-    digest = OpenSSL::Digest.new("sha256")
-    calc_sig = OpenSSL::HMAC.hexdigest(digest, Rails.application.config.x.shared_remote_key, "#{key},#{value}")
-
-    if calc_sig != sig
-      raise VerificationError.new
-    end
-  end
-
   def increment_post_search_count(tags, session_id)
     tags = normalize_tags(tags)
     code = hash(tags)
@@ -72,17 +64,5 @@ class HitCounter
         client.zincrby("ps-month-#{month}", 1, tags)
       end
     end
-  end
-
-  def client
-    @client ||= Redis.new
-  end
-
-  def hash(string)
-    Digest::MD5.hexdigest(string)
-  end
-
-  def normalize_tags(tags)
-    tags.to_s.gsub(/\u3000/, " ").downcase.strip.scan(/\S+/).uniq.sort.join(" ")
   end
 end

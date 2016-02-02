@@ -22,8 +22,8 @@ module Reportbooru
 
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
-    config.x.shared_remote_key = File.read(File.expand_path("~/.reportbooru/shared_remote_key"))
-    config.x.aws_sqs_similarity_queue_url = File.read(File.expand_path("~/.reportbooru/sqs_url"))
-    config.x.aws_sqs_related_tag_queue_url = File.read(File.expand_path("~/.reportbooru/sqs_reltag_url"))
+    config.x.shared_remote_key = ENV["DANBOORU_SHARED_REMOTE_KEY"]
+    config.x.aws_sqs_similarity_queue_url = ENV["DANBOORU_SQS_SIMILAR_USER_URL"]
+    config.x.aws_sqs_related_tag_queue_url = ENV["DANBOORU_SQS_SIMILAR_TAG_URL"]
   end
 end
