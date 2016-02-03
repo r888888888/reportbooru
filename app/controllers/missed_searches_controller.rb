@@ -4,8 +4,8 @@ class MissedSearchesController < ApplicationController
   rescue_from Concerns::RedisCounter::VerificationError, :with => :render_verification_error
 
   def create
-    if params[:key] && params[:value] && params[:sig]
-      MissedSearchCounter.new.count!(params[:key], params[:value], params[:sig])
+    if params[:tags] && params[:session_id] && params[:sig]
+      MissedSearchCounter.new.count!(params[:tags], params[:session_id], params[:sig])
       render nothing: true
     else
       render nothing: true, status: 422
@@ -13,7 +13,7 @@ class MissedSearchesController < ApplicationController
   end
 
   def show
-    to_text(MissedSearchCounter.new.rank)
+    render text: to_text(MissedSearchCounter.new.rank)
   end
 
 protected

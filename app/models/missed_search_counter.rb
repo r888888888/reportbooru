@@ -14,7 +14,7 @@ class MissedSearchCounter
   end
 
   def count!(tags, session_id, sig)
-    validate!(tags, session_id, sig)
+    validate!(nil, session_id, sig)
     tags = normalize_tags(tags)
     code = hash(tags)
     today = Time.now.strftime("%Y%m%d")
