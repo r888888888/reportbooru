@@ -13,6 +13,7 @@ class MissedSearchesController < ApplicationController
   end
 
   def show
+    headers["Content-Type"] = "text/plain; charset=UTF-8" 
     render text: to_text(MissedSearchCounter.new.rank)
   end
 
