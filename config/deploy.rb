@@ -13,5 +13,6 @@ set :default_env, {
   "RAILS_ENV" => "production"
 }
 set :linked_dirs, fetch(:linked_dirs, []).push('log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'vendor/bundle')
+set :linked_files, fetch(:linked_files, []).push(".rbenv-vars")
 
 after 'deploy:publishing', 'unicorn:reload'
