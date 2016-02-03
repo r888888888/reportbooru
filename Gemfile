@@ -38,6 +38,7 @@ group :production do
   gem 'capistrano3-unicorn', :require => false
   gem 'capistrano-bundler'
   gem 'capistrano-rails'
+  gem 'capistrano-rbenv'
 end
 
 group :development, :test do

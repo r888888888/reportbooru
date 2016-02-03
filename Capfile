@@ -8,6 +8,7 @@ require 'capistrano/deploy'
 require 'capistrano/rails'
 require 'whenever/capistrano'
 require 'capistrano3/unicorn'
+require 'capistrano/rbenv'
 
 # Load custom tasks from `lib/capistrano/tasks` if you have any defined
 Dir.glob('lib/capistrano/tasks/*.cap').each { |r| import r }
