@@ -17,7 +17,7 @@ class UserSimilarityQuery
       )
       return "not ready"
     else
-      redis.zrevrange(redis_key, 0, 25, with_scores: true)
+      redis.zrevrange(redis_key, 0, 12, with_scores: true)
     end
   end
 
@@ -38,7 +38,7 @@ class UserSimilarityQuery
       posts1 = Favorite.for_user(user_id).pluck_rows(:post_id)
       redis.zadd(redis_key, calculate_with_weighted_cosine(posts0, posts1), user_id)
     end
-    redis.zremrangebyrank(redis_key, 0, -26)
+    redis.zremrangebyrank(redis_key, 0, -13)
     redis.expire(redis_key, 36.hours.to_i)
   end
 
