@@ -71,8 +71,13 @@ private
   end
 
   def calculate_with_weighted_cosine(posts0, posts1)
-    n = Post.maximum(:id).to_f
-    a = (posts0 & posts1).map {|x| x.to_f / n}.sum
+    n = Post.maximum(:id)
+    c = Post.estimate_post_id(90.days.ago.to_date)
+    if n == c
+      return 0
+    else
+      a = (posts0 & posts1).map {|x| [x.to_f - c, 0].max / (n.to_f - c)}.sum
+    end
     div = Math.sqrt(posts0.size * posts1.size)
     if div == 0
       0
