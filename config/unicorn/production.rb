@@ -4,7 +4,7 @@ app_path = "/var/www/reportbooru/current"
 # Set unicorn options
 worker_processes 5
 
-preload_app false
+preload_app true
 timeout 180
 listen "127.0.0.1:9000"
 
@@ -25,20 +25,23 @@ stdout_path "/dev/null"
 pid "/var/www/reportbooru/shared/pids/unicorn.pid"
 
 before_fork do |server, worker|
-  Signal.trap 'TERM' do
-    puts 'Unicorn master intercepting TERM and sending myself QUIT instead'
-    Process.kill 'QUIT', Process.pid
+  old_pid = "#{server.config[:pid]}.oldbin"
+  
+  if File.exists?(old_pid) && server.pid != old_pid
+    begin
+      Process.kill("QUIT", File.read(old_pid).to_i)
+    rescue Errno::ENOENT, Errno::ESRCH
+      # someone else did our job for us
+    end
   end
 
-  defined?(ActiveRecord::Base) and
+  if defined?(ActiveRecord::Base)
     ActiveRecord::Base.connection.disconnect!
+  end
 end
 
 after_fork do |server, worker|
-  Signal.trap 'TERM' do
-    puts 'Unicorn worker intercepting TERM and doing nothing. Wait for master to send QUIT'
-  end
-
-  defined?(ActiveRecord::Base) and
+  if defined?(ActiveRecord::Base)
     ActiveRecord::Base.establish_connection
+  end
 end

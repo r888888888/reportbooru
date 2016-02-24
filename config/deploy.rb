@@ -16,4 +16,4 @@ set :linked_dirs, fetch(:linked_dirs, []).push('log', 'tmp/pids', 'tmp/cache', '
 set :linked_files, fetch(:linked_files, []).push(".rbenv-vars")
 set :rbenv_ruby, "2.1.5"
 
-after 'deploy:publishing', 'unicorn:reload'
+after 'deploy:publishing', 'unicorn:restart'
