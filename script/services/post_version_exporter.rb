@@ -69,7 +69,6 @@ while $running
     PostVersion.where("id > ? and id <= ?", last_id, next_id).find_each do |version|
       hash = {
         "id" => version.id,
-        "created_at" => version.created_at,
         "updated_at" => version.updated_at,
         "post_id" => version.post_id,
         "tags" => version.tags,
