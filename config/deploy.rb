@@ -13,7 +13,7 @@ set :default_env, {
   "RAILS_ENV" => "production"
 }
 set :linked_dirs, fetch(:linked_dirs, []).push('log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'vendor/bundle')
-set :linked_files, fetch(:linked_files, []).push(".rbenv-vars")
+set :linked_files, fetch(:linked_files, []).push(".rbenv-vars", "google-key.json")
 set :rbenv_ruby, "2.1.5"
 
 after 'deploy:publishing', 'unicorn:restart'
