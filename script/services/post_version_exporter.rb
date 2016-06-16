@@ -54,7 +54,6 @@ Signal.trap("TERM") do
 end
 
 def get_last_exported_id
-  return 0
   REDIS.get("post-version-exporter-id").to_i
 end
 
@@ -92,7 +91,7 @@ while $running
       REDIS.set("post-version-exporter-id", store_id)
     end
 
-    sleep 60
+    sleep 10
   rescue Exception => e
     LOGGER.error "error: #{e}"
     sleep(60)
