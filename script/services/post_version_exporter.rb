@@ -83,15 +83,18 @@ while $running
       end
     end
 
-    LOGGER.info "inserting #{last_id}..#{store_id}"
-    result = GBQ.insert("post_versions", batch)
-    if result["insertErrors"]
-      LOGGER.error result.inspect
+    if batch.any?
+      LOGGER.info "inserting #{last_id}..#{store_id}"
+      result = GBQ.insert("post_versions", batch)
+      if result["insertErrors"]
+        LOGGER.error result.inspect
+      else
+        REDIS.set("post-version-exporter-id", store_id)
+      end
     else
-      REDIS.set("post-version-exporter-id", store_id)
+      sleep(60)
     end
 
-    sleep 10
   rescue Exception => e
     LOGGER.error "error: #{e}"
     sleep(60)
