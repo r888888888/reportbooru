@@ -38,7 +38,7 @@ logfile = File.open($options[:logfile], "a")
 logfile.sync = true
 LOGGER = Logger.new(logfile)
 REDIS = Redis.new
-BATCH_SIZE = 5_000
+BATCH_SIZE = 10_000
 GBQ = BigQuery::Client.new(
   "json_key" => $options[:google_key_path],
   "project_id" => google_config["project_id"],
@@ -54,7 +54,41 @@ Signal.trap("TERM") do
 end
 
 def get_last_exported_id
+  return 0
   REDIS.get("post-version-exporter-id").to_i
+end
+
+def find_previous(version)
+  if version.updated_at.to_i == Time.zone.parse("2007-03-14T19:38:12Z").to_i
+    # Old post versions which didn't have updated_at set correctly
+    PostVersion.where("post_id = ? and updated_at = ? and id < ?", version.post_id, version.updated_at, version.id).order("updated_at desc, id desc").first
+  else
+    PostVersion.where("post_id = ? and updated_at < ?", version.post_id, version.updated_at).order("updated_at desc, id desc").first
+  end
+end
+
+def calculate_diff(older, newer)
+  if older
+    older_tags = older.tags.scan(/\S+/)
+    older_tags << "rating:#{older.rating}" if older.rating.present?
+    older_tags << "parent:#{older.parent_id}" if older.parent_id.present?
+    older_tags << "source:#{older.source}" if older.source.present?
+  else
+    older_tags = []
+  end
+
+  newer_tags = newer.tags.scan(/\S+/)
+  newer_tags << "rating:#{newer.rating}" if newer.rating.present?
+  newer_tags << "parent:#{newer.parent_id}" if newer.parent_id.present?
+  newer_tags << "source:#{newer.source}" if newer.source.present?
+
+  added_tags = newer_tags - older_tags
+  removed_tags = older_tags - newer_tags
+
+  return {
+    :added_tags => added_tags,
+    :removed_tags => removed_tags
+  }
 end
 
 while $running
@@ -64,11 +98,15 @@ while $running
     store_id = last_id
     batch = []
     PostVersion.where("id > ? and id <= ?", last_id, next_id).find_each do |version|
+      previous = find_previous(version)
+      diff = calculate_diff(previous, version)
       hash = {
         "id" => version.id,
         "updated_at" => version.updated_at,
         "post_id" => version.post_id,
         "tags" => version.tags,
+        "added_tags" => diff[:added_tags].join(" "),
+        "removed_tags" => diff[:removed_tags].join(" "),
         "rating" => version.rating,
         "parent_id" => version.parent_id,
         "source" => version.source,
