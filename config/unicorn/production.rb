@@ -4,7 +4,7 @@ app_path = "/var/www/reportbooru/current"
 # Set unicorn options
 worker_processes 5
 
-preload_app true
+preload_app false
 timeout 180
 listen "127.0.0.1:9000"
 

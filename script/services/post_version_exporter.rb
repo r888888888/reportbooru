@@ -54,7 +54,6 @@ Signal.trap("TERM") do
 end
 
 def get_last_exported_id
-  return 0
   REDIS.get("post-version-exporter-id").to_i
 end
 
