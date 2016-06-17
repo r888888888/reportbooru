@@ -58,8 +58,6 @@ def get_last_exported_id
 end
 
 while $running
-  LOGGER.info "starting poll"
-
   begin
     last_id = get_last_exported_id
     next_id = last_id + BATCH_SIZE
@@ -88,6 +86,7 @@ while $running
       result = GBQ.insert("post_versions", batch)
       if result["insertErrors"]
         LOGGER.error result.inspect
+        sleep(180)
       else
         REDIS.set("post-version-exporter-id", store_id)
       end
