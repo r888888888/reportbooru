@@ -7,7 +7,7 @@ module BigQuery
     end
 
     def escape(s)
-      s.gsub(/\\/, '\0\0').gsub(/['"]/, '\\\\\0')
+      Regexp.escape(s).gsub(/\\/, '\0\0').gsub(/['"]/, '\\\\\0')
     end
 
     def client
