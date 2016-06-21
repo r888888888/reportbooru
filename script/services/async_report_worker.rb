@@ -88,7 +88,7 @@ def report_post_versions_added(json)
   report = ""
   report << "<h1>Post Changes - Adding #{tag}</h1>"
   report << "<ul>\n"
-  results = BigQuery::PostVersion.new.find_removed(tag)
+  results = BigQuery::PostVersion.new.find_added(tag)
   if results["rows"].blank?
     report << "<li>No matches found</li>\n"
   else
