@@ -55,6 +55,10 @@ def report_post_versions_removed(json)
   report << "<h1>Post Changes - Removing #{tag}</h1>"
   report = "<ul>\n"
   results = BigQuery::PostVersion.find_removed(tag)
+  if results.empty?
+    report << "<li>No matches found</li>\n"
+  end
+
   results["rows"].each do |row|
     version_id = row["f"][0]["v"]
     post_id = row["f"][1]["v"]
@@ -82,6 +86,10 @@ def report_post_versions_added(json)
   report << "<h1>Post Changes - Adding #{tag}</h1>"
   report << "<ul>\n"
   results = BigQuery::PostVersion.find_removed(tag)
+  if results.empty?
+    report << "<li>No matches found</li>\n"
+  end
+
   results["rows"].each do |row|
     version_id = row["f"][0]["v"]
     post_id = row["f"][1]["v"]
