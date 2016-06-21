@@ -155,6 +155,8 @@ GEM
     os (0.9.6)
     pg (0.18.4)
     pkg-config (1.1.7)
+    pony (1.11)
+      mail (>= 2.0)
     postgresql_cursor (0.6.0)
       activerecord (>= 3.1.0)
     rack (1.6.4)
@@ -262,6 +264,7 @@ DEPENDENCIES
   jquery-rails
   lru_redux
   pg
+  pony
   postgresql_cursor
   rails (~> 4.2.0)
   redis

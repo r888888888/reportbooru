@@ -51,8 +51,6 @@ SQS_POLLER.before_request do
 end
 
 while $running
-  LOGGER.info "starting poll"
-
   begin
     SQS_POLLER.poll do |msg|
       if msg.body =~ /simusers-(\d+)/

@@ -73,8 +73,6 @@ def process_calculate(tag_name)
 end
 
 while $running
-  LOGGER.info "starting poll"
-
   begin
     SQS_POLLER.poll do |msg|
       if msg.body =~ /^calculate (.+)/
