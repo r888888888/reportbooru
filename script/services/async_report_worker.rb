@@ -52,9 +52,10 @@ SQS_POLLER = Aws::SQS::QueuePoller.new(SQS_QUEUE_URL, client: SQS_CLIENT)
 def report_post_versions_removed(json)
   tag = json["tag"]
   email = json["email"]
+  report = ""
   report << "<h1>Post Changes - Removing #{tag}</h1>"
-  report = "<ul>\n"
-  results = BigQuery::PostVersion.find_removed(tag)
+  report <<"<ul>\n"
+  results = BigQuery::PostVersion.new.find_removed(tag)
   if results.empty?
     report << "<li>No matches found</li>\n"
   end
@@ -72,10 +73,11 @@ def report_post_versions_removed(json)
     rating = row["f"][9]["v"]
     source = row["f"][10]["v"]
 
-    report << %{<li><a href="#{Rails.config.x.danbooru_hostname}/post_versions?search[post_id]=#{post_id}&hilite=#{id}">post ##{post_id}</a> | removed: #{removed_tags}</li>\n}
+    report << %{<li><a href="#{Rails.application.config.x.danbooru_hostname}/post_versions?search[post_id]=#{post_id}&hilite=#{version_id}">post ##{post_id}</a> | removed: #{removed_tags}</li>\n}
   end
 
   report << "</ul>\n"
+  LOGGER.info "Emailed report for removing #{tag} to #{email}"
   send_email(email, "Danbooru Post Change Report", report)
 end
 
@@ -85,7 +87,7 @@ def report_post_versions_added(json)
   report = ""
   report << "<h1>Post Changes - Adding #{tag}</h1>"
   report << "<ul>\n"
-  results = BigQuery::PostVersion.find_removed(tag)
+  results = BigQuery::PostVersion.new.find_removed(tag)
   if results.empty?
     report << "<li>No matches found</li>\n"
   end
@@ -103,17 +105,18 @@ def report_post_versions_added(json)
     rating = row["f"][9]["v"]
     source = row["f"][10]["v"]
 
-    report << %{<li><a href="#{Rails.config.x.danbooru_hostname}/post_versions?search[post_id]=#{post_id}&hilite=#{id}">post ##{post_id}</a> | added: #{added_tags}</li>\n}
+    report << %{<li><a href="#{Rails.application.config.x.danbooru_hostname}/post_versions?search[post_id]=#{post_id}&hilite=#{version_id}">post ##{post_id}</a> | added: #{added_tags}</li>\n}
   end
 
   report << "</ul>\n"
+  LOGGER.info "Emailed report for adding #{tag} to #{email}"
   send_email(email, "Danbooru Post Change Report", report)
 end
 
 def send_email(destination, subject, body)
   Pony.mail(
     to: destination,
-    from: Danbooru.config.x.admin_email,
+    from: Rails.application.config.x.admin_email,
     subject: subject,
     body: body,
     content_type: "text/html"
