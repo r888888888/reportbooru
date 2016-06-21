@@ -60,20 +60,20 @@ def report_post_versions_removed(json)
     report << "<li>No matches found</li>\n"
   else
     results["rows"].each do |row|
-    version_id = row["f"][0]["v"]
-    post_id = row["f"][1]["v"]
-    updated_at = Time.at(row["f"][2]["v"].to_f)
-    updater_id = row["f"][3]["v"]
-    updater_ip_addr = row["f"][4]["v"]
-    tags = row["f"][5]["v"]
-    added_tags = row["f"][6]["v"]
-    removed_tags = row["f"][7]["v"]
-    parent_id = row["f"][8]["v"]
-    rating = row["f"][9]["v"]
-    source = row["f"][10]["v"]
+      version_id = row["f"][0]["v"]
+      post_id = row["f"][1]["v"]
+      updated_at = Time.at(row["f"][2]["v"].to_f)
+      updater_id = row["f"][3]["v"]
+      updater_ip_addr = row["f"][4]["v"]
+      tags = row["f"][5]["v"]
+      added_tags = row["f"][6]["v"]
+      removed_tags = row["f"][7]["v"]
+      parent_id = row["f"][8]["v"]
+      rating = row["f"][9]["v"]
+      source = row["f"][10]["v"]
 
-    report << %{<li><a href="#{Rails.application.config.x.danbooru_hostname}/post_versions?search[post_id]=#{post_id}&hilite=#{version_id}">post ##{post_id}</a> | removed: #{removed_tags}</li>\n}
-  end
+      report << %{<li><a href="#{Rails.application.config.x.danbooru_hostname}/post_versions?search[post_id]=#{post_id}&hilite=#{version_id}">post ##{post_id}</a> | removed: #{removed_tags}</li>\n}
+    end
 
   end
 
@@ -88,7 +88,7 @@ def report_post_versions_added(json)
   report = ""
   report << "<h1>Post Changes - Adding #{tag}</h1>"
   report << "<ul>\n"
-  results = BigQuery::PostVersion.new.find_added(tag)
+  results = BigQuery::PostVersion.new.find_removed(tag)
   if results["rows"].blank?
     report << "<li>No matches found</li>\n"
   else
