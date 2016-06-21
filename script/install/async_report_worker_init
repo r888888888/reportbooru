@@ -1,5 +1,5 @@
 ### BEGIN INIT INFO
-# Provides:          reportbooru_post_version_exporter
+# Provides:          reportbooru_async_report_worker
 # Required-Start:    $remote_fs $syslog
 # Required-Stop:     $remote_fs $syslog
 # Default-Start:     2 3 4 5
@@ -8,15 +8,13 @@
 # Description:       Enable service provided by daemon.
 ### END INIT INFO
 
-# Author: albert yi <r888888888@gmail.com>
-
-NAME=reportbooru_post_version_exporter
+NAME=reportbooru_async_report_worker
 CHUID=danbooru
-LOGFILE=/var/log/reportbooru/post_version_exporter.log
-DESC="post version exporter"
-PIDFILE=/var/run/reportbooru/post_version_exporter.pid
+LOGFILE=/var/log/reportbooru/async_report_worker.log
+DESC="async report worker"
+PIDFILE=/var/run/reportbooru/async_report_worker.pid
 ROOT_DIR=/var/www/reportbooru/current
-DAEMON=script/services/post_version_exporter.rb
+DAEMON=script/services/async_report_worker.rb
 DAEMON_CMD="bundle exec ruby $DAEMON --pidfile=$PIDFILE >> $LOGFILE 2>&1"
 
 case "$1" in

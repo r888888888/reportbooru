@@ -1,16 +1,12 @@
+### BEGIN INIT INFO
+# Provides:          reportbooru_related_tag
+# Required-Start:    $remote_fs $syslog
 # Required-Stop:     $remote_fs $syslog
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: reportbooru related tag worker
-# Description:       This file should be used to construct scripts to be
-#                    placed in /etc/init.d.  This example start a
-#                    single forking daemon capable of writing a pid
-#                    file.  To get other behavoirs, implemend
-#                    do_start(), do_stop() or other functions to
-#                    override the defaults in /lib/init/init-d-script.
+# Short-Description: Start daemon at boot time
+# Description:       Enable service provided by daemon.
 ### END INIT INFO
-
-# Author: albert yi <r888888888@gmail.com>
 
 NAME=reportbooru_related_tag
 CHUID=danbooru
