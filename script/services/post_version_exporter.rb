@@ -96,7 +96,7 @@ while $running
     next_id = last_id + BATCH_SIZE
     store_id = last_id
     batch = []
-    PostVersion.where("id > ? and id <= ?", last_id, next_id).find_each do |version|
+    PostVersion.where("id > ? and id <= ? and updated_at < ?", last_id, next_id, 70.minutes.ago).find_each do |version|
       previous = find_previous(version)
       diff = calculate_diff(previous, version)
       hash = {
