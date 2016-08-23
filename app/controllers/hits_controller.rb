@@ -5,7 +5,7 @@ class HitsController < ApplicationController
 
   def create
     if params[:key] && params[:value] && params[:sig]
-      HitCounter.new.count!(params[:key], params[:value], params[:sig])
+      HitCounter.new.count!(params[:key], params[:value], params[:sig], params[:uid])
       render nothing: true
     else
       render nothing: true, status: 422
@@ -18,9 +18,6 @@ class HitsController < ApplicationController
     case params[:id]
     when "day"
       render text: to_text(HitCounter.new.post_search_rank_day(@date, HitCounter::LIMIT))
-
-    when "week"
-      render text: to_text(HitCounter.new.post_search_rank_week(@date, HitCounter::LIMIT))
 
     when "month"
       render text: to_text(HitCounter.new.post_search_rank_month(@date, HitCounter::LIMIT))
