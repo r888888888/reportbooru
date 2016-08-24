@@ -1,0 +1,3 @@
+<% @searches.each do |search| %>
+  <li><%= link_to(search, "/posts?tags=" + CGI.escape(search)) %></li>
+<% end %>

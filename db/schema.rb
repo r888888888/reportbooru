@@ -11,17 +11,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150720222615) do
+ActiveRecord::Schema.define(version: 0) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-
-  create_table "post_view_hits", force: :cascade do |t|
-    t.date    "date",                null: false
-    t.integer "post_id",             null: false
-    t.integer "count",   default: 0, null: false
-  end
-
-  add_index "post_view_hits", ["date", "post_id"], name: "index_post_view_hits_on_date_and_post_id", unique: true, using: :btree
 
 end

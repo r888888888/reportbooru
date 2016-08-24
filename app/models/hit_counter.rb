@@ -17,7 +17,9 @@ class HitCounter
     client.zrevrange(key, 0, limit, with_scores: true)
   end
 
-  def post_search_by_user(user_id)
+  def post_search_by_user(user_id, sig)
+    validate!("uid", user_id, sig)
+
     week1 = 2.weeks.ago.to_i / (60 * 60 * 24 * 7)
     week2 = 1.week.ago.to_i / (60 * 60 * 24 * 7)
     week3 = Time.now.to_i / (60 * 60 * 24 * 7)
