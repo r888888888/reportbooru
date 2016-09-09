@@ -58,6 +58,11 @@ while $running
         LOGGER.info "processing #{user_id}"
         query = UserSimilarityQuery.new(user_id)
         query.calculate
+      elsif msg.body =~ /simpvotes-(\d+)/
+        user_id = $1
+        LOGGER.info "processing #{user_id}"
+        query = PostVoteSimilarityQuery.new(user_id)
+        query.calculate
       else
         LOGGER.error "unknown message: #{msg.body}"
       end

@@ -18,6 +18,11 @@ class ReportsController < ApplicationController
     render text: query.results_text
   end
 
+  def post_vote_similarity
+    query = PostVoteSimilarityQuery.new(params[:user_id])
+    render text: query.results_text
+  end
+
   def status
     report = StatusReport.new
   end
