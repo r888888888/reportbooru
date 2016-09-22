@@ -10,6 +10,17 @@ require File.expand_path("../../../config/environment", __FILE__)
 Process.daemon
 Process.setpriority(Process::PRIO_USER, 0, 10)
 
+SCHEMA = {
+  version_id: {type: "INTEGER"},
+  version: {type: "INTEGER"},
+  updated_at: {type: "TIMESTAMP"},
+  post_id: {type: "INTEGER"},
+  added_tag: {type: "STRING"},
+  removed_tag: {type: "STRING"},
+  updater_id: {type: "INTEGER"},
+  updater_ip_addr: {type: "STRING"}
+}
+
 $running = true
 $options = {
   pidfile: "/var/run/reportbooru/flat_post_version_exporter.pid",
@@ -38,7 +49,7 @@ logfile = File.open($options[:logfile], "a")
 logfile.sync = true
 LOGGER = Logger.new(logfile)
 REDIS = Redis.new
-BATCH_SIZE = 1_000
+BATCH_SIZE = 100
 GBQ = BigQuery::Client.new(
   "json_key" => $options[:google_key_path],
   "project_id" => google_config["project_id"],
@@ -99,6 +110,11 @@ def calculate_diff(older, newer)
   }
 end
 
+begin
+  GBQ.create_table("post_version_flat", SCHEMA)
+rescue Google::Apis::ClientError
+end
+
 while $running
   begin
     last_id = get_last_exported_id
@@ -120,9 +136,6 @@ while $running
           "updater_ip_addr" => version.updater_ip_addr.to_s
         }
         batch << hash
-        if version.id > store_id
-          store_id = version.id
-        end
       end
       diff[:removed_tags].each do |removed_tag|
         hash = {
@@ -135,9 +148,10 @@ while $running
           "updater_ip_addr" => version.updater_ip_addr.to_s
         }
         batch << hash
-        if version.id > store_id
-          store_id = version.id
-        end
+      end
+
+      if version.id > store_id
+        store_id = version.id
       end
     end
 
