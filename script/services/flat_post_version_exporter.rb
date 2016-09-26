@@ -111,7 +111,7 @@ def calculate_diff(older, newer)
 end
 
 begin
-  GBQ.create_table("post_version_flat", SCHEMA)
+  GBQ.create_table("post_versions_flat", SCHEMA)
 rescue Google::Apis::ClientError
 end
 
@@ -125,6 +125,7 @@ while $running
       previous = find_previous(version)
       diff = calculate_diff(previous, version)
       vnum = find_version_number(version)
+      
       diff[:added_tags].each do |added_tag|
         hash = {
           "version_id" => version.id,
@@ -137,6 +138,7 @@ while $running
         }
         batch << hash
       end
+
       diff[:removed_tags].each do |removed_tag|
         hash = {
           "version_id" => version.id,
@@ -144,6 +146,18 @@ while $running
           "updated_at" => version.updated_at,
           "post_id" => version.post_id,
           "removed_tag" => removed_tag,
+          "updater_id" => version.updater_id,
+          "updater_ip_addr" => version.updater_ip_addr.to_s
+        }
+        batch << hash
+      end
+
+      if diff[:added_tags].empty? && diff[:removed_tags].empty?
+        hash = {
+          "version_id" => version.id,
+          "version" => vnum,
+          "updated_at" => version.updated_at,
+          "post_id" => version.post_id,
           "updater_id" => version.updater_id,
           "updater_ip_addr" => version.updater_ip_addr.to_s
         }
