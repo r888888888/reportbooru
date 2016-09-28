@@ -23,23 +23,23 @@ module BigQuery
     end
 
     def count_artist_added(user_id)
-      query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat] join [danbooru_#{Rails.env}.tags] on post_versions_flat.added_tag = tags.name where post_versions_flat.updater_id = #{user_id} and post_versions_flat.added_tag is not null and tags.category = 1")
+      query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat] as pvf join [danbooru_#{Rails.env}.tags] as t on pvf.added_tag = t.name where pvf.updater_id = #{user_id} and pvf.added_tag is not null and t.category = 1")
     end
 
     def count_character_added(user_id)
-      query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat] join [danbooru_#{Rails.env}.tags] on post_versions_flat.added_tag = tags.name where post_versions_flat.updater_id = #{user_id} and post_versions_flat.added_tag is not null and tags.category = 4")
+      query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat] as pvf join [danbooru_#{Rails.env}.tags] as t on pvf.added_tag = t.name where pvf.updater_id = #{user_id} and pvf.added_tag is not null and t.category = 4")
     end
 
     def count_copyright_added(user_id)
-      query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat] join [danbooru_#{Rails.env}.tags] on post_versions_flat.added_tag = tags.name where post_versions_flat.updater_id = #{user_id} and post_versions_flat.added_tag is not null and tags.category = 3")
+      query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat] as pvf join [danbooru_#{Rails.env}.tags] as t on pvf.added_tag = t.name where pvf.updater_id = #{user_id} and pvf.added_tag is not null and t.category = 3")
     end
 
     def count_rating_changed(user_id)
-      query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat] where updater_id = #{user_id} and removed_tag like 'rating:%'")
+      query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat] where updater_id = #{user_id} and regexp_match(removed_tag, r'^rating:')")
     end
 
     def count_source_changed(user_id)
-      query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat] where updater_id = #{user_id} and removed_tag like 'source:%'")
+      query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat] where updater_id = #{user_id} and regexp_match(removed_tag, r'^source:')")
     end
   end
 end
