@@ -259,6 +259,7 @@ DEPENDENCIES
   capistrano-rbenv
   capistrano3-unicorn
   coffee-rails (~> 4.1.0)
+  google-api-client
   httpclient
   jbuilder (~> 2.0)
   jquery-rails

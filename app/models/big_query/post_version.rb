@@ -11,35 +11,41 @@ module BigQuery
     end
 
     def count_changes(user_id)
-      query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat] where updater_id = #{user_id}")
+      get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat] where updater_id = #{user_id}")
     end
 
     def count_added(user_id)
-      query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat] where updater_id = #{user_id} and added_tag is not null")
+      get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat] where updater_id = #{user_id} and added_tag is not null")
     end
 
     def count_removed(user_id)
-      query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat] where updater_id = #{user_id} and removed_tag is not null")
+      get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat] where updater_id = #{user_id} and removed_tag is not null")
     end
 
     def count_artist_added(user_id)
-      query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat] as pvf join [danbooru_#{Rails.env}.tags] as t on pvf.added_tag = t.name where pvf.updater_id = #{user_id} and pvf.added_tag is not null and t.category = 1")
+      get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat] as pvf join [danbooru_#{Rails.env}.tags] as t on pvf.added_tag = t.name where pvf.updater_id = #{user_id} and pvf.added_tag is not null and t.category = 1")
     end
 
     def count_character_added(user_id)
-      query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat] as pvf join [danbooru_#{Rails.env}.tags] as t on pvf.added_tag = t.name where pvf.updater_id = #{user_id} and pvf.added_tag is not null and t.category = 4")
+      get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat] as pvf join [danbooru_#{Rails.env}.tags] as t on pvf.added_tag = t.name where pvf.updater_id = #{user_id} and pvf.added_tag is not null and t.category = 4")
     end
 
     def count_copyright_added(user_id)
-      query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat] as pvf join [danbooru_#{Rails.env}.tags] as t on pvf.added_tag = t.name where pvf.updater_id = #{user_id} and pvf.added_tag is not null and t.category = 3")
+      get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat] as pvf join [danbooru_#{Rails.env}.tags] as t on pvf.added_tag = t.name where pvf.updater_id = #{user_id} and pvf.added_tag is not null and t.category = 3")
     end
 
     def count_rating_changed(user_id)
-      query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat] where updater_id = #{user_id} and regexp_match(removed_tag, r'^rating:')")
+      get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat] where updater_id = #{user_id} and regexp_match(removed_tag, r'^rating:')")
     end
 
     def count_source_changed(user_id)
-      query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat] where updater_id = #{user_id} and regexp_match(removed_tag, r'^source:')")
+      get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat] where updater_id = #{user_id} and regexp_match(removed_tag, r'^source:')")
+    end
+
+    def get_count(resp)
+      resp["rows"][0]["f"][0]["v"]
+    rescue
+      0
     end
   end
 end

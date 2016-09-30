@@ -34,6 +34,7 @@ gem 'aws-sdk', '~> 2'
 gem 'lru_redux'
 gem 'bigquery', :git => "https://github.com/abronte/BigQuery.git", :ref => "b92b4e0b54574e3fde7ad910f39a67538ed387ad"
 gem 'pony'
+gem 'google-api-client'
 
 group :production do
   gem 'unicorn', :platforms => :ruby
