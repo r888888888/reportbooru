@@ -42,31 +42,30 @@ EOS
     end
 
     def generate
-      jsonf = Tempfile.new("#{file_name}_json")
-      htmlf = Tempfile.new("#{file_name}_html")
-
-      jsonf.write("[")
-      htmlf.write(HTML_HEADER)
+      data = []
 
       candidates.each do |user_id|
-        data = calculate_data(user_id)
-        write_table(htmlf, data)
-        write_json(jsonf, data)
+        data << calculate_data(user_id)
       end
 
+      htmlf = Tempfile.new("#{file_name}_html")
+      htmlf.write(HTML_HEADER)
+      htmlf.write(data.map {|x| to_html(x)}.join("\n")
       htmlf.write(HTML_FOOTER)
-      jsonf.seek(-1, IO::SEEK_CUR)
+
+      jsonf = Tempfile.new("#{file_name}_json")
+      jsonf.write("[")
+      jsonf.write(data.map {|x| to_json(x)}).join(",")
       jsonf.write("]")
+
       htmlf.rewind
       jsonf.rewind
 
-      upload(jsonf, "#{file_name}.json", "application/json")
       upload(htmlf, "#{file_name}.html", "text/html")
+      upload(jsonf, "#{file_name}.json", "application/json")
     ensure
       jsonf.close
-      jsonf.unlink
       htmlf.close
-      htmlf.unlink
     end
 
     def calculate_data(user_id)
@@ -96,32 +95,39 @@ EOS
       }
     end
 
-    def write_table(file, data)
-      file.write("<tr>")
-      file.write("<td><a href='https://danbooru.donmai.us/users/#{data[:id]}'>#{data[:name]}</a></td>")
-      file.write("<td>#{data[:total]}</td>")
-      file.write("<td>#{data[:rating]}</td>")
-      file.write("<td>#{data[:source]}</td>")
-      file.write("<td>#{data[:added]}</td>")
-      file.write("<td>#{data[:removed]}</td>")
-      file.write("<td>#{data[:artist]}</td>")
-      file.write("<td>#{data[:character]}</td>")
-      file.write("<td>#{data[:copyright]}</td>")
-      file.write("</tr>")
+    def to_html(data)
+      s = ""
+      s << ("<tr>")
+      s << ("<td><a href='https://danbooru.donmai.us/users/#{data[:id]}'>#{data[:name]}</a></td>")
+      s << ("<td>#{data[:total]}</td>")
+      s << ("<td>#{data[:rating]}</td>")
+      s << ("<td>#{data[:source]}</td>")
+      s << ("<td>#{data[:added]}</td>")
+      s << ("<td>#{data[:removed]}</td>")
+      s << ("<td>#{data[:artist]}</td>")
+      s << ("<td>#{data[:character]}</td>")
+      s << ("<td>#{data[:copyright]}</td>")
+      s << ("</tr>")
     end
 
-    def write_json(file, data)
-      file.write(data.to_json)
-      file.write(",")
+    def to_json(data)
+      data.to_json
     end
 
     def upload(file, name, content_type)
       data = {
         content_type: content_type
       }
-      storage = Google::Apis::StorageV1::StorageService.new
-      storage.authorization = Google::Auth.get_application_default([Google::Apis::StorageV1::AUTH_DEVSTORAGE_READ_WRITE])
-      storage.insert_object("danbooru-reports", data, name: "post-changes/#{name}", content_type: content_type, upload_source: file.path)
+
+      storage_service.insert_object("danbooru-reports", data, name: "post-changes/#{name}", content_type: content_type, upload_source: file.path)
+    end
+
+    def storage_service
+      @_storage_service ||= begin
+        s = Google::Apis::StorageV1::StorageService.new
+        s.authorization = Google::Auth.get_application_default([Google::Apis::StorageV1::AUTH_DEVSTORAGE_READ_WRITE])
+        s
+      end
     end
 
     def candidates
