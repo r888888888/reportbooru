@@ -48,6 +48,8 @@ EOS
         data << calculate_data(user_id)
       end
 
+      data = data.sort_by {|x| -x[:total]}
+
       htmlf = Tempfile.new("#{file_name}_html")
       htmlf.write(HTML_HEADER)
       htmlf.write(data.map {|x| to_html(x)}.join("\n"))
@@ -55,7 +57,7 @@ EOS
 
       jsonf = Tempfile.new("#{file_name}_json")
       jsonf.write("[")
-      jsonf.write(data.map {|x| to_json(x)}).join(",")
+      jsonf.write(data.map {|x| to_json(x)}.join(","))
       jsonf.write("]")
 
       htmlf.rewind
