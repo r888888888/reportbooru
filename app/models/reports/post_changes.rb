@@ -50,7 +50,7 @@ EOS
 
       htmlf = Tempfile.new("#{file_name}_html")
       htmlf.write(HTML_HEADER)
-      htmlf.write(data.map {|x| to_html(x)}.join("\n")
+      htmlf.write(data.map {|x| to_html(x)}.join("\n"))
       htmlf.write(HTML_FOOTER)
 
       jsonf = Tempfile.new("#{file_name}_json")
