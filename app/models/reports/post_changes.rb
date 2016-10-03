@@ -85,7 +85,6 @@ EOS
       return {
         id: user_id,
         name: name,
-        client: client,
         total: total,
         rating: rating,
         source: source,

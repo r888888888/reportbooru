@@ -53,7 +53,6 @@ EOS
       return {
         id: user_id,
         name: name,
-        client: client,
         total: total,
         queue_bypass: queue_bypass,
         deleted: deleted,
@@ -70,7 +69,7 @@ EOS
     end
 
     def date_string
-      30.days.ago.strftime("%Y-%m-%d")
+      30.days.ago.strftime("%Y-%m-%d %H:%M")
     end
 
     def file_name
