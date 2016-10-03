@@ -1,5 +1,5 @@
 module DanbooruRo
-  class Base
+  class Base < ActiveRecord::Base
     self.abstract_class = true
     establish_connection "danbooru_#{Rails.env}".to_sym
 
