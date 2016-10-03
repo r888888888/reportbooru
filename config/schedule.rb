@@ -7,5 +7,9 @@ every :sunday, :at => "1:00 am" do
 end
 
 every :sunday, :at => "2:00 am" do
+  runner "BigQuery::User.new.export!"
+end
+
+every :sunday, :at => "3:00 am" do
   runner "Reports::PostChanges.new.generate"
 end

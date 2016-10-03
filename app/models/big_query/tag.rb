@@ -17,7 +17,7 @@ module BigQuery
       
       client.create_table("tags", SCHEMA)
 
-      ::Tag.find_in_batches do |group|
+      DanbooruRo::Tag.find_in_batches do |group|
         batch = group.map do |x| 
           {
             "id" => x.id,

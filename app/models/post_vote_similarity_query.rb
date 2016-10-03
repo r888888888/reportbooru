@@ -31,9 +31,9 @@ class PostVoteSimilarityQuery
   def calculate
     return if redis.zcard(redis_key) > 0
 
-    posts0 = PostVote.positive_post_ids(user_id)
-    PostVote.unique_user_ids.each do |user_id|
-      posts1 = PostVote.positive_post_ids(user_id)
+    posts0 = DanbooruRo::PostVote.positive_post_ids(user_id)
+    DanbooruRo::PostVote.unique_user_ids.each do |user_id|
+      posts1 = DanbooruRo::PostVote.positive_post_ids(user_id)
       redis.zadd(redis_key, calculate_with_cosine(posts0, posts1), user_id)
     end
     redis.zremrangebyrank(redis_key, 0, -13)

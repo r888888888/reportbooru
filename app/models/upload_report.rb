@@ -16,7 +16,7 @@ class UploadReport
     hash = date_hash()
 
     queries.each.with_index do |query, i|
-      Post.raw_tag_match(query).partition(min_date, max_date).each do |result|
+      DanbooruRo::Post.raw_tag_match(query).partition(min_date, max_date).each do |result|
         hash[result.date.strftime("%Y-%m-%d")][i] = result.post_count
       end
     end

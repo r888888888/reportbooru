@@ -26,7 +26,7 @@ class TagSimilarityCalculator
     # related tags, but is more db intensive
     counts = Hash.new {|h, k| h[k] = 0}
 
-    Post.raw_tag_match(tag_name).limit(SAMPLE_SIZE).reorder("posts.md5").pluck(:tag_string).each do |tag_string|
+    DanbooruRo::Post.raw_tag_match(tag_name).limit(SAMPLE_SIZE).reorder("posts.md5").pluck(:tag_string).each do |tag_string|
       tag_string.scan(/\S+/).each do |tag|
         counts[tag] += 1
       end
@@ -38,8 +38,8 @@ class TagSimilarityCalculator
       if ctag == tag_name
         similar_counts[ctag] = 1
       else
-        acount = Post.raw_intersection_tag_match([tag_name, ctag]).where("id >= ?", Post.estimate_post_id(date_constraint(tag.post_count))).count
-        ctag_count = Tag.post_count(ctag)
+        acount = DanbooruRo::Post.raw_intersection_tag_match([tag_name, ctag]).where("id >= ?", Post.estimate_post_id(date_constraint(tag.post_count))).count
+        ctag_count = DanbooruRo::Tag.post_count(ctag)
         div = Math.sqrt(tag.post_count * ctag_count)
         if div != 0
           c = acount / div

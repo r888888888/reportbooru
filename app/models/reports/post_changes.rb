@@ -69,7 +69,7 @@ EOS
     end
 
     def calculate_data(user_id)
-      name = User.find(user_id).name
+      name = DanbooruRo::User.find(user_id).name
       client = BigQuery::PostVersion.new
       total = client.count_changes(user_id)
       rating = client.count_rating_changed(user_id)
@@ -131,7 +131,7 @@ EOS
     end
 
     def candidates
-      PostVersion.where("updated_at > ?", 30.days.ago).group("updater_id").having("count(*) > ?", MINIMUM_CHANGES_IN_A_MONTH).pluck(:updater_id)
+      DanbooruRo::PostVersion.where("updated_at > ?", 30.days.ago).group("updater_id").having("count(*) > ?", MINIMUM_CHANGES_IN_A_MONTH).pluck(:updater_id)
     end
   end
 end
