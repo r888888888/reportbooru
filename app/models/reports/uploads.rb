@@ -1,54 +1,61 @@
 module Reports
-  class Uploads
+  class Uploads < Base
     VERSION = 1
-    HTML_HEADER = <<-EOS
-<html>
-<header>
-<title>Post Change Report</title>
-</header>
-<body>
-<table>
-<thead>
-<tr>
-<th>User</th>
-<th>Total</th>
-<th>Deleted</th>
-<th>Parent</th>
-<th>Source</th>
-<th>S</th>
-<th>Q</th>
-<th>E</th>
-<th>Gen</th>
-<th>Char</th>
-<th>Copy</th>
-<th>Art</th>
-</tr>
-</thead>
-<tbody>
-EOS
-    HTML_FOOTER = <<-EOS
-</tbody>
-</table>
-</body>
-</html>
+    HTML_TEMPLATE = <<EOS
+%html
+  %header
+    %title Upload Report
+  %body
+    %table
+      %thead
+        %tr
+          %th User
+          %th Total
+          %th Del
+          %th Par
+          %th Src
+          %th S
+          %th Q
+          %th E
+          %th Gen
+          %th Char
+          %th Copy
+          %th Art
+      %tbody
+        - data.each do |datum|
+          %tr
+            %td
+              %a{:href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
+            %td= datum[:total]
+            %td= datum[:queue_bypass]
+            %td= datum[:deleted]
+            %td= datum[:source]
+            %td= datum[:safe]
+            %td= datum[:questionable]
+            %td= datum[:explicit]
+            %td= datum[:general]
+            %td= datum[:character]
+            %td= datum[:copyright]
+            %td= datum[:artist]
 EOS
 
     def calculate_data(user_id)
       user = DanbooruRo::User.find(user_id)
       name = user.name
       client = BigQuery::PostVersion.new
-      total = DanbooruRo::Post.where("created_at > ?", 30.days.ago).where(uploader_id: user.id).count
-      queue_bypass = DanbooruRo::Post.where("created_at > ?", 30.days.ago).where(uploader_id: user.id, approver_id: nil, is_deleted: false, is_pending: false).count
-      deleted = DanbooruRo::Post.where("created_at > ?", 30.days.ago).where(uploader_id: user.id, is_deleted: false).count
-      parent = DanbooruRo::Post.where("parent_id is not null and created_at > ?", 30.days.ago).where(uploader_id: user.id).count
-      source = DanbooruRo::Post.where("source <> '' and source is not null and created_at > ?", 30.days.ago).where(uploader_id: user.id).count
-      safe = DanbooruRo::Post.where("created_at > ?", 30.days.ago).where(uploader_id: user.id, rating: "s").count
-      questionable = DanbooruRo::Post.where("created_at > ?", 30.days.ago).where(uploader_id: user.id, rating: "q").count
-      explicit = DanbooruRo::Post.where("created_at > ?", 30.days.ago).where(uploader_id: user.id, rating: "e").count
-      general = client.count_general_added_v1(user_id, date_string)
-      character = client.count_character_added_v1(user_id, date_string)
-      copyright = client.count_copyright_added_v1(user_id, date_string)
-      artist = client.count_artist_added_v1(user_id, date_string)
+      tda = 30.days.ago.strftime("%F")
+      total = DanbooruRo::Post.where("created_at > ?", tda).where(uploader_id: user.id).count
+      queue_bypass = DanbooruRo::Post.where("created_at > ?", tda).where(uploader_id: user.id, approver_id: nil, is_deleted: false, is_pending: false).count
+      deleted = DanbooruRo::Post.where("created_at > ?", tda).where(uploader_id: user.id, is_deleted: false).count
+      parent = DanbooruRo::Post.where("parent_id is not null and created_at > ?", tda).where(uploader_id: user.id).count
+      source = DanbooruRo::Post.where("source <> '' and source is not null and created_at > ?", tda).where(uploader_id: user.id).count
+      safe = DanbooruRo::Post.where("created_at > ?", tda).where(uploader_id: user.id, rating: "s").count
+      questionable = DanbooruRo::Post.where("created_at > ?", tda).where(uploader_id: user.id, rating: "q").count
+      explicit = DanbooruRo::Post.where("created_at > ?", tda).where(uploader_id: user.id, rating: "e").count
+      general = client.count_general_added_v1(user_id, tda)
+      character = client.count_character_added_v1(user_id, tda)
+      copyright = client.count_copyright_added_v1(user_id, tda)
+      artist = client.count_artist_added_v1(user_id, tda)
 
       return {
         id: user_id,
@@ -69,63 +76,42 @@ EOS
     end
 
     def date_string
-      30.days.ago.strftime("%Y-%m-%d %H:%M")
+      Time.now.strftime("%F %H:%M")
     end
 
     def file_name
-      s = Time.now.strftime("%Y-%m-%d")
-      "uploads_#{s}_v#{VERSION}"
+      "uploads_#{date_string}_v#{VERSION}"
     end
 
     def generate
-      data = []
-
-      candidates.each do |user_id|
-        data << calculate_data(user_id)
-      end
-
-      data = data.sort_by {|x| -x[:total]}
-
       htmlf = Tempfile.new("#{file_name}_html")
-      htmlf.write(HTML_HEADER)
-      htmlf.write(data.map {|x| to_html(x)}.join("\n"))
-      htmlf.write(HTML_FOOTER)
-
       jsonf = Tempfile.new("#{file_name}_json")
-      jsonf.write("[")
-      jsonf.write(data.map {|x| to_json(x)}.join(","))
-      jsonf.write("]")
 
-      htmlf.rewind
-      jsonf.rewind
+      begin
+        data = []
 
-      upload(htmlf, "#{file_name}.html", "text/html")
-      upload(jsonf, "#{file_name}.json", "application/json")
-    ensure
-      jsonf.close
-      htmlf.close
-    end
+        candidates.each do |user_id|
+          data << calculate_data(user_id)
+        end
 
-    def to_html(data)
-      s = ""
-      s << ("<tr>")
-      s << ("<td><a href='https://danbooru.donmai.us/users/#{data[:id]}'>#{data[:name]}</a></td>")
-      s << ("<td>#{data[:total]}</td>")
-      s << ("<td>#{data[:queue_bypass]}</td>")
-      s << ("<td>#{data[:deleted]}</td>")
-      s << ("<td>#{data[:source]}</td>")
-      s << ("<td>#{data[:safe]}</td>")
-      s << ("<td>#{data[:questionable]}</td>")
-      s << ("<td>#{data[:explicit]}</td>")
-      s << ("<td>#{data[:general]}</td>")
-      s << ("<td>#{data[:character]}</td>")
-      s << ("<td>#{data[:copyright]}</td>")
-      s << ("<td>#{data[:artist]}</td>")
-      s << ("</tr>")
-    end
+        data = data.sort_by {|x| -x[:total]}
 
-    def to_json(data)
-      data.to_json
+        engine = Haml::Engine.new(HTML_TEMPLATE)
+        htmlf.write(engine.render(Object.new, data: data))
+
+        jsonf.write("[")
+        jsonf.write(data.map {|x| x.to_json}.join(","))
+        jsonf.write("]")
+
+        htmlf.rewind
+        jsonf.rewind
+
+        upload(htmlf, "#{file_name}.html", "text/html")
+        upload(jsonf, "#{file_name}.json", "application/json")
+      ensure
+        jsonf.close
+        htmlf.close
+      end
     end
 
     def upload(file, name, content_type)
@@ -134,14 +120,6 @@ EOS
       }
 
       storage_service.insert_object("danbooru-reports", data, name: "uploads/#{name}", content_type: content_type, upload_source: file.path)
-    end
-
-    def storage_service
-      @_storage_service ||= begin
-        s = Google::Apis::StorageV1::StorageService.new
-        s.authorization = Google::Auth.get_application_default([Google::Apis::StorageV1::AUTH_DEVSTORAGE_READ_WRITE])
-        s
-      end
     end
 
     def candidates

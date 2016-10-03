@@ -1,36 +1,39 @@
 require 'google/apis/storage_v1'
 
 module Reports
-  class PostChanges
+  class PostChanges < Base
     VERSION = 1
     MINIMUM_CHANGES_IN_A_MONTH = 400
-    HTML_HEADER = <<-EOS
-<html>
-<header>
-<title>Post Change Report</title>
-</header>
-<body>
-<table>
-<thead>
-<tr>
-<th>User</th>
-<th>Total</th>
-<th>Rating Changes</th>
-<th>Source Changes</th>
-<th>Tags Added</th>
-<th>Tags Removed</th>
-<th>Artists Added</th>
-<th>Characters Added</th>
-<th>Copyrights Added</th>
-</tr>
-</thead>
-<tbody>
-EOS
-    HTML_FOOTER = <<-EOS
-</tbody>
-</table>
-</body>
-</html>
+    HTML_TEMPLATE = <<EOS
+%html
+  %header
+    %title Post Change Report
+  %body
+    %table
+      %thead
+        %tr
+          %th User
+          %th Total
+          %th Rat
+          %th Src
+          %th Add
+          %th Rem
+          %th Art
+          %th Char
+          %th Copy
+      %tbody
+        - data.each do |datum|
+          %tr
+            %td
+              %a{:href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
+            %td= datum[:total]
+            %td= datum[:rating]
+            %td= datum[:source]
+            %td= datum[:added]
+            %td= datum[:removed]
+            %td= datum[:artist]
+            %td= datum[:character]
+            %td= datum[:copyright]
 EOS
 
     def date_string
@@ -42,32 +45,34 @@ EOS
     end
 
     def generate
-      data = []
-
-      candidates.each do |user_id|
-        data << calculate_data(user_id)
-      end
-
-      data = data.sort_by {|x| -x[:total]}
-
       htmlf = Tempfile.new("#{file_name}_html")
-      htmlf.write(HTML_HEADER)
-      htmlf.write(data.map {|x| to_html(x)}.join("\n"))
-      htmlf.write(HTML_FOOTER)
-
       jsonf = Tempfile.new("#{file_name}_json")
-      jsonf.write("[")
-      jsonf.write(data.map {|x| to_json(x)}.join(","))
-      jsonf.write("]")
 
-      htmlf.rewind
-      jsonf.rewind
+      begin
+        data = []
 
-      upload(htmlf, "#{file_name}.html", "text/html")
-      upload(jsonf, "#{file_name}.json", "application/json")
-    ensure
-      jsonf.close
-      htmlf.close
+        candidates.each do |user_id|
+          data << calculate_data(user_id)
+        end
+
+        data = data.sort_by {|x| -x[:total]}
+
+        engine = Haml::Engine.new(HTML_TEMPLATE)
+        htmlf.write(engine.render(Object.new, data: data))
+
+        jsonf.write("[")
+        jsonf.write(data.map {|x| x.to_json}.join(","))
+        jsonf.write("]")
+
+        htmlf.rewind
+        jsonf.rewind
+
+        upload(htmlf, "#{file_name}.html", "text/html")
+        upload(jsonf, "#{file_name}.json", "application/json")
+      ensure
+        jsonf.close
+        htmlf.close
+      end
     end
 
     def calculate_data(user_id)
@@ -96,39 +101,12 @@ EOS
       }
     end
 
-    def to_html(data)
-      s = ""
-      s << ("<tr>")
-      s << ("<td><a href='https://danbooru.donmai.us/users/#{data[:id]}'>#{data[:name]}</a></td>")
-      s << ("<td>#{data[:total]}</td>")
-      s << ("<td>#{data[:rating]}</td>")
-      s << ("<td>#{data[:source]}</td>")
-      s << ("<td>#{data[:added]}</td>")
-      s << ("<td>#{data[:removed]}</td>")
-      s << ("<td>#{data[:artist]}</td>")
-      s << ("<td>#{data[:character]}</td>")
-      s << ("<td>#{data[:copyright]}</td>")
-      s << ("</tr>")
-    end
-
-    def to_json(data)
-      data.to_json
-    end
-
     def upload(file, name, content_type)
       data = {
         content_type: content_type
       }
 
       storage_service.insert_object("danbooru-reports", data, name: "post-changes/#{name}", content_type: content_type, upload_source: file.path)
-    end
-
-    def storage_service
-      @_storage_service ||= begin
-        s = Google::Apis::StorageV1::StorageService.new
-        s.authorization = Google::Auth.get_application_default([Google::Apis::StorageV1::AUTH_DEVSTORAGE_READ_WRITE])
-        s
-      end
     end
 
     def candidates

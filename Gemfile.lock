@@ -112,6 +112,8 @@ GEM
       multi_json (~> 1.11)
       os (~> 0.9)
       signet (~> 0.7)
+    haml (4.0.7)
+      tilt
     httpclient (2.8.0)
     hurley (0.2)
     i18n (0.7.0)
@@ -260,6 +262,7 @@ DEPENDENCIES
   capistrano3-unicorn
   coffee-rails (~> 4.1.0)
   google-api-client
+  haml
   httpclient
   jbuilder (~> 2.0)
   jquery-rails
