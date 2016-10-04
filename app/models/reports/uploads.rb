@@ -43,7 +43,7 @@ EOS
       user = DanbooruRo::User.find(user_id)
       name = user.name
       client = BigQuery::PostVersion.new
-      tda = 30.days.ago.strftime("%F")
+      tda = 30.days.ago.strftime("%F %H:%M")
       total = DanbooruRo::Post.where("created_at > ?", tda).where(uploader_id: user.id).count
       queue_bypass = DanbooruRo::Post.where("created_at > ?", tda).where(uploader_id: user.id, approver_id: nil, is_deleted: false, is_pending: false).count
       deleted = DanbooruRo::Post.where("created_at > ?", tda).where(uploader_id: user.id, is_deleted: false).count
