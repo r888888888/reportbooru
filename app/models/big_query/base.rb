@@ -4,6 +4,13 @@ module BigQuery
   class Base
     def query(q)
       client.query(q)
+    rescue Google::Apis::TransmissionError => e
+      if e.message =~ /execution expired/
+        sleep 5
+        retry
+      else
+        raise
+      end
     end
 
     def escape(s)

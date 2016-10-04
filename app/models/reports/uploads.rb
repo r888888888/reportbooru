@@ -76,7 +76,7 @@ EOS
     end
 
     def date_string
-      Time.now.strftime("%F %H:%M")
+      Time.now.strftime("%F")
     end
 
     def file_name
