@@ -24,6 +24,10 @@ module Reports
       "#{date_string}_v#{version}"
     end
 
+    def date_window
+      30.days.ago
+    end
+
     def date_string
       Time.now.strftime("%F")
     end

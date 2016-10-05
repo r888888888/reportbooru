@@ -81,16 +81,17 @@ EOS
     end
 
     def calculate_data(user_id)
+      tda = date_window.strftime("%F %H:%M")
       name = DanbooruRo::User.find(user_id).name
       client = BigQuery::PostVersion.new
-      total = client.count_changes(user_id)
-      rating = client.count_rating_changed(user_id)
-      source = client.count_source_changed(user_id)
-      added = client.count_added(user_id)
-      removed = client.count_removed(user_id)
-      artist = client.count_artist_added(user_id)
-      character = client.count_character_added(user_id)
-      copyright = client.count_copyright_added(user_id)
+      total = client.count_changes(user_id, tda)
+      rating = client.count_rating_changed(user_id, tda)
+      source = client.count_source_changed(user_id, tda)
+      added = client.count_added(user_id, tda)
+      removed = client.count_removed(user_id, tda)
+      artist = client.count_artist_added(user_id, tda)
+      character = client.count_character_added(user_id, tda)
+      copyright = client.count_copyright_added(user_id, tda)
 
       return {
         id: user_id,

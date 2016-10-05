@@ -4,7 +4,7 @@ module Reports
       user = DanbooruRo::User.find(user_id)
       name = user.name
       client = BigQuery::PostVersion.new
-      tda = 30.days.ago.strftime("%F %H:%M")
+      tda = date_window.strftime("%F %H:%M")
       total = DanbooruRo::Post.where("created_at > ?", tda).where(uploader_id: user.id).count
       queue_bypass = DanbooruRo::Post.where("created_at > ?", tda).where(uploader_id: user.id, approver_id: nil, is_deleted: false, is_pending: false).count
       deleted = DanbooruRo::Post.where("created_at > ?", tda).where(uploader_id: user.id, is_deleted: false).count
@@ -65,14 +65,6 @@ module Reports
         jsonf.close
         htmlf.close
       end
-    end
-
-    def upload(file, name, content_type)
-      data = {
-        content_type: content_type
-      }
-
-      storage_service.insert_object("danbooru-reports", data, name: "uploads/#{name}", content_type: content_type, upload_source: file.path)
     end
   end
 end

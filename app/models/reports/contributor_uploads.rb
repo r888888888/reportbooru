@@ -1,15 +1,11 @@
 module Reports
-  class ContributorUploads < Base
+  class ContributorUploads < Uploads
     def version
       1
     end
 
     def min_uploads
       300
-    end
-
-    def date_window
-      30.days.ago
     end
 
     def report_name

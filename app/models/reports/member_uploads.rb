@@ -57,10 +57,6 @@ module Reports
 EOS
     end
 
-    def file_name
-      "member/#{date_string}_v#{VERSION}"
-    end
-
     def candidates
       DanbooruRo::User.joins("join posts on posts.uploader_id = users.id").where("posts.created_at >= ? and users.bit_prefs & ? = 0", date_window, 1 << 14).group("users.id").having("count(*) > ?", min_uploads).pluck("distinct(users.id)")
     end

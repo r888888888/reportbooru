@@ -4,10 +4,6 @@ module Reports
 			1
 		end
 
-    def date_window
-      30.days.ago
-    end
-
     def report_name
       "taggers"
     end
@@ -33,7 +29,7 @@ module Reports
               %a{:href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
             %td= datum[:contrib]
             %td= datum[:tags_per_upload]
-            %td= datum[:uploads]
+            %td= datum[:total]
 EOS
 		end
 
