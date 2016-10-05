@@ -60,7 +60,7 @@ EOS
           data << calculate_data(user_id)
         end
 
-        data = data.sort_by {|x| -x[:total]}
+        data = data.sort_by {|x| -x[:total].to_i}
 
         engine = Haml::Engine.new(html_template)
         htmlf.write(engine.render(Object.new, data: data))

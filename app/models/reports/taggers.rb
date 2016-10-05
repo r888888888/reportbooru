@@ -48,7 +48,7 @@ EOS
           data << calculate_data(user_id)
         end
 
-        data = data.sort_by {|x| -x[:tags_per_upload]}
+        data = data.sort_by {|x| -x[:tags_per_upload].to_i}
 
         engine = Haml::Engine.new(html_template)
         htmlf.write(engine.render(Object.new, data: data))
@@ -81,7 +81,7 @@ EOS
         name: user.name,
         total: total,
         contrib: contrib,
-        tags_per_upload: tags / total
+        tags_per_upload: tags.to_i / total.to_i
       }
     end
 
