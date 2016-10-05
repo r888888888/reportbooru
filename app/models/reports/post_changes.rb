@@ -2,14 +2,26 @@ require 'google/apis/storage_v1'
 
 module Reports
   class PostChanges < Base
-    VERSION = 1
-    MINIMUM_CHANGES_IN_A_MONTH = 400
-    HTML_TEMPLATE = <<EOS
+    def version
+      1
+    end
+
+    def min_changes
+      400
+    end
+
+    def report_name
+      "post-changes"
+    end
+
+    def html_template
+      return <<-EOS
 %html
   %header
     %title Post Change Report
   %body
     %table
+      %caption Post changes in the past thirty days (minimum count is #{min_changes})
       %thead
         %tr
           %th User
@@ -35,13 +47,6 @@ module Reports
             %td= datum[:character]
             %td= datum[:copyright]
 EOS
-
-    def date_string
-      Time.now.strftime("%Y-%m-%d")
-    end
-
-    def file_name
-      "post-changes_#{date_string}_v#{VERSION}"
     end
 
     def generate
@@ -57,7 +62,7 @@ EOS
 
         data = data.sort_by {|x| -x[:total]}
 
-        engine = Haml::Engine.new(HTML_TEMPLATE)
+        engine = Haml::Engine.new(html_template)
         htmlf.write(engine.render(Object.new, data: data))
 
         jsonf.write("[")
@@ -101,16 +106,8 @@ EOS
       }
     end
 
-    def upload(file, name, content_type)
-      data = {
-        content_type: content_type
-      }
-
-      storage_service.insert_object("danbooru-reports", data, name: "post-changes/#{name}", content_type: content_type, upload_source: file.path)
-    end
-
     def candidates
-      DanbooruRo::PostVersion.where("updated_at > ?", 30.days.ago).group("updater_id").having("count(*) > ?", MINIMUM_CHANGES_IN_A_MONTH).pluck(:updater_id)
+      DanbooruRo::PostVersion.where("updated_at > ?", date_window).group("updater_id").having("count(*) > ?", min_changes).pluck(:updater_id)
     end
   end
 end

@@ -50,6 +50,10 @@ module BigQuery
       get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat] as pvf join [danbooru_#{Rails.env}.tags] as t on pvf.added_tag = t.name where pvf.updater_id = #{user_id} and pvf.added_tag is not null and t.category = 0 and pvf.version = 1 and pvf.updated_at >= '#{min_date}'")
     end
 
+    def count_any_added_v1(user_id, min_date)
+      get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat] as pvf where pvf.updater_id = #{user_id} and pvf.added_tag is not null and pvf.version = 1 and pvf.updated_at >= '#{min_date}'")
+    end
+
     def count_rating_changed(user_id)
       get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat] where updater_id = #{user_id} and regexp_match(removed_tag, r'^rating:')")
     end

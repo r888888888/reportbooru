@@ -1,44 +1,5 @@
 module Reports
   class Uploads < Base
-    VERSION = 1
-    HTML_TEMPLATE = <<EOS
-%html
-  %header
-    %title Upload Report
-  %body
-    %table
-      %thead
-        %tr
-          %th User
-          %th Total
-          %th Del
-          %th Par
-          %th Src
-          %th S
-          %th Q
-          %th E
-          %th Gen
-          %th Char
-          %th Copy
-          %th Art
-      %tbody
-        - data.each do |datum|
-          %tr
-            %td
-              %a{:href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
-            %td= datum[:total]
-            %td= datum[:queue_bypass]
-            %td= datum[:deleted]
-            %td= datum[:source]
-            %td= datum[:safe]
-            %td= datum[:questionable]
-            %td= datum[:explicit]
-            %td= datum[:general]
-            %td= datum[:character]
-            %td= datum[:copyright]
-            %td= datum[:artist]
-EOS
-
     def calculate_data(user_id)
       user = DanbooruRo::User.find(user_id)
       name = user.name
@@ -75,14 +36,6 @@ EOS
       }
     end
 
-    def date_string
-      Time.now.strftime("%F")
-    end
-
-    def file_name
-      "uploads_#{date_string}_v#{VERSION}"
-    end
-
     def generate
       htmlf = Tempfile.new("#{file_name}_html")
       jsonf = Tempfile.new("#{file_name}_json")
@@ -96,7 +49,7 @@ EOS
 
         data = data.sort_by {|x| -x[:total]}
 
-        engine = Haml::Engine.new(HTML_TEMPLATE)
+        engine = Haml::Engine.new(html_template)
         htmlf.write(engine.render(Object.new, data: data))
 
         jsonf.write("[")
@@ -120,10 +73,6 @@ EOS
       }
 
       storage_service.insert_object("danbooru-reports", data, name: "uploads/#{name}", content_type: content_type, upload_source: file.path)
-    end
-
-    def candidates
-      DanbooruRo::User.joins("join posts on posts.uploader_id = users.id").where("posts.created_at >= ? and users.bit_prefs & ? = 0", 30.days.ago, 1 << 14).group("users.id").having("count(*) > ?", 100).pluck("distinct(users.id)")
     end
   end
 end

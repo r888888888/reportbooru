@@ -16,5 +16,9 @@ module DanbooruRo
     def self.users_with_favorites_ids(min_count = 500)
       select_values_sql("select id from users where fav_count >= ?", min_count)
     end
+
+    def can_upload_free?
+      (bit_prefs & (1 << 14)) > 0
+    end
   end
 end
