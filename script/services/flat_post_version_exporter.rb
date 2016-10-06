@@ -71,18 +71,18 @@ end
 def find_previous(version)
   if version.updated_at.to_i == Time.zone.parse("2007-03-14T19:38:12Z").to_i
     # Old post versions which didn't have updated_at set correctly
-    PostVersion.where("post_id = ? and updated_at = ? and id < ?", version.post_id, version.updated_at, version.id).order("updated_at desc, id desc").first
+    DanbooruRo::PostVersion.where("post_id = ? and updated_at = ? and id < ?", version.post_id, version.updated_at, version.id).order("updated_at desc, id desc").first
   else
-    PostVersion.where("post_id = ? and updated_at < ?", version.post_id, version.updated_at).order("updated_at desc, id desc").first
+    DanbooruRo::PostVersion.where("post_id = ? and updated_at < ?", version.post_id, version.updated_at).order("updated_at desc, id desc").first
   end
 end
 
 def find_version_number(version)
   if version.updated_at.to_i == Time.zone.parse("2007-03-14T19:38:12Z").to_i
     # Old post versions which didn't have updated_at set correctly
-    1 + PostVersion.where("post_id = ? and updated_at = ? and id < ?", version.post_id, version.updated_at, version.id).count
+    1 + DanbooruRo::PostVersion.where("post_id = ? and updated_at = ? and id < ?", version.post_id, version.updated_at, version.id).count
   else
-    1 + PostVersion.where("post_id = ? and updated_at < ?", version.post_id, version.updated_at).count
+    1 + DanbooruRo::PostVersion.where("post_id = ? and updated_at < ?", version.post_id, version.updated_at).count
   end
 end
 
@@ -121,7 +121,7 @@ while $running
     next_id = last_id + BATCH_SIZE
     store_id = last_id
     batch = []
-    PostVersion.where("id > ? and id <= ? and updated_at < ?", last_id, next_id, 70.minutes.ago).find_each do |version|
+    DanbooruRo::PostVersion.where("id > ? and id <= ? and updated_at < ?", last_id, next_id, 70.minutes.ago).find_each do |version|
       previous = find_previous(version)
       diff = calculate_diff(previous, version)
       vnum = find_version_number(version)

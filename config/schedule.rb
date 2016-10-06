@@ -17,3 +17,7 @@ end
 every :sunday, :at => "4:00 am" do
   runner "Reports::MemberUploads.new.generate"
 end
+
+every :sunday, :at => "5:00 am" do
+  runner "Reports::ContributorUploads.new.generate"
+end

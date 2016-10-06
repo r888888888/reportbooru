@@ -17,8 +17,9 @@ module Reports
 %html
   %header
     %title Contributor Upload Report
+    %link{:rel => "stylesheet", :href => "http://yui.yahooapis.com/pure/0.6.0/pure-min.css"}
   %body
-    %table
+    %table{:class => "pure-table-striped"}
       %caption Unlimited uploaders over past thirty days (minium uploads is #{min_uploads})
       %thead
         %tr

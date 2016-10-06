@@ -19,8 +19,9 @@ module Reports
 %html
   %header
     %title Post Change Report
+    %link{:rel => "stylesheet", :href => "http://yui.yahooapis.com/pure/0.6.0/pure-min.css"}
   %body
-    %table
+    %table{:class => "pure-table-striped"}
       %caption Post changes in the past thirty days (minimum count is #{min_changes})
       %thead
         %tr

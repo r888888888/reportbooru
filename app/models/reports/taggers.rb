@@ -13,8 +13,9 @@ module Reports
 %html
   %header
     %title Tagger Report
+    %link{:rel => "stylesheet", :href => "http://yui.yahooapis.com/pure/0.6.0/pure-min.css"}
   %body
-    %table
+    %table{:class => "pure-table-striped"}
       %caption Uploaders and average number of initial tags used (over past thirty days, minimum uploads is #{min_uploads})
       %thead
         %tr
