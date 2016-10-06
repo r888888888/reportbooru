@@ -11,11 +11,14 @@ module Reports
 		def html_template
       return <<-EOS
 %html
-  %header
+  %head
     %title Tagger Report
-    %link{:rel => "stylesheet", :href => "http://yui.yahooapis.com/pure/0.6.0/pure-min.css"}
+    %style
+      :css
+        #{pure_css_tables}
+    %meta{:name => "viewport", :content => "width=device-width, initial-scale=1"}
   %body
-    %table{:class => "pure-table-striped"}
+    %table{:class => "pure-table pure-table-bordered pure-table-striped"}
       %caption Uploaders and average number of initial tags used (over past thirty days, minimum uploads is #{min_uploads})
       %thead
         %tr

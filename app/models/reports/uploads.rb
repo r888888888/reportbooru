@@ -7,7 +7,7 @@ module Reports
       tda = date_window.strftime("%F %H:%M")
       total = DanbooruRo::Post.where("created_at > ?", tda).where(uploader_id: user.id).count
       queue_bypass = DanbooruRo::Post.where("created_at > ?", tda).where(uploader_id: user.id, approver_id: nil, is_deleted: false, is_pending: false).count
-      deleted = DanbooruRo::Post.where("created_at > ?", tda).where(uploader_id: user.id, is_deleted: false).count
+      deleted = DanbooruRo::Post.where("created_at > ?", tda).where(uploader_id: user.id, is_deleted: true).count
       parent = DanbooruRo::Post.where("parent_id is not null and created_at > ?", tda).where(uploader_id: user.id).count
       source = DanbooruRo::Post.where("source <> '' and source is not null and created_at > ?", tda).where(uploader_id: user.id).count
       safe = DanbooruRo::Post.where("created_at > ?", tda).where(uploader_id: user.id, rating: "s").count

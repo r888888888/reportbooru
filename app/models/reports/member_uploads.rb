@@ -19,11 +19,13 @@ module Reports
     def html_template
       return <<-EOS
 %html
-  %header
+  %head
     %title Member Upload Report
-    %link{:rel => "stylesheet", :href => "http://yui.yahooapis.com/pure/0.6.0/pure-min.css"}
+    %style
+      :css
+        #{pure_css_tables}
   %body
-    %table{:class => "pure-table-striped"}
+    %table{:class => "pure-table pure-table-bordered pure-table-striped"}
       %caption Limited uploaders over past thirty days (minium uploads is #{min_uploads})
       %thead
         %tr
