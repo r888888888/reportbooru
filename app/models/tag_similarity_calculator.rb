@@ -53,7 +53,7 @@ class TagSimilarityCalculator
 
   def update_danbooru
     params = {
-      "key" => Rails.application.config.x.shared_remote_key,
+      "key" => ENV["shared_remote_key"],
       "name" => tag_name,
       "related_tags" => results.join(" ")
     }

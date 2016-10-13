@@ -39,7 +39,7 @@ class UploadReport
   def validate_key(sig)
     digest = OpenSSL::Digest.new("sha256")
     string = "#{min_date},#{max_date},#{queries.join(',')}"
-    calc_sig = OpenSSL::HMAC.hexdigest(digest, Rails.application.config.x.shared_remote_key, string)
+    calc_sig = OpenSSL::HMAC.hexdigest(digest, ENV["shared_remote_key"], string)
 
     if calc_sig != sig
       raise VerificationError.new

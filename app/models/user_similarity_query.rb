@@ -13,7 +13,7 @@ class UserSimilarityQuery
     if redis.zcard(redis_key) == 0
       sqs_client.send_message(
         message_body: redis_key,
-        queue_url: Rails.application.config.x.aws_sqs_similarity_queue_url
+        queue_url: ENV["aws_sqs_similarity_queue_url"]
       )
       return "not ready"
     else

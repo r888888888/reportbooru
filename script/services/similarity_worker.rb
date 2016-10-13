@@ -32,7 +32,7 @@ logfile = File.open($options[:logfile], "a")
 logfile.sync = true
 LOGGER = Logger.new(logfile)
 REDIS = Redis.new
-SQS_QUEUE_URL = Rails.application.config.x.aws_sqs_similarity_queue_url
+SQS_QUEUE_URL = ENV["aws_sqs_similarity_queue_url"]
 SQS_CLIENT = Aws::SQS::Client.new
 SQS_POLLER = Aws::SQS::QueuePoller.new(SQS_QUEUE_URL, client: SQS_CLIENT)
 
