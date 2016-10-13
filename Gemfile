@@ -36,6 +36,7 @@ gem 'bigquery', :git => "https://github.com/abronte/BigQuery.git", :ref => "b92b
 gem 'pony'
 gem 'google-api-client'
 gem 'haml'
+gem 'figaro'
 
 group :production do
   gem 'unicorn', :platforms => :ruby
