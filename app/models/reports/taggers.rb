@@ -4,8 +4,8 @@ module Reports
 			1
 		end
 
-    def report_name
-      "taggers"
+    def folder_id
+      "0B1OwQUUumteuRVlIVWpqWEhiQ3c"
     end
 
 		def html_template

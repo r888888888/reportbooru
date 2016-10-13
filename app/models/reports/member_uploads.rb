@@ -12,8 +12,8 @@ module Reports
       30.days.ago
     end
 
-    def report_name
-      "uploads/member"
+    def folder_id
+      "0B1OwQUUumteuQVgxdmR3OE5fT0U"
     end
 
     def html_template

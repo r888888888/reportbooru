@@ -1,3 +1,5 @@
+require 'google/apis/drive_v3'
+
 module Reports
   class Base
     def version
@@ -8,15 +10,15 @@ module Reports
       raise NotImplementedError
     end
 
-    def file_name
-      raise NotImplementedError
-    end
-
     def candidates
       raise NotImplementedError
     end
 
     def report_name
+      raise NotImplementedError
+    end
+
+    def folder_id
       raise NotImplementedError
     end
 
@@ -32,20 +34,22 @@ module Reports
       Time.now.strftime("%F")
     end
 
-    def storage_service
-      @_storage_service ||= begin
-        s = Google::Apis::StorageV1::StorageService.new
-        s.authorization = Google::Auth.get_application_default([Google::Apis::StorageV1::AUTH_DEVSTORAGE_READ_WRITE])
+    def drive_service
+      @_drive_service ||= begin
+        s = Google::Apis::DriveV3::DriveService.new
+        s.authorization = Google::Auth.get_application_default([Google::Apis::DriveV3::AUTH_DRIVE])
         s
       end
     end
 
-    def upload(file, name, content_type)
+    def upload(folder, file, name, content_type)
       data = {
-        content_type: content_type
+        name: name,
+        mime_type: content_type,
+        parents: folder_id
       }
 
-      storage_service.insert_object("danbooru-reports", data, name: "#{report_name}/#{name}", content_type: content_type, upload_source: file.path)
+      drive_service.create_file(data, fields: "id", upload_source: file.path, content_type: content_type)
     end
 
     def pure_css_tables

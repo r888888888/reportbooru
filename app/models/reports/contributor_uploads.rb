@@ -8,8 +8,8 @@ module Reports
       300
     end
 
-    def report_name
-      "uploads/contrib"
+    def folder_id
+      "0B1OwQUUumteuU1RFakdaVmM1clk"
     end
 
     def html_template

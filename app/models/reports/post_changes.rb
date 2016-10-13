@@ -1,5 +1,3 @@
-require 'google/apis/storage_v1'
-
 module Reports
   class PostChanges < Base
     def version
@@ -10,8 +8,8 @@ module Reports
       400
     end
 
-    def report_name
-      "post-changes"
+    def folder_id
+      "0B1OwQUUumteucE0wTVJSWnhRSG8"
     end
 
     def html_template
