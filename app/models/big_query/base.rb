@@ -29,7 +29,7 @@ module BigQuery
       @_client_options ||= {
         pidfile: "/var/run/reportbooru/post_version_exporter.pid",
         logfile: "/var/log/reportbooru/post_version_exporter.log",
-        google_key_path: "/var/www/reportbooru/shared/google-key.json",
+        google_key_path: ENV["google_api_key_path"],
         google_data_set: "danbooru_#{Rails.env}"
       }
     end
