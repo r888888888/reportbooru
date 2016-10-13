@@ -22,11 +22,5 @@ module Reportbooru
 
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
-    config.x.admin_email = "webmaster@danbooru.donmai.us"
-    config.x.danbooru_hostname = "https://danbooru.donmai.us"
-    config.x.shared_remote_key = ENV["DANBOORU_SHARED_REMOTE_KEY"]
-    config.x.aws_sqs_report_queue_url = ENV["DANBOORU_SQS_REPORT_QUEUE_URL"]
-    config.x.aws_sqs_similarity_queue_url = ENV["DANBOORU_SQS_SIMILAR_USER_URL"]
-    config.x.aws_sqs_related_tag_queue_url = ENV["DANBOORU_SQS_SIMILAR_TAG_URL"]
   end
 end

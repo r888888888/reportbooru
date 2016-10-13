@@ -16,4 +16,6 @@
 !/log/.keep
 /tmp
 config/unicorn/production.rb
-config/application.yml
+
+# Ignore application configuration
+/config/application.yml
