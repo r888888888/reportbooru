@@ -16,3 +16,4 @@
 !/log/.keep
 /tmp
 config/unicorn/production.rb
+config/application.yml
