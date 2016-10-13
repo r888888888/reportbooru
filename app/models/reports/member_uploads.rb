@@ -8,10 +8,6 @@ module Reports
       100
     end
 
-    def date_window
-      30.days.ago
-    end
-
     def folder_id
       "0B1OwQUUumteuQVgxdmR3OE5fT0U"
     end

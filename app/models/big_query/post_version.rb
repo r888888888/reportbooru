@@ -61,11 +61,5 @@ module BigQuery
     def count_source_changed(user_id, min_date)
       get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat] where updater_id = #{user_id} and regexp_match(removed_tag, r'^source:') and updated_at >= '#{min_date}'")
     end
-
-    def get_count(resp)
-      resp["rows"][0]["f"][0]["v"]
-    rescue
-      0
-    end
   end
 end

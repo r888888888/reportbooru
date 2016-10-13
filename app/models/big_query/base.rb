@@ -13,6 +13,12 @@ module BigQuery
       end
     end
 
+    def get_count(resp)
+      resp["rows"][0]["f"][0]["v"]
+    rescue
+      0
+    end
+
     def escape(s)
       Regexp.escape(s).gsub(/\\/, '\0\0').gsub(/['"]/, '\\\\\0')
     end
