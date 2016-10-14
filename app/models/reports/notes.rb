@@ -65,6 +65,7 @@ EOS
       user = DanbooruRo::User.find(user_id)
       tda = date_window.strftime("%F %H:%M")
       client = BigQuery::NoteVersion.new
+      contrib = user.can_upload_free? ? "Y" : nil
 
       return {
         id: user.id,
@@ -112,7 +113,7 @@ EOS
     end
 
 		def candidates
-			DanbooruRo::NoteVersion.where("updated_at > ?", date_window).group("updater_id").having("count(*) > ?", min_changes)
+			DanbooruRo::NoteVersion.where("updated_at > ?", date_window).group("updater_id").having("count(*) > ?", min_changes).pluck(:updater_id)
 		end
 	end
 end

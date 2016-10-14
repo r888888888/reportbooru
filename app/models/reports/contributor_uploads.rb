@@ -4,14 +4,6 @@ module Reports
       1
     end
 
-    def min_uploads
-      300
-    end
-
-    def folder_id
-      "0B1OwQUUumteuU1RFakdaVmM1clk"
-    end
-
     def html_template
       return <<-EOS
 %html
@@ -58,6 +50,14 @@ EOS
 
     def candidates
       DanbooruRo::User.joins("join posts on posts.uploader_id = users.id").where("posts.created_at >= ? and users.bit_prefs & ? > 0", date_window, 1 << 14).group("users.id").having("count(*) > ?", min_uploads).pluck("distinct(users.id)")
+    end
+
+    def report_name
+      "contributor_uploads"
+    end
+
+    def min_uploads
+      300
     end
   end
 end

@@ -1,5 +1,9 @@
 module Reports
   class Uploads < Base
+    def sort_key
+      :total
+    end
+    
     def calculate_data(user_id)
       user = DanbooruRo::User.find(user_id)
       name = user.name
@@ -34,37 +38,6 @@ module Reports
         copyright: copyright,
         artist: artist
       }
-    end
-
-    def generate
-      htmlf = Tempfile.new("#{file_name}_html")
-      jsonf = Tempfile.new("#{file_name}_json")
-
-      begin
-        data = []
-
-        candidates.each do |user_id|
-          data << calculate_data(user_id)
-        end
-
-        data = data.sort_by {|x| -x[:total].to_i}
-
-        engine = Haml::Engine.new(html_template)
-        htmlf.write(engine.render(Object.new, data: data))
-
-        jsonf.write("[")
-        jsonf.write(data.map {|x| x.to_json}.join(","))
-        jsonf.write("]")
-
-        htmlf.rewind
-        jsonf.rewind
-
-        upload(htmlf, "#{file_name}.html", "text/html")
-        upload(jsonf, "#{file_name}.json", "application/json")
-      ensure
-        jsonf.close
-        htmlf.close
-      end
     end
   end
 end

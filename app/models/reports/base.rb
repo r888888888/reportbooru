@@ -1,5 +1,3 @@
-require 'google/apis/drive_v3'
-
 module Reports
   class Base
     def version
@@ -17,8 +15,8 @@ module Reports
     def report_name
       raise NotImplementedError
     end
-
-    def folder_id
+    
+    def sort_key
       raise NotImplementedError
     end
 
@@ -34,22 +32,41 @@ module Reports
       Time.now.strftime("%F")
     end
 
-    def drive_service
-      @_drive_service ||= begin
-        s = Google::Apis::DriveV3::DriveService.new
-        s.authorization = Google::Auth.get_application_default([Google::Apis::DriveV3::AUTH_DRIVE])
-        s
-      end
+    def base_directory
+      ENV["BASE_REPORTS_DIR"]
     end
 
-    def upload(folder, file, name, content_type)
-      data = {
-        name: name,
-        mime_type: content_type,
-        parents: folder_id
-      }
+    def report_directory
+      File.join(base_directory, report_name)
+    end
 
-      drive_service.create_file(data, fields: "id", upload_source: file.path, content_type: content_type)
+    def report_path(ext)
+      File.join(report_directory, file_name + "." + ext)
+    end
+
+    def generate
+      htmlf = File.open(report_path("html"), "w")
+      jsonf = File.open(report_path("json"), "w")
+
+      begin
+        data = []
+
+        candidates.each do |user_id|
+          data << calculate_data(user_id)
+        end
+
+        data = data.sort_by {|x| -x[sort_key].to_i}
+
+        engine = Haml::Engine.new(html_template)
+        htmlf.write(engine.render(Object.new, data: data))
+
+        jsonf.write("[")
+        jsonf.write(data.map {|x| x.to_json}.join(","))
+        jsonf.write("]")
+      ensure
+        jsonf.close
+        htmlf.close
+      end
     end
 
     def pure_css_tables

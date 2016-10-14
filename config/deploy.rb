@@ -12,7 +12,7 @@ set :default_env, {
   "PATH" => '$HOME/.rbenv/shims:$HOME/.rbenv/bin:$PATH',
   "RAILS_ENV" => "production"
 }
-set :linked_dirs, fetch(:linked_dirs, []).push('log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'vendor/bundle')
+set :linked_dirs, fetch(:linked_dirs, []).push('log', 'public/reports', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'vendor/bundle')
 set :linked_files, fetch(:linked_files, []).push("config/application.yml")
 set :rbenv_ruby, "2.3.1"
 
