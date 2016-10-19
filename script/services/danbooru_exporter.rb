@@ -479,9 +479,9 @@ class WikiPageExporter
       changes[:is_locked] = b.is_locked
     end
 
-    if a.nil? || a.is_deleted != b.is_deleted
-      changes[:is_deleted] = b.is_deleted
-    end
+    # if a.nil? || a.is_deleted != b.is_deleted
+    #   changes[:is_deleted] = b.is_deleted
+    # end
 
     if a.nil? || a.other_names != b.other_names
       changes[:other_names] = b.other_names
