@@ -62,6 +62,7 @@ class ArtistVersionExporter
     version: {type: "INTEGER"},
     created_at: {type: "TIMESTAMP"},
     updated_at: {type: "TIMESTAMP"},
+    updater_id: {type: "INTEGER"},
     artist_id: {type: "INTEGER"},
     name: {type: "STRING"},
     updater_ip_addr: {type: "STRING"},
@@ -362,7 +363,7 @@ class FlatPostVersionExporter
 
   def execute
     create_table
-    
+
     begin
       last_id = get_last_exported_id
       next_id = last_id + BATCH_SIZE
