@@ -6,7 +6,7 @@ class ApplicationController < ActionController::Base
 protected
 
   def check_shared_key
-    if params[:key] != ENV["shared_remote_key"]
+    if params[:key] != ENV["DANBOORU_SHARED_REMOTE_KEY"]
       render text: "forbidden", status: 403
       return false
     end

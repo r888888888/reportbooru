@@ -16,7 +16,7 @@ module Concerns
 
     def validate!(key, value, sig)
       digest = OpenSSL::Digest.new("sha256")
-      calc_sig = OpenSSL::HMAC.hexdigest(digest, ENV["shared_remote_key"], "#{key},#{value}")
+      calc_sig = OpenSSL::HMAC.hexdigest(digest, ENV["DANBOORU_SHARED_REMOTE_KEY"], "#{key},#{value}")
 
       if calc_sig != sig
         raise VerificationError.new
