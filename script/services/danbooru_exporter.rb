@@ -342,9 +342,9 @@ class PostVersionExporter
   def find_previous(version)
     if version.updated_at.to_i == Time.zone.parse("2007-03-14T19:38:12Z").to_i
       # Old post versions which didn't have updated_at set correctly
-      PostVersion.where("post_id = ? and updated_at = ? and id < ?", version.post_id, version.updated_at, version.id).order("updated_at desc, id desc").first
+      DanbooruRo::PostVersion.where("post_id = ? and updated_at = ? and id < ?", version.post_id, version.updated_at, version.id).order("updated_at desc, id desc").first
     else
-      PostVersion.where("post_id = ? and updated_at < ?", version.post_id, version.updated_at).order("updated_at desc, id desc").first
+      DanbooruRo::PostVersion.where("post_id = ? and updated_at < ?", version.post_id, version.updated_at).order("updated_at desc, id desc").first
     end
   end
 
@@ -378,7 +378,7 @@ class PostVersionExporter
       next_id = last_id + BATCH_SIZE
       store_id = last_id
       batch = []
-      PostVersion.where("id > ? and id <= ? and updated_at < ?", last_id, next_id, 70.minutes.ago).find_each do |version|
+      DanbooruRo::PostVersion.where("id > ? and id <= ? and updated_at < ?", last_id, next_id, 70.minutes.ago).find_each do |version|
         previous = find_previous(version)
         diff = calculate_diff(previous, version)
         hash = {
@@ -450,7 +450,7 @@ class WikiPageExporter
   end
 
   def find_previous(version)
-    WikiPageVersion.where("wiki_page_id = ? and updated_at < ?", version.wiki_page_id, version.updated_at).order("updated_at desc, id desc").first
+    DanbooruRo::WikiPageVersion.where("wiki_page_id = ? and updated_at < ?", version.wiki_page_id, version.updated_at).order("updated_at desc, id desc").first
   end
 
   def find_version_number(version)
@@ -496,7 +496,7 @@ class WikiPageExporter
       next_id = last_id + BATCH_SIZE
       store_id = last_id
       batch = []
-      WikiPageVersion.where("id > ? and id <= ? and updated_at < ?", last_id, next_id, 70.minutes.ago).find_each do |version|
+      DanbooruRo::WikiPageVersion.where("id > ? and id <= ? and updated_at < ?", last_id, next_id, 70.minutes.ago).find_each do |version|
         previous = find_previous(version)
         diff = calculate_diff(previous, version)
         diff[:version_id] = version.id
