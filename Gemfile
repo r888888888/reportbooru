@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
+gem 'dotenv-rails', :require => "dotenv/rails-now"
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 4.2.0'
@@ -36,7 +37,6 @@ gem 'bigquery', :git => "https://github.com/abronte/BigQuery.git", :ref => "b92b
 gem 'pony'
 gem 'google-api-client'
 gem 'haml'
-gem 'figaro'
 
 group :production do
   gem 'unicorn', :platforms => :ruby

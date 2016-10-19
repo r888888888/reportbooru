@@ -1,5 +1,5 @@
 ### BEGIN INIT INFO
-# Provides:          reportbooru_flat_note_version_exporter
+# Provides:          reportbooru_danbooru_exporter
 # Required-Start:    $remote_fs $syslog
 # Required-Stop:     $remote_fs $syslog
 # Default-Start:     2 3 4 5
@@ -10,13 +10,13 @@
 
 # Author: albert yi <r888888888@gmail.com>
 
-NAME=reportbooru_flat_note_version_exporter
+NAME=reportbooru_danbooru_exporter
 CHUID=danbooru
-LOGFILE=/var/log/reportbooru/flat_note_version_exporter.log
-DESC="flat note version exporter"
-PIDFILE=/var/run/reportbooru/flat_note_version_exporter.pid
+LOGFILE=/var/log/reportbooru/danbooru_exporter.log
+DESC="danbooru exporter"
+PIDFILE=/var/run/reportbooru/danbooru_exporter.pid
 ROOT_DIR=/var/www/reportbooru/current
-DAEMON=script/services/flat_note_version_exporter.rb
+DAEMON=script/services/danbooru_exporter.rb
 DAEMON_CMD="bundle exec ruby $DAEMON --pidfile=$PIDFILE >> $LOGFILE 2>&1"
 
 case "$1" in
