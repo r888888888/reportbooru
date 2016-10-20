@@ -11,13 +11,5 @@ every :sunday, :at => "2:00 am" do
 end
 
 every :sunday, :at => "3:00 am" do
-  runner "Reports::PostChanges.new.generate"
-end
-
-every :sunday, :at => "4:00 am" do
-  runner "Reports::MemberUploads.new.generate"
-end
-
-every :sunday, :at => "5:00 am" do
-  runner "Reports::ContributorUploads.new.generate"
+  runner "Reports.generate_all"
 end
