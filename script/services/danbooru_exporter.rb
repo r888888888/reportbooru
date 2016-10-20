@@ -530,6 +530,7 @@ class WikiPageExporter
   SCHEMA = {
     version_id: {type: "INTEGER"},
     version: {type: "INTEGER"},
+    wiki_page_id: {type: "INTEGER"},
     created_at: {type: "TIMESTAMP"},
     updated_at: {type: "TIMESTAMP"},
     updater_id: {type: "INTEGER"},
