@@ -1,6 +1,6 @@
 module Reports
   def generate_all
-    [ContributorUploads, MemberUploads, PostAppeals, Notes, Taggers].each do |model|
+    [Artists, ContributorUploads, MemberUploads, PostAppeals, Notes, Taggers, WikiPages].each do |model|
       model.new.generate
     end
   end

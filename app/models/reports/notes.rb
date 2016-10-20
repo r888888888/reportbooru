@@ -20,8 +20,8 @@ module Reports
 			100
 		end
 
-		def folder_id
-			"0B1OwQUUumteuaXl6VFpwcHM2WGs"
+		def folder_name
+			"notes"
 		end
 		
 		def html_template
@@ -78,38 +78,6 @@ EOS
         deletes: client.count_deletes(user_id, tda),
         undeletes: client.count_undeletes(user_id, tda)
       }
-    end
-
-
-    def generate
-      htmlf = Tempfile.new("#{file_name}_html")
-      jsonf = Tempfile.new("#{file_name}_json")
-
-      begin
-        data = []
-
-        candidates.each do |user_id|
-          data << calculate_data(user_id)
-        end
-
-        data = data.sort_by {|x| -x[:creates].to_i}
-
-        engine = Haml::Engine.new(html_template)
-        htmlf.write(engine.render(Object.new, data: data))
-
-        jsonf.write("[")
-        jsonf.write(data.map {|x| x.to_json}.join(","))
-        jsonf.write("]")
-
-        htmlf.rewind
-        jsonf.rewind
-
-        upload(htmlf, "#{file_name}.html", "text/html")
-        upload(jsonf, "#{file_name}.json", "application/json")
-      ensure
-        jsonf.close
-        htmlf.close
-      end
     end
 
 		def candidates

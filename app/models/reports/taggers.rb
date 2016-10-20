@@ -4,8 +4,12 @@ module Reports
 			1
 		end
 
-    def folder_id
-      "0B1OwQUUumteuRVlIVWpqWEhiQ3c"
+    def report_name
+      "taggers"
+    end
+
+    def sort_key
+      :tags_per_upload
     end
 
 		def html_template
@@ -36,37 +40,6 @@ module Reports
             %td= datum[:total]
 EOS
 		end
-
-    def generate
-      htmlf = Tempfile.new("#{file_name}_html")
-      jsonf = Tempfile.new("#{file_name}_json")
-
-      begin
-        data = []
-
-        candidates.each do |user_id|
-          data << calculate_data(user_id)
-        end
-
-        data = data.sort_by {|x| -x[:tags_per_upload].to_i}
-
-        engine = Haml::Engine.new(html_template)
-        htmlf.write(engine.render(Object.new, data: data))
-
-        jsonf.write("[")
-        jsonf.write(data.map {|x| x.to_json}.join(","))
-        jsonf.write("]")
-
-        htmlf.rewind
-        jsonf.rewind
-
-        upload(htmlf, "#{file_name}.html", "text/html")
-        upload(jsonf, "#{file_name}.json", "application/json")
-      ensure
-        jsonf.close
-        htmlf.close
-      end
-    end
 
     def calculate_data(user_id)
       user = DanbooruRo::User.find(user_id)
