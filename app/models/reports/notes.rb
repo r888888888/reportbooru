@@ -20,9 +20,13 @@ module Reports
 			100
 		end
 
-		def folder_name
+		def report_name
 			"notes"
 		end
+
+    def sort_key
+      :creates
+    end
 		
 		def html_template
       return <<-EOS

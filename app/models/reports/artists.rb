@@ -32,6 +32,10 @@ module Reports
     def report_name
       "artists"
     end
+
+    def sort_key
+      :total
+    end
     
     def html_template
       return <<-EOS
@@ -64,7 +68,7 @@ module Reports
               %a{:href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
             %td= datum[:total]
             %td= datum[:creates]
-            %td= datum[:name]
+            %td= datum[:name_changes]
             %td= datum[:other]
             %td= datum[:url]
             %td= datum[:group]
@@ -93,7 +97,7 @@ EOS
         name: user.name,
         total: total,
         creates: creates,
-        name: name_changes,
+        name_changes: name_changes,
         other: other,
         url: url,
         group: group,

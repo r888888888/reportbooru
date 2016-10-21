@@ -33,7 +33,7 @@ module BigQuery
     end
 
     def count_wiki(user_id, min_date)
-      DanbooruRo::WikiPage.joins("join artists on artists.name = wiki_pages.title").where("wiki_pages.creator_id = ? and created_at > ?", user_id, min_date).count
+      DanbooruRo::WikiPage.joins("join artists on artists.name = wiki_pages.title").where("wiki_pages.creator_id = ? and wiki_pages.created_at > ?", user_id, min_date).count
 
       #DanbooruRo::WikiPageVersion.joins("join artist_versions on artist_versions.name = wiki_page_versions.title").where("wiki_page_versions.updater_id = ? and wiki_page_versions.updated_at - artist_versions.updated_at < interval '1 second' and wiki_page_versions.updated_at > ? and artist_versions.updater_id = ?", user_id, min_date, user_id).count
     end
