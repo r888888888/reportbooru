@@ -19,8 +19,8 @@ module Reports
         %tr
           %th User
           %th Total
+          %th Bypass
           %th Del
-          %th Par
           %th Src
           %th S
           %th Q

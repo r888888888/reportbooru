@@ -12,7 +12,6 @@ module Reports
 		end
 		
 		def candidates
-			DanbooruRo::NoteVersion.where("updated_at > ?", date_window).group("updater_id").having("count(*) > ?", min_changes)
 		end
 	end
 end
