@@ -157,7 +157,7 @@ class ArtistVersionExporter
       end
 
       if batch.any?
-        logger.info "inserting #{last_id}..#{store_id}"
+        logger.info "artist versions: inserting #{last_id}..#{store_id}"
         result = gbq.insert("artist_versions", batch)
         if result["insertErrors"]
           logger.error result.inspect
@@ -272,7 +272,7 @@ class NoteExporter
       end
 
       if batch.any?
-        logger.info "inserting #{last_id}..#{store_id}"
+        logger.info "note versions: inserting #{last_id}..#{store_id}"
         result = gbq.insert("note_versions_flat", batch)
         if result["insertErrors"]
           logger.error result.inspect
@@ -418,7 +418,7 @@ class FlatPostVersionExporter
       end
 
       if batch.any?
-        logger.info "inserting #{last_id}..#{store_id}"
+        logger.info "flat post versions: inserting #{last_id}..#{store_id}"
         result = gbq.insert("post_versions_flat", batch)
         if result["insertErrors"]
           logger.error result.inspect
@@ -510,7 +510,7 @@ class PostVersionExporter
       end
 
       if batch.any?
-        logger.info "inserting #{last_id}..#{store_id}"
+        logger.info "post versions: inserting #{last_id}..#{store_id}"
         result = GBQ.insert("post_versions", batch)
         if result["insertErrors"]
           logger.error result.inspect
@@ -621,7 +621,7 @@ class WikiPageExporter
       end
 
       if batch.any?
-        logger.info "inserting #{last_id}..#{store_id}"
+        logger.info "wiki: inserting #{last_id}..#{store_id}"
         result = GBQ.insert("wiki_page_versions", batch)
         if result["insertErrors"]
           logger.error result.inspect

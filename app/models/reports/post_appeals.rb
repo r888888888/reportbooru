@@ -57,7 +57,7 @@ EOS
         id: user.id,
         name: user.name,
         count: DanbooruRo::PostAppeal.where("created_at > ? and creator_id = ?", date_window, user.id).count,
-        resolved: DanbooruRo::PostAppeal.where("created_at > ? and creator_id = ? and is_resolved = true", date_window, user.id).count
+        resolved: DanbooruRo::PostAppeal.joins("join posts on posts.id = post_appeals.id").where("post_appeals.created_at > ? and post_appeals.creator_id = ? and posts.is_deleted = false and posts.is_flagged = false", date_window, user.id).count
       }
     end
 		
