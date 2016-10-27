@@ -56,7 +56,7 @@ Signal.trap("TERM") do
 end
 
 class ArtistVersionExporter
-  BATCH_SIZE = 1000
+  BATCH_SIZE = 5000
   SCHEMA = {
     version_id: {type: "INTEGER"},
     version: {type: "INTEGER"},
@@ -526,7 +526,7 @@ class PostVersionExporter
 end
 
 class WikiPageExporter
-  BATCH_SIZE = 1000
+  BATCH_SIZE = 5000
   SCHEMA = {
     version_id: {type: "INTEGER"},
     version: {type: "INTEGER"},
