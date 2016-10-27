@@ -1,12 +1,10 @@
 =begin
-from brokeneagle98:
-
-Total: total post appeals created/user
+Total: total post flags created/user
 Successful: total where 'is_resolved' == true
 =end
 
 module Reports
-	class PostAppeals < Base
+  class PostFlags < Base
     def version
       1
     end
@@ -16,7 +14,7 @@ module Reports
     end
 
     def report_name
-      "post_appeals"
+      "post_flags"
     end
 
     def sort_key
@@ -27,14 +25,14 @@ module Reports
       return <<-EOS
 %html
   %head
-    %title Post Appeals Report
+    %title Post Flags Report
     %style
       :css
         #{pure_css_tables}
     %meta{:name => "viewport", :content => "width=device-width, initial-scale=1"}
   %body
     %table{:class => "pure-table pure-table-bordered pure-table-striped"}
-      %caption Post appeals (over past thirty days, minimum count is #{min_changes})
+      %caption Post flags (over past thirty days, minimum count is #{min_changes})
       %thead
         %tr
           %th User
@@ -56,13 +54,13 @@ EOS
       return {
         id: user.id,
         name: user.name,
-        count: DanbooruRo::PostAppeal.where("created_at > ? and creator_id = ?", date_window, user.id).count,
-        resolved: DanbooruRo::PostAppeal.where("created_at > ? and creator_id = ? and is_resolved = true", date_window, user.id).count
+        count: DanbooruRo::PostFlag.where("created_at > ? and creator_id = ?", date_window, user.id).count,
+        resolved: DanbooruRo::PostFlag.where("created_at > ? and creator_id = ? and is_resolved = true", date_window, user.id).count
       }
     end
-		
-		def candidates
-			DanbooruRo::PostAppeal.where("updated_at > ?", date_window).group("creator_id").having("count(*) > ?", min_changes).pluck(:creator_id)
-		end
-	end
+
+    def candidates
+      DanbooruRo::PostFlag.where("updated_at > ?", date_window).group("creator_id").having("count(*) > ?", min_changes).pluck(:creator_id)
+    end
+  end
 end
