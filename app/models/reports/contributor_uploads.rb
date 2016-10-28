@@ -26,6 +26,7 @@ module Reports
           %th Total
           %th Bypass
           %th Del
+          %th Del Conf
           %th Src
           %th S
           %th Q
@@ -34,6 +35,8 @@ module Reports
           %th Char
           %th Copy
           %th Art
+          %th Med Score
+          %th Neg Conf
       %tbody
         - data.each do |datum|
           %tr
@@ -42,6 +45,7 @@ module Reports
             %td= datum[:total]
             %td= datum[:queue_bypass]
             %td= datum[:deleted]
+            %td= datum[:del_conf]
             %td= datum[:source]
             %td= datum[:safe]
             %td= datum[:questionable]
@@ -50,6 +54,8 @@ module Reports
             %td= datum[:character]
             %td= datum[:copyright]
             %td= datum[:artist]
+            %td= datum[:med_score]
+            %td= datum[:neg_conf]
 EOS
     end
 
