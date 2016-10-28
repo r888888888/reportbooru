@@ -21,11 +21,17 @@ module Reports
 %html
   %head
     %title Post Change Report
-    %style
-      :css
-        #{pure_css_tables}
+    %meta{:name => "viewport", :content => "width=device-width, initial-scale=1"}
+    %script{:src => "/reports/assets/jquery-3.1.1.slim.min.js"}
+    %script{:src => "/reports/assets/jquery.tablesorter.min.js"}
+    %link{:rel => "stylesheet", :href => "/reports/assets/pure.css"}
+    %script
+      :javascript
+        $(function() {
+          $("#report").tablesorter();
+        });
   %body
-    %table{:class => "pure-table pure-table-bordered pure-table-striped"}
+    %table{:id => "report", :class => "pure-table pure-table-bordered pure-table-striped"}
       %caption Post changes in the past thirty days (minimum count is #{min_changes})
       %thead
         %tr
