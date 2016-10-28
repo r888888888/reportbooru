@@ -19,7 +19,7 @@ module Reports
       });
   %body
     %table{:id => "report", :class => "pure-table pure-table-bordered pure-table-striped"}
-      %caption Limited uploaders over past thirty days (minium uploads is #{min_uploads})
+      %caption Limited uploaders over past thirty days (minimum uploads is #{min_uploads})
       %thead
         %tr
           %th User

@@ -12,15 +12,15 @@ module Concerns
       100 * (phat + z*z/(2*n) - z * Math.sqrt((phat*(1-phat)+z*z/(4*n))/n))/(1+z*z/n)
     end
 
-    def deletion_confidence_interval_for(user_id, date)
-      deletions = DanbooruRo::Post.where("created_at > ?", date).where(:uploader_id => user_id, :is_deleted => true).count
-      total = DanbooruRo::Post.where("created_at > ?", date).where(:uploader_id => user_id).count
+    def deletion_confidence_interval_for(user_id, date, key = :uploader_id)
+      deletions = DanbooruRo::Post.where("created_at > ?", date).where(key => user_id, :is_deleted => true).count
+      total = DanbooruRo::Post.where("created_at > ?", date).where(key => user_id).count
       ci_lower_bound(deletions, total)
     end
 
-    def negative_score_confidence_interval_for(user_id, date)
-      hits = DanbooruRo::Post.where("created_at > ? and score < 0", date).where(:uploader_id => user_id).count
-      total = DanbooruRo::Post.where("created_at > ?", date).where(:uploader_id => user_id).count
+    def negative_score_confidence_interval_for(user_id, date, key = :uploader_id)
+      hits = DanbooruRo::Post.where("created_at > ? and score < 0", date).where(key => user_id).count
+      total = DanbooruRo::Post.where("created_at > ?", date).where(key => user_id).count
       ci_lower_bound(hits, total)
     end
   end
