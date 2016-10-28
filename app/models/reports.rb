@@ -1,6 +1,6 @@
 module Reports
   def generate_all
-    [Artists, BulkUpdateRequests, Comments, ContributorUploads, ForumPosts, ForumTopics MemberUploads, PostAppeals, PostChanges, PostFlags, Notes, TagAliases, TagImplications, Taggers, WikiPages].each do |model|
+    [ArtistCommentaries, Artists, BulkUpdateRequests, Comments, ContributorUploads, ForumPosts, ForumTopics MemberUploads, PostAppeals, PostChanges, PostFlags, Notes, TagAliases, TagImplications, Taggers, WikiPages].each do |model|
       model.new.generate
     end
   end
