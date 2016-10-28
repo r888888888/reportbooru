@@ -25,7 +25,7 @@ module Reports
     end
 
     def min_changes
-			100
+			20
 		end
 		
     def html_template

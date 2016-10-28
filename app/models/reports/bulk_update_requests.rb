@@ -13,7 +13,7 @@ module Reports
     end
 
     def min_changes
-      10
+      5
     end
 
     def report_name
@@ -63,14 +63,14 @@ EOS
       return {
         id: user.id,
         name: user.name,
-        count: DanbooruRo::BulkUpdateRequest.where("created_at > ? and creator_id = ?", date_window, user.id).count,
-        approved: DanbooruRo::BulkUpdateRequest.where("created_at > ? and creator_id = ? and status = ?", date_window, user.id, "approved").count,
-        rejected: DanbooruRo::BulkUpdateRequest.where("created_at > ? and creator_id = ? and status = ?", date_window, user.id, "rejected").count
+        count: DanbooruRo::BulkUpdateRequest.where("created_at > ? and user_id = ?", date_window, user.id).count,
+        approved: DanbooruRo::BulkUpdateRequest.where("created_at > ? and user_id = ? and status = ?", date_window, user.id, "approved").count,
+        rejected: DanbooruRo::BulkUpdateRequest.where("created_at > ? and user_id = ? and status = ?", date_window, user.id, "rejected").count
       }
     end
 
 		def candidates
-			DanbooruRo::BulkUpdateRequest.where("updated_at > ?", date_window).group("creator_id").having("count(*) > ?", min_changes).pluck(:creator_id)
+			DanbooruRo::BulkUpdateRequest.where("updated_at > ?", date_window).group("user_id").having("count(*) > ?", min_changes).pluck(:user_id)
 		end
 	end
 end
