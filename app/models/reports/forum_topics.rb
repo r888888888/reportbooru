@@ -49,7 +49,7 @@ module Reports
         - data.each do |datum|
           %tr
             %td
-              %a{:class => "user-#{datum[:level]}", :href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
+              %a{:class => "user-\#{datum[:level]}", :href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
             %td= datum[:total]
             %td= datum[:tag_cat]
             %td= datum[:bug_cat]
