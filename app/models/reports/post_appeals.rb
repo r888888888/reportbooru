@@ -20,7 +20,7 @@ module Reports
     end
 
     def sort_key
-      :total
+      :count
     end
     
     def html_template
