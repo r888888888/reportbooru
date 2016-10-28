@@ -48,7 +48,7 @@ module Reports
         - data.each do |datum|
           %tr
             %td
-              %a{:href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
+              %a{:class => "user-#{datum[:level]}", :href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
             %td= datum[:count]
             %td= datum[:resolved]
 EOS
@@ -60,6 +60,7 @@ EOS
       return {
         id: user.id,
         name: user.name,
+        level: user.level,
         count: DanbooruRo::PostAppeal.where("created_at > ? and creator_id = ?", date_window, user.id).count,
         resolved: DanbooruRo::PostAppeal.joins("join posts on posts.id = post_appeals.id").where("post_appeals.created_at > ? and post_appeals.creator_id = ? and posts.is_deleted = false and posts.is_flagged = false", date_window, user.id).count
       }

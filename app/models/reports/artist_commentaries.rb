@@ -57,7 +57,7 @@ module Reports
         - data.each do |datum|
           %tr
             %td
-              %a{:href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
+              %a{:class => "user-#{datum[:level]}", :href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
             %td= datum[:total]
             %td= datum[:creates]
             %td= datum[:orig_title]
@@ -111,6 +111,7 @@ EOS
 
       return {
         id: user.id,
+        level: user.level,
         name: user.name,
         total: total,
         creates: creates,

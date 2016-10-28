@@ -55,7 +55,7 @@ module Reports
         - data.each do |datum|
           %tr
             %td
-              %a{:href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
+              %a{:class => "user-#{datum[:level]}", :href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
             %td= datum[:total]
             %td= datum[:updates]
             %td= datum[:bumps]
@@ -70,6 +70,7 @@ EOS
       return {
         id: user.id,
         name: user.name,
+        level: user.level,
         total: DanbooruRo::Comment.where("created_at > ? and creator_id = ?", date_window, user.id).count,
         updates: DanbooruRo::Comment.where("created_at > ? and creator_id = ? and updated_at <> created_at", date_window, user.id).count,
         bumps: DanbooruRo::Comment.where("created_at > ? and creator_id = ? and do_not_bump_post = false", date_window, user.id).count,

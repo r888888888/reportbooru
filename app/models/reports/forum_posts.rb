@@ -48,7 +48,7 @@ module Reports
         - data.each do |datum|
           %tr
             %td
-              %a{:href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
+              %a{:class => "user-#{datum[:level]}", :href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
             %td= datum[:total]
             %td= datum[:updates]
 EOS
@@ -60,6 +60,7 @@ EOS
       return {
         id: user.id,
         name: user.name,
+        level: user.level,
         total: DanbooruRo::ForumPost.where("created_at > ? and creator_id = ?", date_window, user.id).count,
         updates: DanbooruRo::ForumPost.where("created_at > ? and creator_id = ? and created_at <> updated_at", date_window, user.id).count
       }

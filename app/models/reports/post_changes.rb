@@ -47,7 +47,7 @@ module Reports
         - data.each do |datum|
           %tr
             %td
-              %a{:href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
+              %a{:class => "user-#{datum[:level]}", :href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
             %td= datum[:total]
             %td= datum[:rating]
             %td= datum[:source]
@@ -60,8 +60,9 @@ EOS
     end
 
     def calculate_data(user_id)
+      user = DanbooruRo::User.find(user_id)
       tda = date_window.strftime("%F %H:%M")
-      name = DanbooruRo::User.find(user_id).name
+      name = user.name
       client = BigQuery::PostVersion.new
       total = client.count_changes(user_id, tda)
       rating = client.count_rating_changed(user_id, tda)
@@ -75,6 +76,7 @@ EOS
       return {
         id: user_id,
         name: name,
+        level: user.level,
         total: total,
         rating: rating,
         source: source,

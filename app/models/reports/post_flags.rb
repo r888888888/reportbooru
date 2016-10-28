@@ -46,7 +46,7 @@ module Reports
         - data.each do |datum|
           %tr
             %td
-              %a{:href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
+              %a{:class => "user-#{datum[:level]}", :href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
             %td= datum[:count]
             %td= datum[:resolved]
 EOS
@@ -58,6 +58,7 @@ EOS
       return {
         id: user.id,
         name: user.name,
+        level: user.level,
         count: DanbooruRo::PostFlag.where("created_at > ? and creator_id = ?", date_window, user.id).count,
         resolved: DanbooruRo::PostFlag.where("created_at > ? and creator_id = ? and is_resolved = true", date_window, user.id).count
       }

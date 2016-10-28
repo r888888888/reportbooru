@@ -58,7 +58,7 @@ module Reports
         - data.each do |datum|
           %tr
             %td
-              %a{:href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
+              %a{:class => "user-#{datum[:level]}", :href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
             %td= datum[:contrib]
             %td= datum[:creates]
             %td= datum[:edits]
@@ -78,6 +78,7 @@ EOS
       return {
         id: user.id,
         name: user.name,
+        level: user.level,
         creates: client.count_creates(user_id, tda),
         contrib: contrib,
         edits: client.count_edits(user_id, tda),
