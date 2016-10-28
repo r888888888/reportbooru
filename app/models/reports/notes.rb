@@ -37,11 +37,10 @@ module Reports
     %script{:src => "/reports/assets/jquery-3.1.1.slim.min.js"}
     %script{:src => "/reports/assets/jquery.tablesorter.min.js"}
     %link{:rel => "stylesheet", :href => "/reports/assets/pure.css"}
-    %script
-      :javascript
-        $(function() {
-          $("#report").tablesorter();
-        });
+    :javascript
+      $(function() {
+        $("#report").tablesorter();
+      });
   %body
     %table{:id => "report", :class => "pure-table pure-table-bordered pure-table-striped"}
       %caption Note changes (over past thirty days, minimum changes is #{min_changes})
