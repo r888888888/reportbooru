@@ -1,5 +1,9 @@
 module BigQuery
   class NoteVersion < Base
+    def count_total(user_id, min_date)
+      get_count query("select count(*) from [danbooru_#{Rails.env}.note_versions_flat] where updater_id = #{user_id} and updated_at >= '#{min_date}'")
+    end
+
     def count_creates(user_id, min_date)
       get_count query("select count(*) from [danbooru_#{Rails.env}.note_versions_flat] where updater_id = #{user_id} and updated_at >= '#{min_date}' and version = 1")
     end

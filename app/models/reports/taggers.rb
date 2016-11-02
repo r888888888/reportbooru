@@ -32,7 +32,6 @@ module Reports
         %tr
           %th User
           %th Level
-          %th Contrib
           %th Tags/Upload
           %th Uploads
       %tbody
@@ -41,7 +40,6 @@ module Reports
             %td
               %a{:class => "user-\#{datum[:level]}", :href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
             %td= datum[:level_string]
-            %td= datum[:contrib]
             %td= datum[:tags_per_upload]
             %td= datum[:total]
 EOS
@@ -53,7 +51,6 @@ EOS
       client = BigQuery::PostVersion.new
       total = DanbooruRo::Post.where("created_at > ? and uploader_id = ?", date_window, user_id).count
       tags = client.count_any_added_v1(user_id, tda)
-      contrib = user.can_upload_free? ? "Y" : nil
 
       return {
         id: user.id,

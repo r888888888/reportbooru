@@ -89,7 +89,7 @@ EOS
             remove += 1
           end
 
-          if (prev_post_ids & version_post_ids).size == prev_post_ids.size
+          if (prev_post_ids - version_post_ids).empty? && (version_post_ids - prev_post_ids).empty?
             order += 1
           end
         end

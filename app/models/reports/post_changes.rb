@@ -44,6 +44,7 @@ module Reports
           %th Art
           %th Char
           %th Copy
+          %th Gen
       %tbody
         - data.each do |datum|
           %tr
@@ -58,6 +59,7 @@ module Reports
             %td= datum[:artist]
             %td= datum[:character]
             %td= datum[:copyright]
+            %td= datum[:general]
 EOS
     end
 
@@ -74,6 +76,7 @@ EOS
       artist = client.count_artist_added(user_id, tda)
       character = client.count_character_added(user_id, tda)
       copyright = client.count_copyright_added(user_id, tda)
+      copyright = client.count_general_added(user_id, tda)
 
       return {
         id: user_id,
@@ -87,7 +90,8 @@ EOS
         removed: removed,
         artist: artist,
         character: character,
-        copyright: copyright
+        copyright: copyright,
+        general: general
       }
     end
 

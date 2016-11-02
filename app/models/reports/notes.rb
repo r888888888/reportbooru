@@ -48,7 +48,7 @@ module Reports
         %tr
           %th User
           %th Level
-          %th Contrib
+          %th Total
           %th Creates
           %th Edits
           %th Moves
@@ -61,7 +61,7 @@ module Reports
             %td
               %a{:class => "user-\#{datum[:level]}", :href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
             %td= datum[:level_string]
-            %td= datum[:contrib]
+            %td= datum[:total]
             %td= datum[:creates]
             %td= datum[:edits]
             %td= datum[:moves]
@@ -75,15 +75,14 @@ EOS
       user = DanbooruRo::User.find(user_id)
       tda = date_window.strftime("%F %H:%M")
       client = BigQuery::NoteVersion.new
-      contrib = user.can_upload_free? ? "Y" : nil
 
       return {
         id: user.id,
         name: user.name,
         level: user.level,
         level_string: user.level_string,
+        total: client.count_total(user_id, tda),
         creates: client.count_creates(user_id, tda),
-        contrib: contrib,
         edits: client.count_edits(user_id, tda),
         moves: client.count_moves(user_id, tda),
         resizes: client.count_resizes(user_id, tda),

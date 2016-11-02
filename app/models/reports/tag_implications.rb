@@ -12,7 +12,7 @@ module Reports
     end
 
     def min_changes
-      10
+      1
     end
 
     def report_name

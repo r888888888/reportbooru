@@ -28,6 +28,7 @@ module Reports
           %th Byp
           %th Del
           %th Del Conf
+          %th Unq Flag
           %th Src
           %th S
           %th Q
@@ -38,6 +39,7 @@ module Reports
           %th Art
           %th Med Score
           %th Neg Conf
+          %th Unq Downvote
       %tbody
         - data.each do |datum|
           %tr
@@ -48,6 +50,7 @@ module Reports
             %td= datum[:queue_bypass]
             %td= datum[:deleted]
             %td= datum[:del_conf]
+            %td= datum[:uniq_flaggers]
             %td= datum[:source]
             %td= datum[:safe]
             %td= datum[:questionable]
@@ -58,6 +61,7 @@ module Reports
             %td= datum[:artist]
             %td= datum[:med_score]
             %td= datum[:neg_conf]
+            %td= datum[:uniq_downvoters]
 EOS
     end
 
