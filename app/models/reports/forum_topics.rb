@@ -42,6 +42,7 @@ module Reports
       %thead
         %tr
           %th User
+          %th Level
           %th Total
           %th Tag Cat
           %th Bug Cat
@@ -50,6 +51,7 @@ module Reports
           %tr
             %td
               %a{:class => "user-\#{datum[:level]}", :href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
+            %td= datum[:level_string]
             %td= datum[:total]
             %td= datum[:tag_cat]
             %td= datum[:bug_cat]
@@ -63,6 +65,7 @@ EOS
         id: user.id,
         name: user.name,
         level: user.level,
+        level_string: user.level_string,
         total: DanbooruRo::ForumTopic.where("created_at > ? and creator_id = ?", date_window, user.id).count,
         tag_cat: DanbooruRo::ForumTopic.where("created_at > ? and creator_id = ? and category_id = 1", date_window, user.id).count,
         bug_cat: DanbooruRo::ForumTopic.where("created_at > ? and creator_id = ? and category_id = 2", date_window, user.id).count

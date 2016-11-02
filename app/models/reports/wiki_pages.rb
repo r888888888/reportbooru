@@ -47,6 +47,7 @@ module Reports
       %thead
         %tr
           %th User
+          %th Level
           %th Total
           %th Create
           %th Title
@@ -57,6 +58,7 @@ module Reports
           %tr
             %td
               %a{:class => "user-\#{datum[:level]}", :href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
+            %td= datum[:level_string]
             %td= datum[:total]
             %td= datum[:creates]
             %td= datum[:titles]
@@ -79,6 +81,7 @@ EOS
         id: user.id,
         name: user.name,
         level: user.level,
+        level_string: user.level_string,
         total: total,
         creates: creates,
         titles: titles,

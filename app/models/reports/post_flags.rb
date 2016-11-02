@@ -40,6 +40,7 @@ module Reports
       %thead
         %tr
           %th User
+          %th Level
           %th Count
           %th Resolved
       %tbody
@@ -47,6 +48,7 @@ module Reports
           %tr
             %td
               %a{:class => "user-\#{datum[:level]}", :href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
+            %td= datum[:level_string]
             %td= datum[:count]
             %td= datum[:resolved]
 EOS
@@ -59,6 +61,7 @@ EOS
         id: user.id,
         name: user.name,
         level: user.level,
+        level_string: user.level_string,
         count: DanbooruRo::PostFlag.where("created_at > ? and creator_id = ?", date_window, user.id).count,
         resolved: DanbooruRo::PostFlag.where("created_at > ? and creator_id = ? and is_resolved = true", date_window, user.id).count
       }

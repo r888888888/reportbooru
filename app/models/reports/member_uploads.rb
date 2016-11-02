@@ -23,8 +23,9 @@ module Reports
       %thead
         %tr
           %th User
-          %th Total
-          %th Bypass
+          %th Lvl
+          %th Tot
+          %th Byp
           %th Del
           %th Del Conf
           %th Src
@@ -42,6 +43,7 @@ module Reports
           %tr
             %td
               %a{:class => "user-\#{datum[:level]}", :href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
+            %td= datum[:level_string]
             %td= datum[:total]
             %td= datum[:queue_bypass]
             %td= datum[:deleted]

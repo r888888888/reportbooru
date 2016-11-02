@@ -20,5 +20,33 @@ module DanbooruRo
     def can_upload_free?
       (bit_prefs & (1 << 14)) > 0
     end
+
+    def level_string
+      case level
+      when Levels::BLOCKED
+        "Ban"
+
+      when Levels::MEMBER
+        "Mem"
+
+      when Levels::BUILDER
+        "Bld"
+
+      when Levels::GOLD
+        "Gld"
+
+      when Levels::PLATINUM
+        "Plt"
+
+      when Levels::MODERATOR
+        "Mod"
+
+      when Levels::ADMIN
+        "Adm"
+        
+      else
+        ""
+      end
+    end
   end
 end

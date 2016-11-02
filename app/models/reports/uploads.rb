@@ -9,6 +9,7 @@ module Reports
     def calculate_data(user_id)
       user = DanbooruRo::User.find(user_id)
       name = user.name
+      privs = []
       client = BigQuery::PostVersion.new
       tda = date_window.strftime("%F %H:%M")
       total = DanbooruRo::Post.where("created_at > ?", date_window).where(uploader_id: user.id).count
@@ -30,6 +31,7 @@ module Reports
       return {
         id: user_id,
         name: name,
+        level_string: user.level_string,
         level: user.level,
         total: total,
         queue_bypass: queue_bypass,

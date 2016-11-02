@@ -47,6 +47,7 @@ module Reports
       %thead
         %tr
           %th User
+          %th Level
           %th Contrib
           %th Creates
           %th Edits
@@ -59,6 +60,7 @@ module Reports
           %tr
             %td
               %a{:class => "user-\#{datum[:level]}", :href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
+            %td= datum[:level_string]
             %td= datum[:contrib]
             %td= datum[:creates]
             %td= datum[:edits]
@@ -79,6 +81,7 @@ EOS
         id: user.id,
         name: user.name,
         level: user.level,
+        level_string: user.level_string,
         creates: client.count_creates(user_id, tda),
         contrib: contrib,
         edits: client.count_edits(user_id, tda),

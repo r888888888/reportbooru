@@ -42,6 +42,7 @@ module Reports
       %thead
         %tr
           %th User
+          %th Level
           %th Count
           %th Approved
           %th Rejected
@@ -50,6 +51,7 @@ module Reports
           %tr
             %td
               %a{:class => "user-\#{datum[:level]}", :href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
+            %td= datum[:level_string]
             %td= datum[:count]
             %td= datum[:approved]
             %td= datum[:rejected]
@@ -63,6 +65,7 @@ EOS
         id: user.id,
         name: user.name,
         level: user.level,
+        level_string: user.level_string,
         count: DanbooruRo::TagImplication.where("created_at > ? and creator_id = ?", date_window, user.id).count,
         approved: DanbooruRo::TagImplication.where("created_at > ? and creator_id = ? and status = ?", date_window, user.id, "active").count,
         rejected: DanbooruRo::TagImplication.where("created_at > ? and creator_id = ? and status = ?", date_window, user.id, "deleted").count

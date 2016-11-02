@@ -42,6 +42,7 @@ module Reports
       %thead
         %tr
           %th User
+          %th Level
           %th Total
           %th Updates
       %tbody
@@ -49,6 +50,7 @@ module Reports
           %tr
             %td
               %a{:class => "user-\#{datum[:level]}", :href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
+            %td= datum[:level_string]
             %td= datum[:total]
             %td= datum[:updates]
 EOS
@@ -61,6 +63,7 @@ EOS
         id: user.id,
         name: user.name,
         level: user.level,
+        level_string: user.level_string,
         total: DanbooruRo::ForumPost.where("created_at > ? and creator_id = ?", date_window, user.id).count,
         updates: DanbooruRo::ForumPost.where("created_at > ? and creator_id = ? and created_at <> updated_at", date_window, user.id).count
       }

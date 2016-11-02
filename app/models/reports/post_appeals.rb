@@ -42,6 +42,7 @@ module Reports
       %thead
         %tr
           %th User
+          %th Level
           %th Count
           %th Resolved
       %tbody
@@ -49,6 +50,7 @@ module Reports
           %tr
             %td
               %a{:class => "user-\#{datum[:level]}", :href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
+            %td= datum[:level_string]
             %td= datum[:count]
             %td= datum[:resolved]
 EOS
@@ -61,6 +63,7 @@ EOS
         id: user.id,
         name: user.name,
         level: user.level,
+        level_string: user.level_string,
         count: DanbooruRo::PostAppeal.where("created_at > ? and creator_id = ?", date_window, user.id).count,
         resolved: DanbooruRo::PostAppeal.joins("join posts on posts.id = post_appeals.id").where("post_appeals.created_at > ? and post_appeals.creator_id = ? and posts.is_deleted = false and posts.is_flagged = false", date_window, user.id).count
       }

@@ -46,6 +46,7 @@ module Reports
       %thead
         %tr
           %th User
+          %th Level
           %th Total
           %th Updates
           %th Bumps
@@ -56,6 +57,7 @@ module Reports
           %tr
             %td
               %a{:class => "user-\#{datum[:level]}", :href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
+            %td= datum[:level_string]
             %td= datum[:total]
             %td= datum[:updates]
             %td= datum[:bumps]
@@ -71,6 +73,7 @@ EOS
         id: user.id,
         name: user.name,
         level: user.level,
+        level_string: user.level_string,
         total: DanbooruRo::Comment.where("created_at > ? and creator_id = ?", date_window, user.id).count,
         updates: DanbooruRo::Comment.where("created_at > ? and creator_id = ? and updated_at <> created_at", date_window, user.id).count,
         bumps: DanbooruRo::Comment.where("created_at > ? and creator_id = ? and do_not_bump_post = false", date_window, user.id).count,
