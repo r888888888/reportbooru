@@ -16,7 +16,7 @@ module Reports
       return <<-EOS
 %html
   %head
-    %title Tagger Report
+    %title Top Tagger Report
     %meta{:name => "viewport", :content => "width=device-width, initial-scale=1"}
     %script{:src => "/reports/assets/jquery-3.1.1.slim.min.js"}
     %script{:src => "/reports/assets/jquery.tablesorter.min.js"}
