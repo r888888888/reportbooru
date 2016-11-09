@@ -64,7 +64,7 @@ EOS
     end
 
 		def min_uploads
-			100
+			50
 		end
 
 		def candidates
