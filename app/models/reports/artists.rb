@@ -81,7 +81,7 @@ module Reports
             %td= datum[:delete]
             %td= datum[:undelete]
             %td= datum[:wiki]
-    %p= "Since #{date_window.utc} to #{Time.now.utc}"
+    %p= "Since \#{date_window.utc} to \#{Time.now.utc}"
 EOS
     end
 

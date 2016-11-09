@@ -42,7 +42,7 @@ module Reports
             %td= datum[:level_string]
             %td= datum[:tags_per_upload]
             %td= datum[:total]
-    %p= "Since #{date_window.utc} to #{Time.now.utc}"
+    %p= "Since \#{date_window.utc} to \#{Time.now.utc}"
 EOS
 		end
 

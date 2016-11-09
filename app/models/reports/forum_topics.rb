@@ -55,7 +55,7 @@ module Reports
             %td= datum[:total]
             %td= datum[:tag_cat]
             %td= datum[:bug_cat]
-    %p= "Since #{date_window.utc} to #{Time.now.utc}"
+    %p= "Since \#{date_window.utc} to \#{Time.now.utc}"
 EOS
     end
 

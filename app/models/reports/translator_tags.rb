@@ -47,14 +47,14 @@ module Reports
               %a{:class => "user-\#{datum[:level]}", :href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
             %td= datum[:level_string]
             %td= datum[:total]
-            %td= "#{datum[:add_trans]}/#{datum[:rem_trans]}""
-            %td= "#{datum[:add_check_trans]}/#{datum[:rem_check_trans]}""
-            %td= "#{datum[:add_part_trans]}/#{datum[:rem_part_trans]}""
-            %td= "#{datum[:add_trans_req]}/#{datum[:rem_trans_req]}""
-            %td= "#{datum[:add_comment]}/#{datum[:rem_comment]}""
-            %td= "#{datum[:add_check_comment]}/#{datum[:rem_check_comment]}""
-            %td= "#{datum[:add_comment_req]}/#{datum[:rem_comment_req]}""
-    %p= "Since #{date_window.utc} to #{Time.now.utc}"
+            %td= "\#{datum[:add_trans]}/\#{datum[:rem_trans]}""
+            %td= "\#{datum[:add_check_trans]}/\#{datum[:rem_check_trans]}""
+            %td= "\#{datum[:add_part_trans]}/\#{datum[:rem_part_trans]}""
+            %td= "\#{datum[:add_trans_req]}/\#{datum[:rem_trans_req]}""
+            %td= "\#{datum[:add_comment]}/\#{datum[:rem_comment]}""
+            %td= "\#{datum[:add_check_comment]}/\#{datum[:rem_check_comment]}""
+            %td= "\#{datum[:add_comment_req]}/\#{datum[:rem_comment_req]}""
+    %p= "Since \#{date_window.utc} to \#{Time.now.utc}"
 EOS
     end
 

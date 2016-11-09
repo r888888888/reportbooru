@@ -60,7 +60,7 @@ module Reports
             %td= datum[:character]
             %td= datum[:copyright]
             %td= datum[:general]
-    %p= "Since #{date_window.utc} to #{Time.now.utc}"
+    %p= "Since \#{date_window.utc} to \#{Time.now.utc}"
 EOS
     end
 

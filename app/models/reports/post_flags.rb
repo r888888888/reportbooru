@@ -51,7 +51,7 @@ module Reports
             %td= datum[:level_string]
             %td= datum[:count]
             %td= datum[:resolved]
-    %p= "Since #{date_window.utc} to #{Time.now.utc}"
+    %p= "Since \#{date_window.utc} to \#{Time.now.utc}"
 EOS
     end
 

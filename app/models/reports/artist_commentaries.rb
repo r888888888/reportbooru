@@ -66,7 +66,7 @@ module Reports
             %td= datum[:orig_desc]
             %td= datum[:trans_title]
             %td= datum[:trans_desc]
-    %p= "Since #{date_window.utc} to #{Time.now.utc}"
+    %p= "Since \#{date_window.utc} to \#{Time.now.utc}"
 EOS
     end
 

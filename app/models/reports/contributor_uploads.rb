@@ -62,7 +62,7 @@ module Reports
             %td= datum[:med_score]
             %td= datum[:neg_conf]
             %td= datum[:uniq_downvoters]
-    %p= "Since #{date_window.utc} to #{Time.now.utc}"
+    %p= "Since \#{date_window.utc} to \#{Time.now.utc}"
 EOS
     end
 

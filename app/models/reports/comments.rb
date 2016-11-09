@@ -63,7 +63,7 @@ module Reports
             %td= datum[:bumps]
             %td= datum[:pos]
             %td= datum[:neg]
-    %p= "Since #{date_window.utc} to #{Time.now.utc}"
+    %p= "Since \#{date_window.utc} to \#{Time.now.utc}"
 EOS
     end
 
