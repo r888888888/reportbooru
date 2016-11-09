@@ -68,6 +68,7 @@ module Reports
             %td= datum[:resizes]
             %td= datum[:deletes]
             %td= datum[:undeletes]
+    %p= "Since #{date_window.utc} to #{Time.now.utc}"
 EOS
 		end
 

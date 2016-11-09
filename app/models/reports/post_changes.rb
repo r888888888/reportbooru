@@ -60,6 +60,7 @@ module Reports
             %td= datum[:character]
             %td= datum[:copyright]
             %td= datum[:general]
+    %p= "Since #{date_window.utc} to #{Time.now.utc}"
 EOS
     end
 
@@ -76,7 +77,7 @@ EOS
       artist = client.count_artist_added(user_id, tda)
       character = client.count_character_added(user_id, tda)
       copyright = client.count_copyright_added(user_id, tda)
-      copyright = client.count_general_added(user_id, tda)
+      general = client.count_general_added(user_id, tda)
 
       return {
         id: user_id,

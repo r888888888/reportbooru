@@ -38,6 +38,9 @@ module DanbooruRo
       when Levels::PLATINUM
         "Plt"
 
+      when Levels::JANITOR
+        "Jan"
+
       when Levels::MODERATOR
         "Mod"
 

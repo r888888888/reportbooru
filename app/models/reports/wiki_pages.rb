@@ -64,6 +64,7 @@ module Reports
             %td= datum[:titles]
             %td= datum[:others]
             %td= datum[:bodies]
+    %p= "Since #{date_window.utc} to #{Time.now.utc}"
 EOS
     end
 

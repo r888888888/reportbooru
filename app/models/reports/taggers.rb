@@ -42,6 +42,7 @@ module Reports
             %td= datum[:level_string]
             %td= datum[:tags_per_upload]
             %td= datum[:total]
+    %p= "Since #{date_window.utc} to #{Time.now.utc}"
 EOS
 		end
 
@@ -58,7 +59,6 @@ EOS
         level: user.level,
         level_string: user.level_string,
         total: total,
-        contrib: contrib,
         tags_per_upload: tags.to_i / total.to_i
       }
     end

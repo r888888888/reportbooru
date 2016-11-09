@@ -55,6 +55,7 @@ module Reports
             %td= datum[:count]
             %td= datum[:approved]
             %td= datum[:rejected]
+    %p= "Since #{date_window.utc} to #{Time.now.utc}"
 EOS
     end
 

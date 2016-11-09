@@ -53,6 +53,7 @@ module Reports
             %td= datum[:level_string]
             %td= datum[:total]
             %td= datum[:updates]
+    %p= "Since #{date_window.utc} to #{Time.now.utc}"
 EOS
     end
 

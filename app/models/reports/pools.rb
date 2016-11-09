@@ -52,6 +52,7 @@ module Reports
             %td= datum[:add]
             %td= datum[:remove]
             %td= datum[:order]
+    %p= "Since #{date_window.utc} to #{Time.now.utc}"
 EOS
     end
 
