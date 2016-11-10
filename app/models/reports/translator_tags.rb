@@ -86,7 +86,7 @@ EOS
     end
 
     def min_changes
-      100
+      150
     end
 
     def candidates

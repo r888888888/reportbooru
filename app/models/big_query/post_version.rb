@@ -73,7 +73,7 @@ module BigQuery
       resp = query("select updater_id from [danbooru_#{Rails.env}.post_versions_flat] where added_tag in (#{tag_subquery}) or removed_tag in (#{tag_subquery}) and updated_at >= '#{min_date}' group by updater_id having count(*) > #{min_changes}")
 
       if resp["rows"]
-        resp["rows"].map {|x| x["f"][0]["v"]}
+        resp["rows"].map {|x| x["f"][0]["v"]}.select {|x| x.is_a?(String)}
       else
         []
       end
