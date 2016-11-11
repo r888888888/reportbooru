@@ -158,7 +158,7 @@ class ArtistVersionExporter
 
       if batch.any?
         logger.info "artist versions: inserting #{last_id}..#{store_id}"
-        partition_timestamp = batch[0]["updated_at"].strftime("%Y%m%d")
+        partition_timestamp = batch[0][:updated_at].strftime("%Y%m%d")
         result = gbq.insert("artist_versions_part$#{partition_timestamp}", batch)
         if result["insertErrors"]
           logger.error result.inspect
@@ -274,7 +274,7 @@ class NoteExporter
 
       if batch.any?
         logger.info "note versions: inserting #{last_id}..#{store_id}"
-        partition_timestamp = batch[0]["updated_at"].strftime("%Y%m%d")
+        partition_timestamp = batch[0][:updated_at].strftime("%Y%m%d")
         result = gbq.insert("note_versions_flat_part$#{partition_timestamp}", batch)
         if result["insertErrors"]
           logger.error result.inspect
@@ -625,7 +625,7 @@ class WikiPageExporter
 
       if batch.any?
         logger.info "wiki: inserting #{last_id}..#{store_id}"
-        partition_timestamp = batch[0]["updated_at"].strftime("%Y%m%d")
+        partition_timestamp = batch[0][:updated_at].strftime("%Y%m%d")
         result = GBQ.insert("wiki_page_versions_part$#{partition_timestamp}", batch)
         if result["insertErrors"]
           logger.error result.inspect
