@@ -82,7 +82,7 @@ class ArtistVersionExporter
   end
 
   def get_last_exported_id
-    redis.get("artist-version-exporter-id").to_i
+    redis.get("artist-version-exporter-id-part").to_i
   end
 
   def find_previous(version)
@@ -125,7 +125,7 @@ class ArtistVersionExporter
 
   def create_table
     begin
-      gbq.create_table("artist_versions", SCHEMA)
+      gbq.create_table("artist_versions_part", SCHEMA, enable_partitioning: true)
     rescue Google::Apis::ClientError
     end
   end
@@ -158,11 +158,12 @@ class ArtistVersionExporter
 
       if batch.any?
         logger.info "artist versions: inserting #{last_id}..#{store_id}"
-        result = gbq.insert("artist_versions", batch)
+        partition_timestamp = batch[0]["updated_at"].strftime("%Y%m%d")
+        result = gbq.insert("artist_versions_part$#{partition_timestamp}", batch)
         if result["insertErrors"]
           logger.error result.inspect
         else
-          redis.set("artist-version-exporter-id", store_id)
+          redis.set("artist-version-exporter-id-part", store_id)
         end
       end
 
@@ -200,7 +201,7 @@ class NoteExporter
   end
 
   def get_last_exported_id
-    redis.get("flat-note-version-exporter-id").to_i
+    redis.get("flat-note-version-exporter-id-part").to_i
   end
 
   def find_previous(version)
@@ -239,7 +240,7 @@ class NoteExporter
 
   def create_table
     begin
-      gbq.create_table("note_versions_flat", SCHEMA)
+      gbq.create_table("note_versions_flat_part", SCHEMA, enable_partitioning: true)
     rescue Google::Apis::ClientError
     end
   end
@@ -273,11 +274,12 @@ class NoteExporter
 
       if batch.any?
         logger.info "note versions: inserting #{last_id}..#{store_id}"
-        result = gbq.insert("note_versions_flat", batch)
+        partition_timestamp = batch[0]["updated_at"].strftime("%Y%m%d")
+        result = gbq.insert("note_versions_flat_part$#{partition_timestamp}", batch)
         if result["insertErrors"]
           logger.error result.inspect
         else
-          redis.set("flat-note-version-exporter-id", store_id)
+          redis.set("flat-note-version-exporter-id-part", store_id)
         end
       end
 
@@ -552,7 +554,7 @@ class WikiPageExporter
   end
 
   def get_last_exported_id
-    redis.get("wiki-exporter-id").to_i
+    redis.get("wiki-exporter-id-part").to_i
   end
 
   def find_previous(version)
@@ -565,7 +567,7 @@ class WikiPageExporter
 
   def create_table
     begin
-      gbq.create_table("wiki_page_versions", SCHEMA)
+      gbq.create_table("wiki_page_versions_part", SCHEMA)
     rescue Google::Apis::ClientError
     end
   end
@@ -623,7 +625,8 @@ class WikiPageExporter
 
       if batch.any?
         logger.info "wiki: inserting #{last_id}..#{store_id}"
-        result = GBQ.insert("wiki_page_versions", batch)
+        partition_timestamp = batch[0]["updated_at"].strftime("%Y%m%d")
+        result = GBQ.insert("wiki_page_versions_part$#{partition_timestamp}", batch)
         if result["insertErrors"]
           logger.error result.inspect
         else
