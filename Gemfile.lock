@@ -1,7 +1,6 @@
 GIT
-  remote: https://github.com/abronte/BigQuery.git
-  revision: b92b4e0b54574e3fde7ad910f39a67538ed387ad
-  ref: b92b4e0b54574e3fde7ad910f39a67538ed387ad
+  remote: https://github.com/r888888888/BigQuery.git
+  revision: 15e8557659eab48833f66fd96d37504fa2495931
   specs:
     bigquery (0.9.0)
       google-api-client (~> 0.9.3)

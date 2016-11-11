@@ -35,7 +35,7 @@ OptionParser.new do |opts|
   end
 end.parse!
 
-google_config = JSON.parse(File.read($options[:google_key_path]))
+$google_config = JSON.parse(File.read($options[:google_key_path]))
 
 logfile = File.open($options[:logfile], "a")
 logfile.sync = true
@@ -43,7 +43,7 @@ LOGGER = Logger.new(logfile)
 REDIS = Redis.new
 GBQ = BigQuery::Client.new(
   "json_key" => $options[:google_key_path],
-  "project_id" => google_config["project_id"],
+  "project_id" => $google_config["project_id"],
   "dataset" => $options[:google_data_set]
 )
 
@@ -309,7 +309,7 @@ class FlatPostVersionExporter
   end
 
   def get_last_exported_id
-    redis.get("flat-post-version-exporter-id").to_i
+    redis.get("flat-post-version-exporter-id-part").to_i
   end
 
   def find_previous(version)
@@ -356,7 +356,7 @@ class FlatPostVersionExporter
 
   def create_table
     begin
-      gbq.create_table("post_versions_flat", SCHEMA)
+      gbq.create_table("post_versions_flat_part", SCHEMA, enable_partitioning: true)
     rescue Google::Apis::ClientError
     end
   end
@@ -419,11 +419,12 @@ class FlatPostVersionExporter
 
       if batch.any?
         logger.info "flat post versions: inserting #{last_id}..#{store_id}"
-        result = gbq.insert("post_versions_flat", batch)
+        partition_timestamp = batch[0]["updated_at"].strftime("%Y%m%d")
+        result = gbq.insert("post_versions_flat_part$#{partition_timestamp}", batch)
         if result["insertErrors"]
           logger.error result.inspect
         else
-          redis.set("flat-post-version-exporter-id", store_id)
+          redis.set("flat-post-version-exporter-id-part", store_id)
         end
       end
 
