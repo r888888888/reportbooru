@@ -87,17 +87,16 @@ EOS
 
     def calculate_data(user_id)
       user = DanbooruRo::User.find(user_id)
-      tda = date_window.strftime("%F %H:%M")
-      client = BigQuery::ArtistVersion.new
-      total = client.count_total(user_id, tda)
-      creates = client.count_creates(user_id, tda)
-      name_changes = client.count_name(user_id, tda)
-      other = client.count_other(user_id, tda)
-      url = client.count_url(user_id, tda)
-      group = client.count_group(user_id, tda)
-      delete = client.count_delete(user_id, tda)
-      undelete = client.count_undelete(user_id, tda)
-      wiki = client.count_wiki(user_id, tda)
+      client = BigQuery::ArtistVersion.new(date_window)
+      total = client.count_total(user_id)
+      creates = client.count_creates(user_id)
+      name_changes = client.count_name(user_id)
+      other = client.count_other(user_id)
+      url = client.count_url(user_id)
+      group = client.count_group(user_id)
+      delete = client.count_delete(user_id)
+      undelete = client.count_undelete(user_id)
+      wiki = client.count_wiki(user_id)
 
       return {
         id: user.id,

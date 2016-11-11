@@ -48,10 +48,9 @@ EOS
 
     def calculate_data(user_id)
       user = DanbooruRo::User.find(user_id)
-      tda = date_window.strftime("%F %H:%M")
-      client = BigQuery::PostVersion.new
+      client = BigQuery::PostVersion.new(date_window)
       total = DanbooruRo::Post.where("created_at > ? and uploader_id = ?", date_window, user_id).count
-      tags = client.count_any_added_v1(user_id, tda)
+      tags = client.count_any_added_v1(user_id)
 
       return {
         id: user.id,

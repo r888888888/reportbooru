@@ -70,13 +70,12 @@ EOS
 
     def calculate_data(user_id)
       user = DanbooruRo::User.find(user_id)
-      tda = date_window.strftime("%F %H:%M")
-      client = BigQuery::WikiPageVersion.new
-      total = client.count_total(user_id, tda)
-      creates = client.count_creates(user_id, tda)
-      titles = client.count_title_changes(user_id, tda)
-      others = client.count_other_name_changes(user_id, tda)
-      bodies = client.count_body_changes(user_id, tda)
+      client = BigQuery::WikiPageVersion.new(date_window)
+      total = client.count_total(user_id)
+      creates = client.count_creates(user_id)
+      titles = client.count_title_changes(user_id)
+      others = client.count_other_name_changes(user_id)
+      bodies = client.count_body_changes(user_id)
 
       return {
         id: user.id,

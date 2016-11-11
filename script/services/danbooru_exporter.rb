@@ -652,7 +652,7 @@ while $running
   ArtistVersionExporter.new(REDIS, LOGGER, GBQ).execute
   exit unless $running
 
-  60.times do
+  10.times do
     sleep(1)
     exit unless $running
   end

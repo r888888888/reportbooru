@@ -60,26 +60,25 @@ EOS
 
     def calculate_data(user_id)
       user = DanbooruRo::User.find(user_id)
-      tda = date_window.strftime("%F %H:%M")
-      client = BigQuery::PostVersion.new
+      client = BigQuery::PostVersion.new(date_window)
 
       h = {
         id: user.id,
         name: user.name,
         level: user.level,
         level_string: user.level_string,
-        add_trans: client.count_tag_added(user_id, "translation", tda),
-        rem_trans: client.count_tag_removed(user_id, "translation", tda),
-        add_check_trans: client.count_tag_added(user_id, "check_translation", tda),
-        rem_check_trans: client.count_tag_removed(user_id, "check_translation", tda),
-        add_part_trans: client.count_tag_added(user_id, "partially_translated", tda),
-        rem_part_trans: client.count_tag_removed(user_id, "partially_translated", tda),
-        add_comment: client.count_tag_added(user_id, "commentary", tda),
-        rem_comment: client.count_tag_removed(user_id, "commentary", tda),
-        add_check_comment: client.count_tag_added(user_id, "check_commentary", tda),
-        rem_check_comment: client.count_tag_removed(user_id, "check_commentary", tda),
-        add_comment_req: client.count_tag_added(user_id, "commentary_request", tda),
-        rem_comment_req: client.count_tag_removed(user_id, "commentary_request", tda)
+        add_trans: client.count_tag_added(user_id, "translation"),
+        rem_trans: client.count_tag_removed(user_id, "translation"),
+        add_check_trans: client.count_tag_added(user_id, "check_translation"),
+        rem_check_trans: client.count_tag_removed(user_id, "check_translation"),
+        add_part_trans: client.count_tag_added(user_id, "partially_translated"),
+        rem_part_trans: client.count_tag_removed(user_id, "partially_translated"),
+        add_comment: client.count_tag_added(user_id, "commentary"),
+        rem_comment: client.count_tag_removed(user_id, "commentary"),
+        add_check_comment: client.count_tag_added(user_id, "check_commentary"),
+        rem_check_comment: client.count_tag_removed(user_id, "check_commentary"),
+        add_comment_req: client.count_tag_added(user_id, "commentary_request"),
+        rem_comment_req: client.count_tag_removed(user_id, "commentary_request")
       }
       h[:total] = h[:add_trans] + h[:rem_trans] + h[:add_check_trans] + h[:rem_check_trans] + h[:add_part_trans] + h[:rem_part_trans] + h[:add_comment] + h[:rem_comment] + h[:add_check_comment] + h[:rem_check_comment] + h[:add_comment_req] + h[:rem_comment_req]
       h
@@ -90,9 +89,8 @@ EOS
     end
 
     def candidates
-      tda = date_window.strftime("%F %H:%M")
-      client = BigQuery::PostVersion.new
-      client.translator_tag_candidates(tda, min_changes)
+      client = BigQuery::PostVersion.new(date_window)
+      client.translator_tag_candidates(min_changes)
     end
   end
 end

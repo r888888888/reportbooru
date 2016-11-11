@@ -2,6 +2,15 @@ require "big_query"
 
 module BigQuery
   class Base
+    attr_reader :partition_date, :date, :date_s, :part_s
+
+    def initialize(date)
+      @date = date
+      @partition_date = 30.days.ago(@date)
+      @date_s = @date.strftime("%Y-%m-%d 00:00:00")
+      @part_s = @partition_date.strftime("%Y-%m-%d 00:00:00")
+    end
+
     def query(q)
       client.query(q)
     rescue Google::Apis::TransmissionError => e
