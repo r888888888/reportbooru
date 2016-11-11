@@ -567,7 +567,7 @@ class WikiPageExporter
 
   def create_table
     begin
-      gbq.create_table("wiki_page_versions_part", SCHEMA)
+      gbq.create_table("wiki_page_versions_part", SCHEMA, enable_partitioning: true)
     rescue Google::Apis::ClientError
     end
   end
