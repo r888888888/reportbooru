@@ -630,7 +630,7 @@ class WikiPageExporter
         if result["insertErrors"]
           logger.error result.inspect
         else
-          redis.set("wiki-exporter-id", store_id)
+          redis.set("wiki-exporter-id-part", store_id)
         end
       end
 
