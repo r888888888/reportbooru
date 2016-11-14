@@ -1,6 +1,8 @@
 module BigQuery
   class PostVersion < Base
     TRANSLATOR_TAGS = %w(translated check_translation partially_translated translation_request commentary check_commentary commentary_request)
+    TRANSIENT_TAGS = TRANSLATOR_TAGS + %w(character_request copyright_request artist_request tagme annotated partially_annotated check_my_note check_pixiv_source)
+    TRANSIENT_TAGS_SQL = TRANSIENT_TAGS.map {|x| "'#{x}'"}.join(', ')
 
     def find_removed(tag)
       tag = escape(tag)
@@ -13,15 +15,15 @@ module BigQuery
     end
 
     def count_changes(user_id)
-      get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and updated_at >= '#{date_s}'")
+      get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and updated_at >= '#{date_s}' and added_tag not in (#{TRANSIENT_TAGS_SQL}) and removed_tag not in (#{TRANSIENT_TAGS_SQL})")
     end
 
     def count_added(user_id)
-      get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and added_tag is not null and updated_at >= '#{date_s}'")
+      get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and added_tag is not null and updated_at >= '#{date_s}' and added_tag not in (#{TRANSIENT_TAGS_SQL})")
     end
 
     def count_removed(user_id)
-      get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and removed_tag is not null and updated_at >= '#{date_s}'")
+      get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and removed_tag is not null and updated_at >= '#{date_s}' and removed_tag not in (#{TRANSIENT_TAGS_SQL})")
     end
 
     def count_artist_added(user_id)
@@ -49,15 +51,15 @@ module BigQuery
     end
 
     def count_general_added(user_id)
-      get_count query("select count(*) from (select added_tag from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and added_tag is not null and updated_at >= '#{date_s}') pvf cross join [danbooru_#{Rails.env}.tags] t on t.name = pvf.added_tag and t.category = 0")
+      get_count query("select count(*) from (select added_tag from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and added_tag is not null and updated_at >= '#{date_s}') pvf cross join [danbooru_#{Rails.env}.tags] t on t.name = pvf.added_tag and t.category = 0 and t.name not in (#{TRANSIENT_TAGS_SQL})")
     end
 
     def count_general_added_v1(user_id)
-      get_count query("select count(*) from (select added_tag from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and added_tag is not null and updated_at >= '#{date_s}' and version = 1) pvf cross join [danbooru_#{Rails.env}.tags] t on t.name = pvf.added_tag and t.category = 0")
+      get_count query("select count(*) from (select added_tag from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and added_tag is not null and updated_at >= '#{date_s}' and version = 1) pvf cross join [danbooru_#{Rails.env}.tags] t on t.name = pvf.added_tag and t.category = 0 and t.name not in (#{TRANSIENT_TAGS_SQL})")
     end
 
     def count_any_added_v1(user_id)
-      get_count query("select count(*) from (select added_tag from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and added_tag is not null and updated_at >= '#{date_s}' and version = 1) pvf cross join [danbooru_#{Rails.env}.tags] t on t.name = pvf.added_tag")
+      get_count query("select count(*) from (select added_tag from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and added_tag is not null and updated_at >= '#{date_s}' and version = 1) pvf cross join [danbooru_#{Rails.env}.tags] t on t.name = pvf.added_tag and t.name not in (#{TRANSIENT_TAGS_SQL})")
     end
 
     def count_rating_changed(user_id)
@@ -81,12 +83,12 @@ module BigQuery
 
     def count_tag_added(user_id, tag)
       es = escape(tag)
-      get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and added_tag = '#{es}' and updated_at >= '#{date_s}'")
+      get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and added_tag = '#{es}' and updated_at >= '#{date_s}' and added_tag not in (#{TRANSIENT_TAGS_SQL})")
     end
 
     def count_tag_removed(user_id, tag)
       es = escape(tag)
-      get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and removed_tag = '#{es}' and updated_at >= '#{date_s}'")
+      get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and removed_tag = '#{es}' and updated_at >= '#{date_s}' and removed_tag not in (#{TRANSIENT_TAGS_SQL})")
     end
   end
 end
