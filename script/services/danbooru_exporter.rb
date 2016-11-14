@@ -514,7 +514,7 @@ class PostVersionExporter
 
       if batch.any?
         logger.info "post versions: inserting #{last_id}..#{store_id}"
-        result = GBQ.insert("post_versions", batch)
+        result = gbq.insert("post_versions", batch)
         if result["insertErrors"]
           logger.error result.inspect
         else
@@ -626,7 +626,7 @@ class WikiPageExporter
       if batch.any?
         logger.info "wiki: inserting #{last_id}..#{store_id}"
         partition_timestamp = batch[0][:updated_at].strftime("%Y%m%d")
-        result = GBQ.insert("wiki_page_versions_part$#{partition_timestamp}", batch)
+        result = gbq.insert("wiki_page_versions_part$#{partition_timestamp}", batch)
         if result["insertErrors"]
           logger.error result.inspect
         else

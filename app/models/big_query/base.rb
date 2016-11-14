@@ -4,7 +4,7 @@ module BigQuery
   class Base
     attr_reader :partition_date, :date, :date_s, :part_s
 
-    def initialize(date)
+    def initialize(date = Time.now)
       @date = date
       @partition_date = 30.days.ago(@date)
       @date_s = @date.strftime("%Y-%m-%d 00:00:00")
