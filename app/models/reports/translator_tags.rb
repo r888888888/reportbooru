@@ -71,6 +71,8 @@ EOS
         rem_trans: client.count_tag_removed(user_id, "translation"),
         add_check_trans: client.count_tag_added(user_id, "check_translation"),
         rem_check_trans: client.count_tag_removed(user_id, "check_translation"),
+        add_trans_req: client.count_tag_added(user_id, "translation_request"),
+        rem_trans_req: client.count_tag_removed(user_id, "translation_request"),
         add_part_trans: client.count_tag_added(user_id, "partially_translated"),
         rem_part_trans: client.count_tag_removed(user_id, "partially_translated"),
         add_comment: client.count_tag_added(user_id, "commentary"),
@@ -80,7 +82,7 @@ EOS
         add_comment_req: client.count_tag_added(user_id, "commentary_request"),
         rem_comment_req: client.count_tag_removed(user_id, "commentary_request")
       }
-      h[:total] = h[:add_trans] + h[:rem_trans] + h[:add_check_trans] + h[:rem_check_trans] + h[:add_part_trans] + h[:rem_part_trans] + h[:add_comment] + h[:rem_comment] + h[:add_check_comment] + h[:rem_check_comment] + h[:add_comment_req] + h[:rem_comment_req]
+      h[:total] = h[:add_trans].to_i + h[:rem_trans].to_i + h[:add_check_trans].to_i + h[:rem_check_trans].to_i + h[:add_part_trans].to_i + h[:rem_part_trans].to_i + h[:add_comment].to_i + h[:rem_comment].to_i + h[:add_check_comment].to_i + h[:rem_check_comment].to_i + h[:add_comment_req].to_i + h[:rem_comment_req].to_i
       h
     end
 

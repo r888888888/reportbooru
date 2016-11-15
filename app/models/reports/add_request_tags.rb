@@ -77,8 +77,8 @@ EOS
         annot_add: client.count_tag_added(user_id, "annotated"),
         annot_rem: client.count_tag_removed(user_id, "annotated")
       }
-      h[:total_add] = h[:tagme_add] + h[:artist_add] + h[:copy_add] + h[:char_add] + h[:source_add] + h[:note_add] + h[:annot_add]
-      h[:total_rem] = h[:tagme_rem] + h[:artist_rem] + h[:copy_rem] + h[:char_rem] + h[:source_rem] + h[:note_rem] + h[:annot_rem]
+      h[:total_add] = h[:tagme_add].to_i + h[:artist_add].to_i + h[:copy_add].to_i + h[:char_add].to_i + h[:source_add].to_i + h[:note_add].to_i + h[:annot_add].to_i
+      h[:total_rem] = h[:tagme_rem].to_i + h[:artist_rem].to_i + h[:copy_rem].to_i + h[:char_rem].to_i + h[:source_rem].to_i + h[:note_rem].to_i + h[:annot_rem].to_i
       h
     end
 
