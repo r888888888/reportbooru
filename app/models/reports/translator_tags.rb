@@ -27,7 +27,7 @@ module Reports
       });
   %body
     %table{:id => "report", :class => "pure-table pure-table-bordered pure-table-striped"}
-      %caption Translator Tags (over past thirty days, minimum uploads is #{min_uploads})
+      %caption Translator Tags (over past thirty days, minimum uploads is #{min_changes})
       %thead
         %tr
           %th User

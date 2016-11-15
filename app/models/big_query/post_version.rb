@@ -1,7 +1,8 @@
 module BigQuery
   class PostVersion < Base
     TRANSLATOR_TAGS = %w(translated check_translation partially_translated translation_request commentary check_commentary commentary_request)
-    TRANSIENT_TAGS = TRANSLATOR_TAGS + %w(character_request copyright_request artist_request tagme annotated partially_annotated check_my_note check_pixiv_source)
+    ADD_REQUEST_TAGS = %w(character_request copyright_request artist_request tagme annotated partially_annotated check_pixiv_source check_my_note)
+    TRANSIENT_TAGS = TRANSLATOR_TAGS + ADD_REQUEST_TAGS
     TRANSIENT_TAGS_SQL = TRANSIENT_TAGS.map {|x| "'#{x}'"}.join(', ')
 
     def find_removed(tag)
@@ -72,7 +73,18 @@ module BigQuery
 
     def translator_tag_candidates(min_changes)
       tag_subquery = TRANSLATOR_TAGS.map {|x| "'#{x}'"}.join(", ")
-      resp = query("select updater_id from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and added_tag in (#{tag_subquery}) or removed_tag in (#{tag_subquery}) and updated_at >= '#{date_s}' group by updater_id having count(*) > #{min_changes}")
+      resp = query("select updater_id from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and (added_tag in (#{tag_subquery}) or removed_tag in (#{tag_subquery})) and updated_at >= '#{date_s}' group by updater_id having count(*) > #{min_changes}")
+
+      if resp["rows"]
+        resp["rows"].map {|x| x["f"][0]["v"]}.select {|x| x.is_a?(String)}
+      else
+        []
+      end
+    end
+
+    def add_request_tag_candidates(min_changes)
+      tag_subquery = ADD_REQUEST_TAGS.map {|x| "'#{x}'"}.join(", ")
+      resp = query("select updater_id from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and (added_tag in (#{tag_subquery}) or removed_tag in (#{tag_subquery})) and updated_at >= '#{date_s}' group by updater_id having count(*) > #{min_changes}")
 
       if resp["rows"]
         resp["rows"].map {|x| x["f"][0]["v"]}.select {|x| x.is_a?(String)}
