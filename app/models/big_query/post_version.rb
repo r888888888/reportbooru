@@ -19,11 +19,11 @@ module BigQuery
     end
 
     def count_added(user_id)
-      get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and added_tag is not null and updated_at >= '#{date_s}' and added_tag not in (#{TRANSIENT_TAGS_SQL})")
+      get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and added_tag is not null and updated_at >= '#{date_s}' and added_tag not in (#{TRANSIENT_TAGS_SQL}) and not regexp_match(added_tag, \"^(rating|parent|source):\")")
     end
 
     def count_removed(user_id)
-      get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and removed_tag is not null and updated_at >= '#{date_s}' and removed_tag not in (#{TRANSIENT_TAGS_SQL})")
+      get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and removed_tag is not null and updated_at >= '#{date_s}' and removed_tag not in (#{TRANSIENT_TAGS_SQL}) and not regexp_match(removed_tag, \"^(rating|parent|source):\")")
     end
 
     def count_artist_added(user_id)
@@ -83,12 +83,12 @@ module BigQuery
 
     def count_tag_added(user_id, tag)
       es = escape(tag)
-      get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and added_tag = '#{es}' and updated_at >= '#{date_s}' and added_tag not in (#{TRANSIENT_TAGS_SQL})")
+      get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and added_tag = '#{es}' and updated_at >= '#{date_s}'")
     end
 
     def count_tag_removed(user_id, tag)
       es = escape(tag)
-      get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and removed_tag = '#{es}' and updated_at >= '#{date_s}' and removed_tag not in (#{TRANSIENT_TAGS_SQL})")
+      get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and removed_tag = '#{es}' and updated_at >= '#{date_s}'")
     end
   end
 end
