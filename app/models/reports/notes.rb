@@ -11,24 +11,24 @@ Undeletes: isactive "True" -> "False"
 =end
 
 module Reports
-	class Notes < Base
-		def version
-			1
-		end
+  class Notes < Base
+    def version
+      1
+    end
 
-		def min_changes
-			100
-		end
+    def min_changes
+      100
+    end
 
-		def report_name
-			"notes"
-		end
+    def report_name
+      "notes"
+    end
 
     def sort_key
       :creates
     end
-		
-		def html_template
+    
+    def html_template
       return <<-EOS
 %html
   %head
@@ -70,12 +70,12 @@ module Reports
             %td= datum[:undeletes]
     %p= "Since \#{date_window.utc} to \#{Time.now.utc}"
 EOS
-		end
+    end
 
     def calculate_data(user_id)
       user = DanbooruRo::User.find(user_id)
       tda = date_window.strftime("%F %H:%M")
-      client = BigQuery::NoteVersion.new
+      client = BigQuery::NoteVersion.new(date_window)
 
       return {
         id: user.id,
@@ -92,8 +92,8 @@ EOS
       }
     end
 
-		def candidates
-			DanbooruRo::NoteVersion.where("updated_at > ?", date_window).group("updater_id").having("count(*) > ?", min_changes).pluck(:updater_id)
-		end
-	end
+    def candidates
+      DanbooruRo::NoteVersion.where("updated_at > ?", date_window).group("updater_id").having("count(*) > ?", min_changes).pluck(:updater_id)
+    end
+  end
 end

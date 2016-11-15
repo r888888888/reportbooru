@@ -58,7 +58,7 @@ module Reports
         data = data.sort_by {|x| -x[sort_key].to_i}
 
         engine = Haml::Engine.new(html_template)
-        htmlf.write(engine.render(Object.new, data: data))
+        htmlf.write(engine.render(Object.new, data: data, date_window: date_window))
 
         jsonf.write("[")
         jsonf.write(data.map {|x| x.to_json}.join(","))
