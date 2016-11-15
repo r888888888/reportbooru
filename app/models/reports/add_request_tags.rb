@@ -36,14 +36,14 @@ module Reports
           %tr
             %td
               %a{:class => "user-\#{datum[:level]}", :href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
-            %td= "#{datum[:total_add]}/#{datum[:total_rem]}"
-            %td= "#{datum[:tagme_add]}/#{datum[:tagme_rem]}"
-            %td= "#{datum[:artist_add]}/#{datum[:artist_rem]}"
-            %td= "#{datum[:copy_add]}/#{datum[:copy_rem]}"
-            %td= "#{datum[:char_add]}/#{datum[:char_rem]}"
-            %td= "#{datum[:source_add]}/#{datum[:source_rem]}"
-            %td= "#{datum[:note_add]}/#{datum[:note_rem]}"
-            %td= "#{datum[:annot_add]}/#{datum[:annot_rem]}"
+            %td= "\#{datum[:total_add]}/\#{datum[:total_rem]}"
+            %td= "\#{datum[:tagme_add]}/\#{datum[:tagme_rem]}"
+            %td= "\#{datum[:artist_add]}/\#{datum[:artist_rem]}"
+            %td= "\#{datum[:copy_add]}/\#{datum[:copy_rem]}"
+            %td= "\#{datum[:char_add]}/\#{datum[:char_rem]}"
+            %td= "\#{datum[:source_add]}/\#{datum[:source_rem]}"
+            %td= "\#{datum[:note_add]}/\#{datum[:note_rem]}"
+            %td= "\#{datum[:annot_add]}/\#{datum[:annot_rem]}"
     %p= "Since \#{date_window.utc} to \#{Time.now.utc}"
 EOS
     end
