@@ -6,7 +6,7 @@ module BigQuery
 
     def initialize(date = Time.now)
       @date = date
-      @partition_date = 30.days.ago(@date)
+      @partition_date = 5.days.ago(@date)
       @date_s = @date.strftime("%Y-%m-%d 00:00:00")
       @part_s = @partition_date.strftime("%Y-%m-%d 00:00:00")
     end
