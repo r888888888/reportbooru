@@ -16,7 +16,7 @@ module BigQuery
     end
 
     def count_changes(user_id)
-      get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and updated_at >= '#{date_s}' and added_tag not in (#{TRANSIENT_TAGS_SQL}) and removed_tag not in (#{TRANSIENT_TAGS_SQL})")
+      get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and updated_at >= '#{date_s}' and (added_tag is null or added_tag not in (#{TRANSIENT_TAGS_SQL})) and (removed_tag is null or removed_tag not in (#{TRANSIENT_TAGS_SQL}))")
     end
 
     def count_added(user_id)
