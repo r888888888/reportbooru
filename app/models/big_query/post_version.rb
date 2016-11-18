@@ -60,7 +60,7 @@ module BigQuery
     end
 
     def count_any_added_v1(user_id)
-      get_count query("select count(*) from (select added_tag from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and added_tag is not null and updated_at >= '#{date_s}' and version = 1) pvf join [danbooru_#{Rails.env}.tags] t on t.name = pvf.added_tag and t.name not in (#{TRANSIENT_TAGS_SQL})")
+      get_count query("select count(*) from (select added_tag from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and added_tag is not null and updated_at >= '#{date_s}' and version = 1) pvf join [danbooru_#{Rails.env}.tags] t on t.name = pvf.added_tag where t.name not in (#{TRANSIENT_TAGS_SQL})")
     end
 
     def count_rating_changed(user_id)
