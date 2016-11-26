@@ -27,7 +27,7 @@ module Reports
           %th Tot
           %th Byp
           %th Del
-          %th Del Conf
+          %th{:title => "Lower bound of 95% confidence interval for probability that an upload gets deleted"} Del Conf
           %th Unq Flag
           %th Src
           %th S
@@ -37,8 +37,9 @@ module Reports
           %th Char
           %th Copy
           %th Art
-          %th Med Score
-          %th Neg Conf
+          %th{:title => "Median score"} Med Score
+          %th{:title => "Lower bound of 95% confidence interval for mean score"} Exp Score
+          %th{:title => "Lower bound of 95% confidence interval for probability that an upload gets a negative score"} Neg Conf
           %th Unq Downvote
       %tbody
         - data.each do |datum|
@@ -60,6 +61,7 @@ module Reports
             %td= datum[:copyright]
             %td= datum[:artist]
             %td= datum[:med_score]
+            %td= datum[:exp_score]
             %td= datum[:neg_conf]
             %td= datum[:uniq_downvoters]
     %p= "Since \#{date_window.utc} to \#{Time.now.utc}"
