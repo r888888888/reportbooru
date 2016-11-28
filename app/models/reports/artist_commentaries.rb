@@ -113,7 +113,6 @@ EOS
       end
 
       return {
-        version_id: version.id,
         id: user.id,
         level: user.level,
         level_string: user.level_string,

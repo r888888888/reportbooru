@@ -28,6 +28,12 @@ module BigQuery
       0
     end
 
+    def get_two(resp)
+      [resp["rows"][0]["f"][0]["v"], resp["rows"][0]["f"][1]["v"]]
+    rescue
+      0
+    end
+
     def escape(s)
       Regexp.escape(s).gsub(/\\/, '\0\0').gsub(/['"]/, '\\\\\0')
     end
