@@ -24,26 +24,44 @@ module Reports
         %tr
           %th User
           %th Total
-          %th tagme
-          %th artist
-          %th copy
-          %th char
-          %th source
-          %th note
-          %th annot
+          %th +Total
+          %th -Total
+          %th +tagme
+          %th -tagme
+          %th +art
+          %th -art
+          %th +copy
+          %th -copy
+          %th +char
+          %th -char
+          %th +source
+          %th -source
+          %th +note
+          %th -note
+          %th +annot
+          %th -annot
       %tbody
         - data.each do |datum|
           %tr
             %td
               %a{:class => "user-\#{datum[:level]}", :href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
-            %td= "\#{datum[:total_add]}/\#{datum[:total_rem]}"
-            %td= "\#{datum[:tagme_add]}/\#{datum[:tagme_rem]}"
-            %td= "\#{datum[:artist_add]}/\#{datum[:artist_rem]}"
-            %td= "\#{datum[:copy_add]}/\#{datum[:copy_rem]}"
-            %td= "\#{datum[:char_add]}/\#{datum[:char_rem]}"
-            %td= "\#{datum[:source_add]}/\#{datum[:source_rem]}"
-            %td= "\#{datum[:note_add]}/\#{datum[:note_rem]}"
-            %td= "\#{datum[:annot_add]}/\#{datum[:annot_rem]}"
+            %td= datum[:total]
+            %td= datum[:total_add]
+            %td= datum[:total_rem]
+            %td= datum[:tagme_add]
+            %td= datum[:tagme_rem]
+            %td= datum[:artist_add]
+            %td= datum[:artist_rem]
+            %td= datum[:copy_add]
+            %td= datum[:copy_rem]
+            %td= datum[:char_add]
+            %td= datum[:char_rem]
+            %td= datum[:source_add]
+            %td= datum[:source_rem]
+            %td= datum[:note_add]
+            %td= datum[:note_rem]
+            %td= datum[:annot_add]
+            %td= datum[:annot_rem]
     %p= "Since \#{date_window.utc} to \#{Time.now.utc}"
 EOS
     end
@@ -79,6 +97,7 @@ EOS
       }
       h[:total_add] = h[:tagme_add].to_i + h[:artist_add].to_i + h[:copy_add].to_i + h[:char_add].to_i + h[:source_add].to_i + h[:note_add].to_i + h[:annot_add].to_i
       h[:total_rem] = h[:tagme_rem].to_i + h[:artist_rem].to_i + h[:copy_rem].to_i + h[:char_rem].to_i + h[:source_rem].to_i + h[:note_rem].to_i + h[:annot_rem].to_i
+      h[:total] = h[:total_add] + h[:total_rem]
       h
     end
 
