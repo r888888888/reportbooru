@@ -53,6 +53,7 @@ module Reports
 
         candidates.each do |user_id|
           data << calculate_data(user_id)
+          puts data.inspect if $DEBUG
         end
 
         data = data.sort_by {|x| -x[sort_key].to_i}

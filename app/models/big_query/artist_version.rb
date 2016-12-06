@@ -9,23 +9,23 @@ module BigQuery
     end
 
     def count_name(user_id)
-      get_count query("select count(*) from [danbooru_#{Rails.env}.artist_versions_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and updated_at >= '#{date_s}' and name is not null")
+      get_count query("select count(*) from [danbooru_#{Rails.env}.artist_versions_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and updated_at >= '#{date_s}' and name is not null and version > 1")
     end
 
     def count_other(user_id)
-      get_count query("select count(*) from [danbooru_#{Rails.env}.artist_versions_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and updated_at >= '#{date_s}' and other_names is not null")
+      get_count query("select count(*) from [danbooru_#{Rails.env}.artist_versions_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and updated_at >= '#{date_s}' and other_names is not null and version > 1")
     end
 
     def count_url(user_id)
-      get_count query("select count(*) from [danbooru_#{Rails.env}.artist_versions_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and updated_at >= '#{date_s}' and url_string is not null")
+      get_count query("select count(*) from [danbooru_#{Rails.env}.artist_versions_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and updated_at >= '#{date_s}' and url_string is not null and version > 1")
     end
 
     def count_group(user_id)
-      get_count query("select count(*) from [danbooru_#{Rails.env}.artist_versions_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and updated_at >= '#{date_s}' and group_name is not null")
+      get_count query("select count(*) from [danbooru_#{Rails.env}.artist_versions_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and updated_at >= '#{date_s}' and group_name is not null and version > 1")
     end
 
     def count_delete(user_id)
-      get_count query("select count(*) from [danbooru_#{Rails.env}.artist_versions_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and updated_at >= '#{date_s}' and is_active = false")
+      get_count query("select count(*) from [danbooru_#{Rails.env}.artist_versions_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and updated_at >= '#{date_s}' and is_active = false and version > 1")
     end
 
     def count_undelete(user_id)
