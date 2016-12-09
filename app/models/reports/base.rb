@@ -44,6 +44,10 @@ module Reports
       File.join(report_directory, file_name + "." + ext)
     end
 
+    def sort(data)
+      data.sort_by {|x| -x[sort_key].to_i}
+    end
+
     def generate
       htmlf = File.open(report_path("html"), "w")
       jsonf = File.open(report_path("json"), "w")
@@ -56,7 +60,7 @@ module Reports
           puts data.inspect if $DEBUG
         end
 
-        data = data.sort_by {|x| -x[sort_key].to_i}
+        data = sort(data)
 
         engine = Haml::Engine.new(html_template)
         htmlf.write(engine.render(Object.new, data: data, date_window: date_window))
