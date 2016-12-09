@@ -15,5 +15,3 @@ set :default_env, {
 set :linked_dirs, fetch(:linked_dirs, []).push('log', 'public/reports', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'vendor/bundle')
 set :linked_files, fetch(:linked_files, []).push(".env")
 set :rbenv_ruby, "2.3.1"
-
-after 'deploy:publishing', 'unicorn:restart'

@@ -36,7 +36,7 @@ module Reports
           %th Change
           %th Count
       %tbody
-        - data.compact.flatten.each do |datum|
+        - data.each do |datum|
           %tr
             %td
               %a{:class => "user-\#{datum[:level]}", :href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
@@ -49,7 +49,7 @@ EOS
     end
 
     def sort(data)
-      data
+      data.compact.flatten.sort_by {|x| -x[:count].to_i}
     end
 
     def calculate_data(user_id)
@@ -59,14 +59,17 @@ EOS
       DanbooruRo::PostVersion.where(updater_id: user_id).where("updated_at > ?", date_window).find_each do |version|
         if version.previous
           diff = version.diff(version.previous)
-          key = []
-          key += diff[:removed_tags].map {|x| "-#{x}"}
-          key += diff[:added_tags].map {|x| "+#{x}"}
-          counts[key.join(" ")] += 1
+          if diff[:removed_tags].any?
+            key = []
+            key += diff[:removed_tags].map {|x| "-#{x}"}
+            key += diff[:added_tags].map {|x| "+#{x}"}
+            counts[key.join(" ")] += 1
+          end
         end
       end
 
-      counts.reject! {|k, v| v < min_changes / 2}
+      counts.reject! {|k, v| v < min_changes}
+      counts.reject! {|k, v| k == "-translation_request +translated"}
       results = []
 
       counts.each do |change, count|
@@ -85,7 +88,10 @@ EOS
     end
 
     def candidates
-      DanbooruRo::PostVersion.joins("join users on users.id = post_versions.updater_id").where("post_versions.updated_at > ? and users.level = ?", date_window, 20).group("post_versions.updater_id").having("count(*) > ?", min_changes).pluck(:updater_id)
+      ids = DanbooruRo::PostVersion.joins("join users on users.id = post_versions.updater_id").where("post_versions.updated_at > ? and users.level = ?", date_window, 20).group("post_versions.updater_id").having("count(*) > ?", min_changes).pluck(:updater_id)
+      ids.select do |user_id|
+        DanbooruRo::PostVersion.where("updated_at < ? and updated_at > ? and updater_id = ?", date_window, 1.year.ago, user_id).count < 100
+      end
     end
   end
 end
