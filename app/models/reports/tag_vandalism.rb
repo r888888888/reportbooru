@@ -44,7 +44,7 @@ module Reports
             %td= datum[:age]
             %td= datum[:change]
             %td= datum[:count]
-    %p= "Since \#{date_window.utc} to \#{Time.now.utc}"
+    %p= "Since \#{date_window.utc} to \#{Time.now.utc}. Users are basic members who have fewer than 100 changes before the period. Only changes that removed a tag are counted."
 EOS
     end
 

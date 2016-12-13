@@ -1,4 +1,4 @@
-#!/home/danbooru/.rbenv/shims/ruby
+#!/usr/bin/env ruby
 
 require "dotenv"
 Dotenv.load
@@ -8,6 +8,7 @@ require "logger"
 require 'optparse'
 require "json"
 require "big_query"
+require "aws-sdk"
 require File.expand_path("../../../config/environment", __FILE__)
 
 Process.daemon
@@ -53,6 +54,80 @@ end
 
 Signal.trap("TERM") do
   $running = false
+end
+
+class PoolVersionExporter
+  def dynamo_db_client
+    Aws::DynamoDB::Client.new(region: ENV["AWS_REGION"])
+  end
+
+  def build_hash(version)
+    post_ids = version.post_ids.scan(/\d+/)
+    previous = find_previous(version)
+    previous_post_ids = previous.nil? ? [] : previous.post_ids.scan(/\d+/)
+    added_post_ids = post_ids - previous_post_ids
+    removed_post_ids = previous_post_ids - post_ids
+
+    h = {
+      put_request: {
+        item: {
+          "version_id" => version.id,
+          "version" => find_version_number(version),
+          "pool_id" => version.pool_id,
+          "post_ids" => post_ids,
+          "updater_id" => version.updater_id,
+          "updater_ip_addr" => version.updater_ip_addr.to_s,
+          "created_at" => version.created_at,
+          "updated_at" => version.updated_at,
+          "added_post_ids" => added_post_ids,
+          "removed_post_ids" => removed_post_ids
+        }
+      }
+    }
+  end
+
+  def get_last_exported_id
+    redis.get("pool-version-id").to_i
+  end
+
+  def find_previous(version)
+    DanbooruRo::PoolVersion.where("pool_id = ? and updated_at < ?", version.pool_id, version.updated_at).order("updated_at desc, id desc").first
+  end
+
+  def find_version_number(version)
+    1 + DanbooruRo::PoolVersion.where("pool_id = ? and updated_at < ?", version.pool_id, version.updated_at).count
+  end
+
+  def execute
+    begin
+      last_id = get_last_exported_id
+      next_id = last_id + 2_000
+      store_id = last_id
+      batch = []
+      DanbooruRo::PoolVersion.where("id > ? and id <= ? and updated_at < ?", last_id, next_id, 70.minutes.ago).find_each do |version|
+        batch << build_hash(version)
+
+        if version.id > store_id
+          store_id = version.id
+        end
+      end
+
+      if batch.any?
+        logger.info "pool versions: inserting #{last_id}..#{store_id}"
+        dynamo_db_client.batch_write_item(
+          request_items: {
+            ENV["DYNAMO_DB_POOL_VERSION_TABLE"] => batch
+          },
+          return_consumed_capacity: "NONE"
+        )
+
+        redis.set("pool-version-id", store_id)
+      end
+
+    rescue Exception => e
+      logger.error "error: #{e}"
+    end
+  end
 end
 
 class ArtistVersionExporter
@@ -651,6 +726,7 @@ while $running
   exit unless $running
   ArtistVersionExporter.new(REDIS, LOGGER, GBQ).execute
   exit unless $running
+  PoolVersionExporter.new.execute
 
   10.times do
     sleep(1)
