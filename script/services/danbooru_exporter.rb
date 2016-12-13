@@ -57,6 +57,13 @@ Signal.trap("TERM") do
 end
 
 class PoolVersionExporter
+  attr_reader :logger, :redis
+
+  def initialize(logger, redis)
+    @logger = logger
+    @redis = redis
+  end
+
   def dynamo_db_client
     Aws::DynamoDB::Client.new(region: ENV["AWS_REGION"])
   end
@@ -67,6 +74,7 @@ class PoolVersionExporter
     previous_post_ids = previous.nil? ? [] : previous.post_ids.scan(/\d+/)
     added_post_ids = post_ids - previous_post_ids
     removed_post_ids = previous_post_ids - post_ids
+    updater_ip_addr = version.updater_ip_addr.blank? ? "na" : version.updater_ip_addr.to_s
 
     h = {
       put_request: {
@@ -76,9 +84,9 @@ class PoolVersionExporter
           "pool_id" => version.pool_id,
           "post_ids" => post_ids,
           "updater_id" => version.updater_id,
-          "updater_ip_addr" => version.updater_ip_addr.to_s,
-          "created_at" => version.created_at,
-          "updated_at" => version.updated_at,
+          "updater_ip_addr" => updater_ip_addr,
+          "created_at" => version.created_at.iso8601,
+          "updated_at" => version.updated_at.iso8601,
           "added_post_ids" => added_post_ids,
           "removed_post_ids" => removed_post_ids
         }
@@ -101,7 +109,7 @@ class PoolVersionExporter
   def execute
     begin
       last_id = get_last_exported_id
-      next_id = last_id + 2_000
+      next_id = last_id + 25
       store_id = last_id
       batch = []
       DanbooruRo::PoolVersion.where("id > ? and id <= ? and updated_at < ?", last_id, next_id, 70.minutes.ago).find_each do |version|
@@ -726,7 +734,7 @@ while $running
   exit unless $running
   ArtistVersionExporter.new(REDIS, LOGGER, GBQ).execute
   exit unless $running
-  PoolVersionExporter.new.execute
+  PoolVersionExporter.new(LOGGER, REDIS).execute
 
   10.times do
     sleep(1)
