@@ -57,11 +57,11 @@ EOS
     end
 
     def find_previous(version)
-      DanbooruRo::PoolVersion.where("pool_id = ? and updated_at < ?", version.pool_id, version.updated_at).order("updated_at desc, id desc").first
+      Archive::PoolVersion.where("pool_id = ? and updated_at < ?", version.pool_id, version.updated_at).order("updated_at desc, id desc").first
     end
 
     def find_versions(user_id)
-      DanbooruRo::PoolVersion.where("updater_id = ? and updated_at > ?", user_id, date_window)
+      Archive::PoolVersion.where("updater_id = ? and updated_at > ?", user_id, date_window)
     end
 
     def calculate_data(user_id)
@@ -80,15 +80,8 @@ EOS
         if prev.nil?
           create += 1
         else
-          prev_post_ids = prev.post_ids.scan(/\d+/)
-
-          if (version_post_ids - prev_post_ids).any?
-            add += 1
-          end
-
-          if (prev_post_ids - version_post_ids).any?
-            remove += 1
-          end
+          add += version.added_post_ids.size
+          remove += version.removed_post_ids.size
 
           if (prev_post_ids - version_post_ids).empty? && (version_post_ids - prev_post_ids).empty?
             order += 1
@@ -110,7 +103,7 @@ EOS
     end
     
     def candidates
-      DanbooruRo::PoolVersion.where("updated_at > ?", date_window).group("updater_id").having("count(*) > ?", min_changes).pluck(:updater_id)
+      Archive::PoolVersion.where("updated_at > ?", date_window).group("updater_id").having("count(*) > ?", min_changes).pluck(:updater_id)
     end
   end
 end

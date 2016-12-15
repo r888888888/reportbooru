@@ -23,3 +23,14 @@ danbooru_production:
   username: danbooru_ro
   host: yukinoshita
   password: <%= ENV["DANBOORU_RO_PASSWORD"] %>
+
+archive_development:
+  adapter: postgresql
+  database: archive_development
+
+archive_production:
+  adapter: postgresql
+  database: <%= ENV["ARCHIVE_DB"] %>
+  username: <%= ENV["ARCHIVE_DB_USER"] %>
+  host: <%= ENV["ARCHIVE_DB_HOST"] %>
+  password: <%= ENV["ARCHIVE_DB_PASSWORD"] %>
