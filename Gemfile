@@ -45,6 +45,7 @@ group :production do
   gem 'capistrano-bundler'
   gem 'capistrano-rails'
   gem 'capistrano-rbenv'
+  gem 'capistrano-deploytags', '~> 1.0.0', require: false
 end
 
 group :development, :test do
