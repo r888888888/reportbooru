@@ -18,9 +18,9 @@ module Reports
   %head
     %title Top Tagger Report
     %meta{:name => "viewport", :content => "width=device-width, initial-scale=1"}
-    %script{:src => "/reports/assets/jquery-3.1.1.slim.min.js"}
-    %script{:src => "/reports/assets/jquery.tablesorter.min.js"}
-    %link{:rel => "stylesheet", :href => "/reports/assets/pure.css"}
+    %script{:src => "/user-reports/assets/jquery-3.1.1.slim.min.js"}
+    %script{:src => "/user-reports/assets/jquery.tablesorter.min.js"}
+    %link{:rel => "stylesheet", :href => "/user-reports/assets/pure.css"}
     :javascript
       $(function() {
         $("#report").tablesorter();
