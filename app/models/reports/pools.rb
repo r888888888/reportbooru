@@ -74,7 +74,7 @@ EOS
 
       find_versions(user_id).find_each do |version|
         total += 1
-        version_post_ids = version.post_ids.scan(/\d+/)
+        version_post_ids = version.post_ids
         prev = find_previous(version)
 
         if prev.nil?
@@ -83,7 +83,7 @@ EOS
           add += version.added_post_ids.size
           remove += version.removed_post_ids.size
 
-          if (prev_post_ids - version_post_ids).empty? && (version_post_ids - prev_post_ids).empty?
+          if version.added_post_ids.empty? && version.removed_post_ids.empty?
             order += 1
           end
         end
