@@ -75,6 +75,10 @@ module BigQuery
       get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and regexp_match(removed_tag, r'^source:') and updated_at >= '#{date_s}'")
     end
 
+    def aggregate_missing_tags(user_id, post_ids)
+      get_two_mult query("select added_tag, count(*) as cnt from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and updater_id <> #{user_id} and post_id in (#{post_ids.join(', ')}) and version > 1 and updated_at >= '#{date_s}' and added_tag is not null group by added_tag having count(*) > 5 order by cnt desc")
+    end
+
     def translator_tag_candidates(min_changes)
       tag_subquery = TRANSLATOR_TAGS.map {|x| "'#{x}'"}.join(", ")
       resp = query("select updater_id from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and (added_tag in (#{tag_subquery}) or removed_tag in (#{tag_subquery})) and updated_at >= '#{date_s}' group by updater_id having count(*) > #{min_changes}")
