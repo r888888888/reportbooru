@@ -34,6 +34,14 @@ module BigQuery
       0
     end
 
+    def get_two_mult(resp)
+      resp["rows"].map do |x|
+        [x["f"][0]["v"], x["f"][1]["v"]]
+      end
+    rescue
+      nil
+    end
+
     def escape(s)
       Regexp.escape(s).gsub(/\\/, '\0\0').gsub(/['"]/, '\\\\\0')
     end
