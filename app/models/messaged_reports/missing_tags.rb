@@ -1,5 +1,3 @@
-# MessagedReports::MissingTags.new.build
-
 module MessagedReports
   class MissingTags
     def min_uploads
@@ -10,7 +8,7 @@ module MessagedReports
       1.week.ago
     end
 
-    def build
+    def send_messages
       candidates.each do |user_id|
         post_ids = post_ids_for(user_id)
         bq = BigQuery::PostVersion.new(date_window)
@@ -33,8 +31,6 @@ module MessagedReports
     end
 
     def candidates
-      return [1]
-
       DanbooruRo::Post.where("created_at >= ? ", date_window).group("uploader_id").having("count(*) > ?", min_uploads).pluck("uploader_id")
     end
   end
