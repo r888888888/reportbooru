@@ -27,7 +27,7 @@ module Reports
       });
   %body
     %table{:id => "report", :class => "pure-table pure-table-bordered pure-table-striped"}
-      %caption Tag vandalism (over past thirty days, minimum changes is #{min_changes})
+      %caption Common tag changes (over past thirty days, minimum changes is #{min_changes}, not all users are suspected vandals)
       %thead
         %tr
           %th User
