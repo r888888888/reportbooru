@@ -14,6 +14,6 @@ every :sunday, :at => "3:00 am" do
   runner "Reports.generate_all"
 end
 
-every '0 6 1,15 * * *' do
+every '0 6 1,15 * *' do
 	runner "MessagedReports::MissingTags.new.send_messages"
 end
