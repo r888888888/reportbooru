@@ -5,7 +5,7 @@ module MessagedReports
     end
 
     def date_window
-      1.week.ago
+      15.days.ago
     end
 
     def send_messages
