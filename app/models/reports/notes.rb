@@ -25,7 +25,7 @@ module Reports
     end
 
     def sort_key
-      :creates
+      :total
     end
     
     def html_template
