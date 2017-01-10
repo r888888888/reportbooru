@@ -642,16 +642,20 @@ class WikiPageExporter
 end
 
 while $running
-  NoteExporter.new(REDIS, LOGGER, GBQ).execute
-  exit unless $running
-  FlatPostVersionExporter.new(REDIS, LOGGER, GBQ).execute
-  exit unless $running
-  PostVersionExporter.new(REDIS, LOGGER, GBQ).execute
-  exit unless $running
-  WikiPageExporter.new(REDIS, LOGGER, GBQ).execute
-  exit unless $running
-  ArtistVersionExporter.new(REDIS, LOGGER, GBQ).execute
-  exit unless $running
+  begin
+    NoteExporter.new(REDIS, LOGGER, GBQ).execute
+    exit unless $running
+    FlatPostVersionExporter.new(REDIS, LOGGER, GBQ).execute
+    exit unless $running
+    PostVersionExporter.new(REDIS, LOGGER, GBQ).execute
+    exit unless $running
+    WikiPageExporter.new(REDIS, LOGGER, GBQ).execute
+    exit unless $running
+    ArtistVersionExporter.new(REDIS, LOGGER, GBQ).execute
+    exit unless $running
+  rescue Exception => e
+    LOGGER.error("error: #{e}")
+  end
 
   10.times do
     sleep(1)
