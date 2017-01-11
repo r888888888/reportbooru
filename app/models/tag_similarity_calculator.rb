@@ -19,8 +19,8 @@ class TagSimilarityCalculator
   end
 
   def calculate
-    tag = Tag.find_by_name(tag_name)
-    return if tag.nil? || tag.related_tags_updated_at >= 24.hours.ago
+    tag = DanbooruRo::Tag.find_by_name(tag_name)
+    return if tag.nil? || (tag.related_tags_updated_at && tag.related_tags_updated_at >= 24.hours.ago)
 
     # this uses cosine similarity to produce more useful
     # related tags, but is more db intensive
@@ -38,7 +38,7 @@ class TagSimilarityCalculator
       if ctag == tag_name
         similar_counts[ctag] = 1
       else
-        acount = DanbooruRo::Post.raw_intersection_tag_match([tag_name, ctag]).where("id >= ?", Post.estimate_post_id(date_constraint(tag.post_count))).count
+        acount = DanbooruRo::Post.raw_intersection_tag_match([tag_name, ctag]).where("id >= ?", DanbooruRo::Post.estimate_post_id(date_constraint(tag.post_count))).count
         ctag_count = DanbooruRo::Tag.post_count(ctag)
         div = Math.sqrt(tag.post_count * ctag_count)
         if div != 0

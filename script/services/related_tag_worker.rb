@@ -83,7 +83,10 @@ while $running
     end
   rescue Exception => e
     LOGGER.error "error: #{e}"
-    sleep(60)
+    60.times do
+      sleep(1)
+      exit unless $running
+    end
     retry
   end
 end

@@ -70,7 +70,10 @@ while $running
   rescue Exception => e
     LOGGER.error e.message
     LOGGER.error e.backtrace.join("\n")
-    sleep(60)
+    60.times do
+      sleep(1)
+      exit unless $running
+    end
     retry
   end
 end
