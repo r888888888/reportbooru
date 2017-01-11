@@ -19,8 +19,8 @@ class TagSimilarityCalculator
   end
 
   def calculate
-    tag = Tag.find_by_name(tag_name)
-    return if tag.nil? || tag.related_tags_updated_at >= 24.hours.ago
+    tag = DanbooruRo::Tag.find_by_name(tag_name)
+    return if tag.nil? || (tag.related_tags_updated_at && tag.related_tags_updated_at >= 24.hours.ago)
 
     # this uses cosine similarity to produce more useful
     # related tags, but is more db intensive
