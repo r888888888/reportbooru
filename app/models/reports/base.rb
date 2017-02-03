@@ -44,6 +44,10 @@ module Reports
       File.join(report_directory, file_name + "." + ext)
     end
 
+    def current_path
+      File.join(report_directory, "!CURRENT.html")
+    end
+
     def sort(data)
       data.sort_by {|x| -x[sort_key].to_i}
     end
@@ -71,6 +75,7 @@ module Reports
       ensure
         jsonf.close
         htmlf.close
+        FileUtils.ln_sf(report_path("html"), current_path)
       end
     end
   end
