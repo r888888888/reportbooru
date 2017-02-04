@@ -63,8 +63,8 @@ module BigQuery
       get_count query("select count(*) from (select added_tag from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and added_tag is not null and updated_at >= '#{date_s}' and version = 1) pvf join [danbooru_#{Rails.env}.tags] t on t.name = pvf.added_tag where t.name not in (#{TRANSIENT_TAGS_SQL})")
     end
 
-    def avg_and_stddev_v1(user_id)
-      get_two query("select avg(c), stddev(c) from (select count(*) as c from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and added_tag is not null and updated_at >= '#{date_s}' and version = 1 and added_tag not in (#{TRANSIENT_TAGS_SQL}) group by post_id)")
+    def quantiles_v1(user_id)
+      get_three query("select nth(25, quantiles(c, 101)), nth(50, quantiles(c, 101)), nth(75, quantiles(c, 101)) from (select count(*) as c from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and added_tag is not null and updated_at >= '#{date_s}' and version = 1 and added_tag not in (#{TRANSIENT_TAGS_SQL}) group by post_id)")
     end
 
     def count_rating_changed(user_id)
