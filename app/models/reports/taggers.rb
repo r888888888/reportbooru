@@ -32,8 +32,9 @@ module Reports
         %tr
           %th User
           %th Level
-          %th Tags/Upload
-          %th Std Dev
+          %th Med Tags/Upload
+          %th{:title => "25th percentile tags/upload"} Low Quart
+          %th{:title => "75th percentile tags/upload"} Up Quart
           %th Uploads
       %tbody
         - data.each do |datum|
@@ -41,8 +42,9 @@ module Reports
             %td
               %a{:class => "user-\#{datum[:level]}", :href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
             %td= datum[:level_string]
-            %td= datum[:tags_per_upload]
-            %td= datum[:stddev]
+            %td= datum[:q2]
+            %td= datum[:q1]
+            %td= datum[:q3]
             %td= datum[:total]
     %p= "Since \#{date_window.utc} to \#{Time.now.utc}"
 EOS
@@ -53,7 +55,7 @@ EOS
       client = BigQuery::PostVersion.new(date_window)
       total = DanbooruRo::Post.where("created_at > ? and uploader_id = ?", date_window, user_id).count
       tags = client.count_any_added_v1(user_id)
-      avg, stddev = client.avg_and_stddev_v1(user_id)
+      q1, q2, q3 = client.quantiles_v1(user_id)
 
       return {
         id: user.id,
@@ -61,8 +63,9 @@ EOS
         level: user.level,
         level_string: user.level_string,
         total: total,
-        tags_per_upload: "%.2f" % avg.to_f,
-        stddev: "%.2f" % stddev.to_f
+        q1: q1,
+        q2: q2,
+        q3: q3
       }
     end
 

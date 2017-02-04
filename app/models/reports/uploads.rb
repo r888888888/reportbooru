@@ -24,12 +24,12 @@ module Reports
       copyright = client.count_copyright_added_v1(user_id)
       artist = client.count_artist_added_v1(user_id)
       med_score = "%.2f" % DanbooruRo::Post.select_value_sql("select percentile_cont(0.50) within group (order by score) from posts where created_at >= ? and uploader_id = ?", date_window, user.id).to_f
+      q1_score = "%.2f" % DanbooruRo::Post.select_value_sql("select percentile_cont(0.25) within group (order by score) from posts where created_at >= ? and uploader_id = ?", date_window, user.id).to_f
+      q3_score = "%.2f" % DanbooruRo::Post.select_value_sql("select percentile_cont(0.75) within group (order by score) from posts where created_at >= ? and uploader_id = ?", date_window, user.id).to_f
       del_conf = "%.1f" % deletion_ci_for(user_id, date_window)
       neg_conf = "%.1f" % negative_score_ci_for(user_id, date_window)
       uniq_flaggers = DanbooruRo::PostFlag.joins("join posts on post_flags.post_id = posts.id").where("posts.created_at > ? and posts.is_deleted = true and posts.uploader_id = ?", date_window, user_id).distinct.count("post_flags.creator_id")
       uniq_downvoters = DanbooruRo::PostVote.joins("join posts on post_votes.post_id = posts.id").where("posts.created_at > ? and post_votes.score < 0 and posts.uploader_id = ?", date_window, user_id).distinct.count("post_votes.user_id")
-      mean_score = DanbooruRo::Post.where("created_at > ?", date_window).where(uploader_id: user.id).average(:score).to_f
-      stddev_score = DanbooruRo::Post.select_value_sql("select stddev(score) from posts where created_at > ? and uploader_id = ?", date_window, user.id).to_f
 
       return {
         id: user_id,
@@ -49,6 +49,8 @@ module Reports
         copyright: copyright,
         artist: artist,
         med_score: med_score,
+        q1_score: q1_score,
+        q3_score: q3_score,
         del_conf: del_conf,
         neg_conf: neg_conf,
         uniq_flaggers: uniq_flaggers,
