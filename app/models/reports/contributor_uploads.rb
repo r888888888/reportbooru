@@ -38,7 +38,6 @@ module Reports
           %th Copy
           %th Art
           %th{:title => "Median score"} Med Score
-          %th{:title => "Lower bound of 95% confidence interval for mean score"} Exp Score
           %th{:title => "Lower bound of 95% confidence interval for probability that an upload gets a negative score"} Neg Conf
           %th Unq Downvote
       %tbody
@@ -61,7 +60,6 @@ module Reports
             %td= datum[:copyright]
             %td= datum[:artist]
             %td= datum[:med_score]
-            %td= datum[:exp_score]
             %td= datum[:neg_conf]
             %td= datum[:uniq_downvoters]
     %p= "Since \#{date_window.utc} to \#{Time.now.utc}"

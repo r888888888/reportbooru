@@ -37,7 +37,6 @@ module Reports
           %th Q
           %th E
           %th{:title => "Median score"} Med Score
-          %th{:title => "Lower bound of 95% confidence interval for mean score"} Exp Score
           %th{:title => "Lower bound of 95% confidence interval for probability that an approval gets a negative score"} Neg Conf
           %th Unq Downvote
       %tbody
@@ -53,7 +52,6 @@ module Reports
             %td= datum[:questionable]
             %td= datum[:explicit]
             %td= datum[:med_score]
-            %td= datum[:exp_score]
             %td= datum[:neg_conf]
             %td= datum[:uniq_downvoters]
     %p= "Since \#{date_window.utc} to \#{Time.now.utc}"
@@ -87,7 +85,6 @@ EOS
       uniq_downvoters = DanbooruRo::PostVote.joins("join posts on post_votes.post_id = posts.id").where("posts.created_at > ? and post_votes.score < 0 and posts.approver_id = ?", date_window, user_id).distinct.count("post_votes.user_id")
       mean_score = DanbooruRo::Post.where("created_at > ?", date_window).where(approver_id: user.id).average(:score).to_f
       stddev_score = DanbooruRo::Post.select_value_sql("select stddev(score) from posts where created_at > ? and approver_id = ?", date_window, user.id).to_f
-      exp_score = "%.2f" % ci_lower_bound(mean_score, stddev_score, total)
 
       return {
         id: user_id,
@@ -102,8 +99,7 @@ EOS
         del_conf: del_conf,
         neg_conf: neg_conf,
         uniq_flaggers: uniq_flaggers,
-        uniq_downvoters: uniq_downvoters,
-        exp_score: exp_score
+        uniq_downvoters: uniq_downvoters
       }
     end
   end
