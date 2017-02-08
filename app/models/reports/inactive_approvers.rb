@@ -5,7 +5,7 @@ module Reports
     end
 
     def version
-      1
+      2
     end
 
     def html_template
@@ -28,18 +28,24 @@ module Reports
         %tr
           %th User
           %th Total
+          %th Approval
+          %th Disapproval
+          %th Age
       %tbody
         - data.each do |datum|
           %tr
             %td
               %a{:class => "user-\#{datum[:level]}", :href => "https://danbooru.donmai.us/users/\#{datum[:id]}"}= datum[:name]
             %td= datum[:total]
+            %td= datum[:approval]
+            %td= datum[:disapproval]
+            %td{:title => "in months"}= datum[:age]
     %p= "Since \#{date_window.utc} to \#{Time.now.utc}"
 EOS
     end
 
     def candidates
-      DanbooruRo::Post.where("created_at > ? and approver_id is not null", date_window).group("approver_id").having("count(*) < ?", max_approvals).pluck(:approver_id)
+      (DanbooruRo::PostApproval.where("created_at > ?", date_window).group("user_id").having("count(*) < ?", max_approvals).pluck("user_id") + DanbooruRo::PostDisapproval.where("created_at > ?", date_window).group("user_id").having("count(*) < ?", max_approvals).pluck("user_id")).uniq
     end
 
     def report_name
@@ -50,16 +56,29 @@ EOS
       30
     end
 
+    def sort(data)
+      data.compact.sort_by {|x| -x[:total].to_i}
+    end
+
     def calculate_data(user_id)
       user = DanbooruRo::User.find(user_id)
       name = user.name
-      total = DanbooruRo::Post.where("created_at > ?", date_window).where(approver_id: user.id).count
+      approval = DanbooruRo::PostApproval.where("created_at > ? and user_id = ?", date_window, user.id).count
+      disapproval = DanbooruRo::PostDisapproval.where("created_at > ? and user_id = ?", date_window, user.id).count
+      total = approval + disapproval
+      if total > max_approvals
+        return nil
+      end
+      age = ((Date.today - user.created_at.to_date) / 30).to_i
 
       return {
         id: user_id,
         name: name,
         level: user.level,
-        total: total
+        total: total,
+        approval: approval,
+        disapproval: disapproval,
+        age: age
       }
     end
   end
