@@ -9,7 +9,7 @@ module Reports
     end
 
     def sort_key
-      :tags_per_upload
+      :q2
     end
 
 		def html_template

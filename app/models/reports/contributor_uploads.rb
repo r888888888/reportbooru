@@ -1,7 +1,7 @@
 module Reports
   class ContributorUploads < Uploads
     def version
-      1
+      2
     end
 
     def html_template
@@ -38,8 +38,6 @@ module Reports
           %th Copy
           %th Art
           %th{:title => "Median score"} Med Score
-          %th{:title => "25th percentile score"} 25th Score
-          %th{:title => "75th percentile score"} 75th Score
           %th{:title => "Lower bound of 95% confidence interval for probability that an upload gets a negative score"} Neg Conf
           %th Unq Downvote
       %tbody
@@ -62,8 +60,6 @@ module Reports
             %td= datum[:copyright]
             %td= datum[:artist]
             %td= datum[:med_score]
-            %td= datum[:q1_score]
-            %td= datum[:q3_score]
             %td= datum[:neg_conf]
             %td= datum[:uniq_downvoters]
     %p= "Since \#{date_window.utc} to \#{Time.now.utc}"
