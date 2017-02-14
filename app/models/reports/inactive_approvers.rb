@@ -23,7 +23,7 @@ module Reports
       });
   %body
     %table{:id => "report", :class => "pure-table pure-table-bordered pure-table-striped"}
-      %caption Inactive Approvers over past thirty days (maximum approvals is #{max_approvals})
+      %caption Inactive Approvers over past thirty days (maximum changes is #{max_approvals})
       %thead
         %tr
           %th User
