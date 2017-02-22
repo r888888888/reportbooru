@@ -76,7 +76,7 @@ module BigQuery
     end
 
     def aggregate_missing_tags(user_id, post_ids)
-      get_two_mult query("select added_tag, count(*) as cnt from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and updater_id <> #{user_id} and post_id in (#{post_ids.join(', ')}) and version > 1 and updated_at >= '#{date_s}' and added_tag is not null and added_tag not in (#{TRANSIENT_TAGS_SQL}) and added_tag not in ('solo', '1girl') group by added_tag having count(*) > 5 order by cnt desc")
+      get_two_mult query("select added_tag, count(*) as cnt from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and updater_id <> #{user_id} and post_id in (#{post_ids.join(', ')}) and version > 1 and updated_at >= '#{date_s}' and added_tag is not null and added_tag not in (#{TRANSIENT_TAGS_SQL}) and added_tag not in ('solo', '1girl') group by added_tag having count(*) > 4 order by cnt desc")
     end
 
     def translator_tag_candidates(min_changes)
