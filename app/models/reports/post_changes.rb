@@ -96,7 +96,7 @@ EOS
     end
 
     def candidates
-      DanbooruRo::PostVersion.where("updated_at > ?", date_window).group("updater_id").having("count(*) > ?", min_changes).pluck(:updater_id)
+      Archive::PostVersion.where("updated_at > ?", date_window).group("updater_id").having("count(*) > ?", min_changes).pluck(:updater_id)
     end
   end
 end

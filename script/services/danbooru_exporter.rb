@@ -316,21 +316,11 @@ class FlatPostVersionExporter
   end
 
   def find_previous(version)
-    if version.updated_at.to_i == Time.zone.parse("2007-03-14T19:38:12Z").to_i
-      # Old post versions which didn't have updated_at set correctly
-      DanbooruRo::PostVersion.where("post_id = ? and updated_at = ? and id < ?", version.post_id, version.updated_at, version.id).order("updated_at desc, id desc").first
-    else
-      DanbooruRo::PostVersion.where("post_id = ? and updated_at < ?", version.post_id, version.updated_at).order("updated_at desc, id desc").first
-    end
+    version.previous
   end
 
   def find_version_number(version)
-    if version.updated_at.to_i == Time.zone.parse("2007-03-14T19:38:12Z").to_i
-      # Old post versions which didn't have updated_at set correctly
-      1 + DanbooruRo::PostVersion.where("post_id = ? and updated_at = ? and id < ?", version.post_id, version.updated_at, version.id).count
-    else
-      1 + DanbooruRo::PostVersion.where("post_id = ? and updated_at < ?", version.post_id, version.updated_at).count
-    end
+    version.version
   end
 
   def calculate_diff(older, newer)
@@ -372,7 +362,7 @@ class FlatPostVersionExporter
       next_id = last_id + BATCH_SIZE
       store_id = last_id
       batch = []
-      DanbooruRo::PostVersion.where("id > ? and id <= ? and updated_at < ?", last_id, next_id, 70.minutes.ago).find_each do |version|
+      Archive::PostVersion.where("id > ? and id <= ? and updated_at < ?", last_id, next_id, 70.minutes.ago).find_each do |version|
         previous = find_previous(version)
         diff = calculate_diff(previous, version)
         vnum = find_version_number(version)
@@ -453,12 +443,7 @@ class PostVersionExporter
   end
 
   def find_previous(version)
-    if version.updated_at.to_i == Time.zone.parse("2007-03-14T19:38:12Z").to_i
-      # Old post versions which didn't have updated_at set correctly
-      DanbooruRo::PostVersion.where("post_id = ? and updated_at = ? and id < ?", version.post_id, version.updated_at, version.id).order("updated_at desc, id desc").first
-    else
-      DanbooruRo::PostVersion.where("post_id = ? and updated_at < ?", version.post_id, version.updated_at).order("updated_at desc, id desc").first
-    end
+    version.previous
   end
 
   def calculate_diff(older, newer)
@@ -491,7 +476,7 @@ class PostVersionExporter
       next_id = last_id + BATCH_SIZE
       store_id = last_id
       batch = []
-      DanbooruRo::PostVersion.where("id > ? and id <= ? and updated_at < ?", last_id, next_id, 70.minutes.ago).find_each do |version|
+      Archive::PostVersion.where("id > ? and id <= ? and updated_at < ?", last_id, next_id, 70.minutes.ago).find_each do |version|
         previous = find_previous(version)
         diff = calculate_diff(previous, version)
         hash = {

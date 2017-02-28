@@ -56,7 +56,7 @@ EOS
       user = DanbooruRo::User.find(user_id)
       counts = Hash.new {|h, k| h[k] = 0}
 
-      DanbooruRo::PostVersion.where(updater_id: user_id).where("updated_at > ?", date_window).find_each do |version|
+      Archive::PostVersion.where(updater_id: user_id).where("updated_at > ?", date_window).find_each do |version|
         if version.previous
           diff = version.diff(version.previous)
           if diff[:removed_tags].any?
@@ -88,9 +88,9 @@ EOS
     end
 
     def candidates
-      ids = DanbooruRo::PostVersion.joins("join users on users.id = post_versions.updater_id").where("post_versions.updated_at > ? and users.level = ?", date_window, 20).group("post_versions.updater_id").having("count(*) > ?", min_changes).pluck(:updater_id)
+      ids = Archive::PostVersion.joins("join users on users.id = post_versions.updater_id").where("post_versions.updated_at > ? and users.level = ?", date_window, 20).group("post_versions.updater_id").having("count(*) > ?", min_changes).pluck(:updater_id)
       ids.select do |user_id|
-        DanbooruRo::PostVersion.where("updated_at < ? and updated_at > ? and updater_id = ?", date_window, 1.year.ago, user_id).count < 100
+        Archive::PostVersion.where("updated_at < ? and updated_at > ? and updater_id = ?", date_window, 1.year.ago, user_id).count < 100
       end
     end
   end
