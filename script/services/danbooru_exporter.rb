@@ -356,6 +356,7 @@ class FlatPostVersionExporter
 
   def execute
     create_table
+    delta = 379_452
 
     begin
       last_id = get_last_exported_id
@@ -429,6 +430,19 @@ end
 
 class PostVersionExporter
   BATCH_SIZE = 1000
+  SCHEMA = {
+    id: {type: "INTEGER"},
+    updated_at: {type: "TIMESTAMP"},
+    post_id: {type: "INTEGER"},
+    tags: {type: "STRING"},
+    added_tags: {type: "STRING"},
+    removed_tags: {type: "STRING"},
+    rating: {type: "STRING"},
+    parent_id: {type: "INTEGER"},
+    source: {type: "STRING"},
+    updater_id: {type: "INTEGER"},
+    updater_ip_addr: {type: "STRING"}
+  }
 
   attr_reader :redis, :logger, :gbq
 
@@ -444,6 +458,13 @@ class PostVersionExporter
 
   def find_previous(version)
     version.previous
+  end
+
+  def create_table
+    begin
+      gbq.create_table("post_versions", SCHEMA, enable_partitioning: true)
+    rescue Google::Apis::ClientError
+    end
   end
 
   def calculate_diff(older, newer)
@@ -472,6 +493,8 @@ class PostVersionExporter
 
   def execute
     begin
+      create_table
+
       last_id = get_last_exported_id
       next_id = last_id + BATCH_SIZE
       store_id = last_id
@@ -573,9 +596,9 @@ class WikiPageExporter
       changes[:is_locked] = b.is_locked
     end
 
-    # if a.nil? || a.is_deleted != b.is_deleted
-    #   changes[:is_deleted] = b.is_deleted
-    # end
+    if a.nil? || a.is_deleted != b.is_deleted
+      changes[:is_deleted] = b.is_deleted
+    end
 
     if a.nil? || a.other_names != b.other_names
       changes[:other_names] = b.other_names
