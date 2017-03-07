@@ -421,8 +421,11 @@ class FlatPostVersionExporter
           redis.set("flat-post-version-exporter-id-part", store_id)
         end
       end
-
     rescue Exception => e
+      if e.to_s =~ /execution expired|Server error/
+        Archive::PostVersion.connection.reconnect!
+      end
+
       logger.error "error: #{e}"
     end
   end
@@ -532,6 +535,10 @@ class PostVersionExporter
       end
 
     rescue Exception => e
+      if e.to_s =~ /execution expired|Server error/ 
+        Archive::PostVersion.connection.reconnect!
+      end
+
       logger.error "error: #{e}"
     end
   end
