@@ -356,7 +356,6 @@ class FlatPostVersionExporter
 
   def execute
     create_table
-    delta = 379_452
 
     begin
       last_id = get_last_exported_id
