@@ -89,7 +89,7 @@ EOS
     end
 
     def candidates
-      ids = Archive::PostVersion.where("post_versions.updated_at > ?", date_window, 20).group("post_versions.updater_id").having("count(*) > ?", min_changes).pluck(:updater_id)
+      ids = Archive::PostVersion.where("post_versions.updated_at > ?", date_window).group("post_versions.updater_id").having("count(*) > ?", min_changes).pluck(:updater_id)
       ids.select do |user_id|
         Archive::PostVersion.where("updated_at < ? and updated_at > ? and updater_id = ?", date_window, 1.year.ago, user_id).count < 100
       end
