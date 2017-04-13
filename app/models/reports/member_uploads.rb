@@ -1,7 +1,7 @@
 module Reports
   class MemberUploads < Uploads
     def version
-      2
+      3
     end
 
     def html_template

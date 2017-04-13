@@ -19,6 +19,10 @@ module Reports
       safe = DanbooruRo::Post.where("created_at > ?", date_window).where(uploader_id: user.id, rating: "s").count
       questionable = DanbooruRo::Post.where("created_at > ?", date_window).where(uploader_id: user.id, rating: "q").count
       explicit = DanbooruRo::Post.where("created_at > ?", date_window).where(uploader_id: user.id, rating: "e").count
+      post_count = safe + questionable + explicit
+      safe = "%d%%" % (100 * safe.to_f / post_count.to_f)
+      questionable = "%d%%" % (100 * questionable.to_f / post_count.to_f)
+      explicit = "%d%%" % (100 * explicit.to_f / post_count.to_f)
       general = client.count_general_added_v1(user_id)
       character = client.count_character_added_v1(user_id)
       copyright = client.count_copyright_added_v1(user_id)

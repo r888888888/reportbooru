@@ -1,6 +1,7 @@
 module DanbooruRo
   class Post < Base
     attr_readonly *column_names
+    has_many :post_votes
 
     def self.escaped_for_tsquery(s)
       "'#{s.gsub(/\0/, '').gsub(/'/, '\0\0').gsub(/\\/, '\0\0\0\0')}'"
