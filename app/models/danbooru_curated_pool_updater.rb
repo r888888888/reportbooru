@@ -11,7 +11,7 @@ class DanbooruCuratedPoolUpdater
     uri = URI.parse("#{ENV['DANBOORU_REPORTBOT_HOST']}/pools/#{pool_id}.json")
 
     Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.is_a?(URI::HTTPS)) do |http|
-      req = Net::HTTP::Post.new(uri.request_uri)
+      req = Net::HTTP::Patch.new(uri.request_uri)
       req.set_form_data(attribs)
       resp = http.request(req)
       if resp.is_a?(Net::HTTPSuccess)
