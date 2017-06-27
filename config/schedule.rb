@@ -17,3 +17,7 @@ end
 every '0 6 1,15 * *' do
 	runner "MessagedReports::MissingTags.new.send_messages"
 end
+
+every '0 7 * * *' do
+	runner "DanbooruCuratedPoolUpdater.new.update_pool"
+end
