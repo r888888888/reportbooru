@@ -25,9 +25,9 @@ class DanbooruCuratedPoolUpdater
   def find_posts
     max_id = DanbooruRo::Post.maximum(:id) - 8000
     super_voters = DanbooruRo::SuperVoter.pluck(:user_id)
-    desired_count = 500
+    desired_count = 300
     posts = nil
-    (1..20).detect do |x|
+    (3..20).detect do |x|
       posts = DanbooruRo::PostVote.where(user_id: super_voters).where("post_id > ?", max_id).group("post_id").having("count(*) >= ?", x).pluck("post_id")
       posts.size < desired_count
     end
