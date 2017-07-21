@@ -21,3 +21,7 @@ end
 every '0 7 * * *' do
 	runner "DanbooruCuratedPoolUpdater.new.update_pool"
 end
+
+every 2.weeks do
+	runner "Exports::Ccs.build"
+end

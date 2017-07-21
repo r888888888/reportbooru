@@ -46,6 +46,10 @@ module DanbooruRo
       x = (date - base) / 365.0
       [13303.93124 * x**2 + 75291.75128 * x - 43332.07692, 0].max.to_i
     end
+
+    def tag_array
+      tag_string.split
+    end
   end
 
 end

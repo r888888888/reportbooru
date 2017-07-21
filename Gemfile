@@ -38,6 +38,7 @@ gem 'pony'
 gem 'google-api-client'
 gem 'haml'
 gem 'statistics2'
+gem 'cityhash'
 
 group :production do
   gem 'unicorn', :platforms => :ruby
