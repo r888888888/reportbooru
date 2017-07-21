@@ -1,3 +1,5 @@
+require 'csv'
+
 module Exports
   class Ccs
     def self.build
@@ -9,10 +11,15 @@ module Exports
             tags =[]
             post.tag_array.each do |tag|
               if DanbooruRo::Tag.select_category_for(tag) == 4
-                chartags << tag
+                tags << tag
               end
             end
-            csv << [post.id, post.md5, "https://s3.amazonaws.com/danbooru" + post.large_file_url.sub(/\/data/, ""), tags.join(" ")]
+            if post.image_width.to_i > 850
+              large_file_path = "sample/sample-#{post.md5}.jpg"
+            else
+              large_file_path = "#{post.md5}.#{post.file_ext}"
+            end
+            csv << [post.id, post.md5, "https://s3.amazonaws.com/danbooru/#{large_file_path}", tags.join(" ")]
           end
         end
       end
