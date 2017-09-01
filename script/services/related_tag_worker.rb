@@ -81,6 +81,9 @@ while $running
         LOGGER.error "unknown message: #{msg.body}"
       end
     end
+  rescue PG::ConnectionBad => e
+    LOGGER.error "error: #{e}"
+    DanbooruRo::Base.connection.reconnect!
   rescue Exception => e
     LOGGER.error "error: #{e}"
     60.times do
