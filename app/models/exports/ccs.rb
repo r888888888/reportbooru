@@ -3,12 +3,12 @@ require 'csv'
 module Exports
   class Ccs
     def self.build
-      n = 6.months.ago
+      n = 4.months.ago
       CSV.open("/var/www/reportbooru/shared/public/exports/posts_chars.csv", "wb") do |csv|
         csv << ["id", "md5", "url", "tags"]
-        DanbooruRo::Post.where("tag_count_character <= 2 and created_at > ?", n).find_each do |post|
+        DanbooruRo::Post.where("created_at > ?", n).find_each do |post|
           if (post.file_ext == "jpg" || post.file_ext == "png") && (post.tag_count_character == 1 || post.tag_string =~ /\dgirl|\dboy/) && post.tag_string !~ /comic|monochrome/
-            tags =[]
+            tags = []
             post.tag_array.each do |tag|
               if DanbooruRo::Tag.select_category_for(tag) == 4 && !DanbooruRo::TagImplication.where(antecedent_name: tag).exists?
                 tags << tag
