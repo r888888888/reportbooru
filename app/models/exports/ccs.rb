@@ -14,6 +14,7 @@ module Exports
                 tags << tag
               end
             end
+            next if tags.size > 2
             tags.each do |tag|
               if post.image_width.to_i > 850
                 large_file_path = "sample/sample-#{post.md5}.jpg"
