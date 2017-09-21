@@ -1,7 +1,7 @@
 module Reports
   class ContributorUploads < Uploads
     def version
-      3
+      4
     end
 
     def html_template
@@ -37,6 +37,7 @@ module Reports
           %th Char
           %th Copy
           %th Art
+          %th{:title => "Percentage that are comics"} Comic
           %th{:title => "Median score"} Med Score
           %th{:title => "Lower bound of 95% confidence interval for probability that an upload gets a negative score"} Neg Conf
           %th Unq Downvote
@@ -59,6 +60,7 @@ module Reports
             %td= datum[:character]
             %td= datum[:copyright]
             %td= datum[:artist]
+            %td= datum[:comic_ratio]
             %td= datum[:med_score]
             %td= datum[:neg_conf]
             %td= datum[:uniq_downvoters]
