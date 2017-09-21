@@ -27,7 +27,7 @@ module Reports
       character = client.count_character_added_v1(user_id)
       copyright = client.count_copyright_added_v1(user_id)
       artist = client.count_artist_added_v1(user_id)
-      comic = DanbooruRo::Post.where("created_at > ?").where(uploader_id: user.id).raw_tag_match("comic").count
+      comic = DanbooruRo::Post.where("created_at > ?", date_window).where(uploader_id: user.id).raw_tag_match("comic").count
       med_score = DanbooruRo::Post.select_value_sql("select percentile_cont(0.50) within group (order by score) from posts where created_at >= ? and uploader_id = ?", date_window, user.id).to_i
       del_conf = "%.1f%" % deletion_ci_for(user_id, date_window)
       neg_conf = "%.1f%" % negative_score_ci_for(user_id, date_window)
