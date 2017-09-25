@@ -25,3 +25,7 @@ end
 every 2.weeks do
 	runner "Exports::Ccs.build"
 end
+
+every 2.weeks do
+	runner "Exports::Tms.build"
+end
