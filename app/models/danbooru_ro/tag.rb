@@ -1,6 +1,7 @@
 module DanbooruRo
   class Tag < Base
     attr_readonly *column_names
+    CATEGORIES = ["general", "artist", nil, "copyright", "character"]
 
     def self.select_category_for(tag_name)
       key = CityHash.hash64(tag_name).to_s(36)
