@@ -294,7 +294,7 @@ class NoteExporter
 end
 
 class FlatPostVersionExporter
-  BATCH_SIZE = 1000
+  BATCH_SIZE = 100
   SCHEMA = {
     version_id: {type: "INTEGER"},
     version: {type: "INTEGER"},
@@ -439,7 +439,7 @@ class FlatPostVersionExporter
 end
 
 class PostVersionExporter
-  BATCH_SIZE = 1000
+  BATCH_SIZE = 100
   SCHEMA = {
     id: {type: "INTEGER"},
     updated_at: {type: "TIMESTAMP"},

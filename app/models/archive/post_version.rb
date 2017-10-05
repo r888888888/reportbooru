@@ -38,7 +38,7 @@ module Archive
         }
       end
 
-      where("created_at >= ?", 4.months.ago).find_each do |version|
+      where("updated_at >= ?", 4.months.ago).find_each do |version|
         batch = []
         if !client.post_version_exists?(version.version, version.post_id)
           previous = version.previous
