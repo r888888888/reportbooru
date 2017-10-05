@@ -15,6 +15,11 @@ module BigQuery
       query("select id, post_id, updated_at, updater_id, updater_ip_addr, tags, added_tags, removed_tags, parent_id, rating, source from [danbooru_#{Rails.env}.post_versions] where regexp_match(added_tags, \"(?:^| )#{tag}(?:$| )\") order by updated_at desc limit 1000")
     end
 
+    def post_version_exists?(version, post_id)
+      count = get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and version = #{version} and post_id = #{post_id}")
+      return count.to_i >= 1
+    end
+
     def count_changes(user_id)
       get_count query("select count(*) from [danbooru_#{Rails.env}.post_versions_flat_part] where _partitiontime >= timestamp('#{part_s}') and updater_id = #{user_id} and updated_at >= '#{date_s}' and (added_tag is null or added_tag not in (#{TRANSIENT_TAGS_SQL})) and (removed_tag is null or removed_tag not in (#{TRANSIENT_TAGS_SQL}))")
     end

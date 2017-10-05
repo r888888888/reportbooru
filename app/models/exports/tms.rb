@@ -14,7 +14,7 @@ module Exports
           copy_tags = []
           tags.each do |tag|
             category = DanbooruRo::Tag.select_category_for(tag).to_i
-            case Tag::CATEGORIES[category]
+            case DanbooruRo::Tag::CATEGORIES[category]
             when "artist"
               art_tags << tag
 
