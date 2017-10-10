@@ -63,6 +63,12 @@ while $running
         LOGGER.info "processing #{user_id}"
         query = PostVoteSimilarityQuery.new(user_id)
         query.calculate
+      elsif msg.body =~ /targetedpostdownvoting-(\d+)-(\d+)/
+        # hijacking this service to send async reports
+        user_id = $1
+        post_id = $2
+        LOGGER.info "processing targeted post down voting report for #{user_id}"
+        MessagedReports::TargetedPostDownVoting.new(user_id, post_id).send_message
       else
         LOGGER.error "unknown message: #{msg.body}"
       end
