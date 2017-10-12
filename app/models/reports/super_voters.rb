@@ -39,7 +39,8 @@ module Reports
           %th{:title => "Percentage of up votes on safe posts"} S
           %th{:title => "Percentage of up votes on questionable posts"} Q
           %th{:title => "Percentage of up votes on explicit posts"} E
-          %th{:title => "Jaccard Similarity to User 0"}
+          %th{:title => "Jaccard Similarity to User 0"} Jacc
+          %th{:title => "Cosine Distance to User 0"} Cos
       %tbody
         - data.each do |datum|
           %tr
@@ -54,6 +55,7 @@ module Reports
             %td= datum[:questionable]
             %td= datum[:explicit]
             %td= datum[:jaccard]
+            %td= datum[:cosine]
     %p= "Since \#{date_window.utc} to \#{Time.now.utc}"
 EOS
     end
@@ -75,6 +77,7 @@ EOS
       post_ids_0 = DanbooruRo::PostVote.where("created_at >= ? and user_id = 1", date_window).pluck(:post_id)
       intersect = (post_ids_1 & post_ids_0).size
       jaccard = "%d%%" % (100 * intersect.to_f / (post_ids_1.size + post_ids_0.size - intersect).to_f)
+      cosine = "%d%%" % (100 * intersect.to_f / Math.sqrt(post_ids_1.size * post_ids_0.size))
 
       return {
         id: user.id,
@@ -88,7 +91,8 @@ EOS
         safe: safe,
         questionable: questionable,
         explicit: explicit,
-        jaccard: jaccard
+        jaccard: jaccard,
+        cosine: cosine
       }
     end
 
