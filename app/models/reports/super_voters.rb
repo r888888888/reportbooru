@@ -77,7 +77,7 @@ EOS
       post_ids_0 = DanbooruRo::PostVote.where("created_at >= ? and user_id = 1", date_window).pluck(:post_id)
       intersect = (post_ids_1 & post_ids_0).size
       jaccard = "%d%%" % (100 * intersect.to_f / (post_ids_1.size + post_ids_0.size - intersect).to_f)
-      cosine = "%d%%" % (100 * intersect.to_f / Math.sqrt(post_ids_1.size * post_ids_0.size))
+      cosine = "%.3f" % intersect.to_f / Math.sqrt(post_ids_1.size * post_ids_0.size)
 
       return {
         id: user.id,
