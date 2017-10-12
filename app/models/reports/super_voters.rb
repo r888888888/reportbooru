@@ -1,7 +1,7 @@
 module Reports
 	class SuperVoters < Base
 		def version
-			1
+			2
 		end
 
     def report_name
@@ -39,6 +39,7 @@ module Reports
           %th{:title => "Percentage of up votes on safe posts"} S
           %th{:title => "Percentage of up votes on questionable posts"} Q
           %th{:title => "Percentage of up votes on explicit posts"} E
+          %th{:title => "Jaccard Similarity to User 0"}
       %tbody
         - data.each do |datum|
           %tr
@@ -52,6 +53,7 @@ module Reports
             %td= datum[:safe]
             %td= datum[:questionable]
             %td= datum[:explicit]
+            %td= datum[:jaccard]
     %p= "Since \#{date_window.utc} to \#{Time.now.utc}"
 EOS
     end
@@ -69,6 +71,10 @@ EOS
       safe = "%d%%" % (100 * safe.to_f / post_count.to_f)
       questionable = "%d%%" % (100 * questionable.to_f / post_count.to_f)
       explicit = "%d%%" % (100 * explicit.to_f / post_count.to_f)
+      post_ids_1 = DanbooruRo::PostVote.where("created_at >= ? and user_id = ?", date_window, user_id).pluck(:post_id)
+      post_ids_0 = DanbooruRo::PostVote.where("created_at >= ? and user_id = 1", date_window).pluck(:post_id)
+      intersect = (post_ids_1 & post_ids_0).size
+      jaccard = "%d%%" % (100 * intersect.to_f / (post_ids_1.size + post_ids_0.size - intersect).to_f)
 
       return {
         id: user.id,
@@ -81,7 +87,8 @@ EOS
         med_score: med_score,
         safe: safe,
         questionable: questionable,
-        explicit: explicit
+        explicit: explicit,
+        jaccard: jaccard
       }
     end
 

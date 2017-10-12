@@ -670,6 +670,7 @@ end
 class PostVoteExporter
   BATCH_SIZE = 1000
   SCHEMA = {
+    id: {type: "INTEGER"},
     post_id: {type: "INTEGER"},
     user_id: {type: "INTEGER"},
     score: {type: "INTEGER"},
