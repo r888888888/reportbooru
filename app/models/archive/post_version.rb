@@ -38,54 +38,59 @@ module Archive
         }
       end
 
-      where("updated_at >= ?", 4.months.ago).find_each do |version|
+      where("updated_at >= ? and id >= ?", 4.months.ago, 19328134).find_each do |version|
         batch = []
-        if !client.post_version_exists?(version.version, version.post_id)
-          previous = version.previous
-          diff = calculate_diff.call(previous, version)
-          vnum = version.version
-          
-          diff[:added_tags].each do |added_tag|
-            hash = {
-              "version_id" => version.id,
-              "version" => vnum,
-              "updated_at" => version.updated_at,
-              "post_id" => version.post_id,
-              "added_tag" => added_tag,
-              "updater_id" => version.updater_id,
-              "updater_ip_addr" => version.updater_ip_addr.to_s
-            }
-            batch << hash
-          end
+        begin
+          if !client.post_version_exists?(version.version, version.post_id)
+            previous = version.previous
+            diff = calculate_diff.call(previous, version)
+            vnum = version.version
+            
+            diff[:added_tags].each do |added_tag|
+              hash = {
+                "version_id" => version.id,
+                "version" => vnum,
+                "updated_at" => version.updated_at,
+                "post_id" => version.post_id,
+                "added_tag" => added_tag,
+                "updater_id" => version.updater_id,
+                "updater_ip_addr" => version.updater_ip_addr.to_s
+              }
+              batch << hash
+            end
 
-          diff[:removed_tags].each do |removed_tag|
-            hash = {
-              "version_id" => version.id,
-              "version" => vnum,
-              "updated_at" => version.updated_at,
-              "post_id" => version.post_id,
-              "removed_tag" => removed_tag,
-              "updater_id" => version.updater_id,
-              "updater_ip_addr" => version.updater_ip_addr.to_s
-            }
-            batch << hash
-          end
+            diff[:removed_tags].each do |removed_tag|
+              hash = {
+                "version_id" => version.id,
+                "version" => vnum,
+                "updated_at" => version.updated_at,
+                "post_id" => version.post_id,
+                "removed_tag" => removed_tag,
+                "updater_id" => version.updater_id,
+                "updater_ip_addr" => version.updater_ip_addr.to_s
+              }
+              batch << hash
+            end
 
-          if diff[:added_tags].empty? && diff[:removed_tags].empty?
-            hash = {
-              "version_id" => version.id,
-              "version" => vnum,
-              "updated_at" => version.updated_at,
-              "post_id" => version.post_id,
-              "updater_id" => version.updater_id,
-              "updater_ip_addr" => version.updater_ip_addr.to_s
-            }
-            batch << hash
-          end
+            if diff[:added_tags].empty? && diff[:removed_tags].empty?
+              hash = {
+                "version_id" => version.id,
+                "version" => vnum,
+                "updated_at" => version.updated_at,
+                "post_id" => version.post_id,
+                "updater_id" => version.updater_id,
+                "updater_ip_addr" => version.updater_ip_addr.to_s
+              }
+              batch << hash
+            end
 
-          partition_timestamp = batch[0]["updated_at"].strftime("%Y%m%d")
-          puts "inserting #{version.id} (#{version.post_id}.#{version.version})"
-          result = client.client.insert("post_versions_flat_part$#{partition_timestamp}", batch)
+            partition_timestamp = batch[0]["updated_at"].strftime("%Y%m%d")
+            puts "inserting #{version.id} (#{version.post_id}.#{version.version})"
+            result = client.client.insert("post_versions_flat_part$#{partition_timestamp}", batch)
+          end
+        rescue Exception => e
+          sleep(60)
+          retry
         end
       end
     end
