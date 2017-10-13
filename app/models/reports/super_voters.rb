@@ -1,7 +1,7 @@
 module Reports
 	class SuperVoters < Base
 		def version
-			2
+			3
 		end
 
     def report_name
@@ -70,14 +70,14 @@ EOS
       questionable = DanbooruRo::PostVote.where("post_votes.created_at > ? and post_votes.user_id = ? and post_votes.score > 0", date_window, user_id).joins(:post).where("posts.rating = ?", "q").count
       explicit = DanbooruRo::PostVote.where("post_votes.created_at > ? and post_votes.user_id = ? and post_votes.score > 0", date_window, user_id).joins(:post).where("posts.rating = ?", "e").count
       post_count = safe + questionable + explicit
-      safe = "%d%%" % (100 * safe.to_f / post_count.to_f)
-      questionable = "%d%%" % (100 * questionable.to_f / post_count.to_f)
-      explicit = "%d%%" % (100 * explicit.to_f / post_count.to_f)
+      safe = "%.0f%%" % (100 * safe.to_f / post_count.to_f)
+      questionable = "%.0f%%" % (100 * questionable.to_f / post_count.to_f)
+      explicit = "%.0f%%" % (100 * explicit.to_f / post_count.to_f)
       post_ids_1 = DanbooruRo::PostVote.where("created_at >= ? and user_id = ?", date_window, user_id).pluck(:post_id)
       post_ids_0 = DanbooruRo::PostVote.where("created_at >= ? and user_id = 1", date_window).pluck(:post_id)
       intersect = (post_ids_1 & post_ids_0).size
-      jaccard = "%d%%" % (100 * intersect.to_f / (post_ids_1.size + post_ids_0.size - intersect).to_f)
-      cosine = "%.3f" % intersect.to_f / Math.sqrt(post_ids_1.size * post_ids_0.size)
+      jaccard = "%.0f%%" % (100 * intersect.to_f / (post_ids_1.size + post_ids_0.size - intersect).to_f)
+      cosine = "%.3f" % (intersect.to_f / Math.sqrt(post_ids_1.size * post_ids_0.size))
 
       return {
         id: user.id,

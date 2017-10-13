@@ -7,7 +7,7 @@ module Reports
     end
 
     def version
-      3
+      4
     end
 
     def html_template
@@ -85,12 +85,12 @@ EOS
       questionable = DanbooruRo::Post.where("created_at > ?", date_window).where(approver_id: user.id, rating: "q").count
       explicit = DanbooruRo::Post.where("created_at > ?", date_window).where(approver_id: user.id, rating: "e").count
       post_count = safe + questionable + explicit
-      safe = "%d%%" % (100 * safe.to_f / post_count.to_f)
-      questionable = "%d%%" % (100 * questionable.to_f / post_count.to_f)
-      explicit = "%d%%" % (100 * explicit.to_f / post_count.to_f)
+      safe = "%.0f%%" % (100 * safe.to_f / post_count.to_f)
+      questionable = "%.0f%%" % (100 * questionable.to_f / post_count.to_f)
+      explicit = "%.0f%%" % (100 * explicit.to_f / post_count.to_f)
       med_score = DanbooruRo::Post.select_value_sql("select percentile_cont(0.50) within group (order by score) from posts where created_at >= ? and approver_id = ?", date_window, user.id).to_i
-      del_conf = "%.1f%%" % deletion_ci_for(user_id, date_window, :approver_id)
-      neg_conf = "%.1f%%" % negative_score_ci_for(user_id, date_window, :approver_id)
+      del_conf = "%.0f%%" % deletion_ci_for(user_id, date_window, :approver_id)
+      neg_conf = "%.0f%%" % negative_score_ci_for(user_id, date_window, :approver_id)
       uniq_flaggers = DanbooruRo::PostFlag.joins("join posts on post_flags.post_id = posts.id").where("posts.created_at > ? and posts.is_deleted = true and posts.approver_id = ?", date_window, user_id).distinct.count("post_flags.creator_id")
       uniq_downvoters = DanbooruRo::PostVote.joins("join posts on post_votes.post_id = posts.id").where("posts.created_at > ? and post_votes.score < 0 and posts.approver_id = ?", date_window, user_id).distinct.count("post_votes.user_id")
 
