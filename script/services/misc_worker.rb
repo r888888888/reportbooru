@@ -1,3 +1,6 @@
+require "dotenv"
+Dotenv.load
+
 require "redis"
 require "logger"
 require "aws-sdk"
