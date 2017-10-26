@@ -22,7 +22,7 @@ module MessagedReports
       uploader_name = DanbooruRo::User.find(post.uploader_id).name
 
       title = "Targeted voting on posts for #{uploader_name} on post ##{post.id}"
-      body = "The following users are suspected of downvoting uploads by #{uploader_name} based on data from post ##{post.id}. In general, you should look for a similarity percentage above 25%.\n\nThe fraction in the parentheses is the number of posts uploaded by #{uploader_name} that were downvoted by the suspect, divided by the count of all the uploads of #{uploader_name} and downvotes of the suspect. This is to normalize the effects of users who many upload a lot, or users who may vote a lot. If every downvote from the suspect was for every upload from the user, then this ratio will be 1. All upload counts are limited to the most recent 90 days.\n\n"
+      body = "The following users are suspected of downvoting uploads by #{uploader_name} based on data from post ##{post.id}. In general, you should look for a similarity percentage above 25%.\n\nThe fraction in the parentheses is the number of posts uploaded by #{uploader_name} that were downvoted by the suspect, divided by the count of all the uploads of #{uploader_name} and downvotes of the suspect. This is to normalize the effects of users who may upload a lot, or users who may vote a lot. If every downvote from the suspect was for every upload from the user, then this ratio will be 1. All upload counts are limited to the most recent 90 days.\n\n"
 
       results.each do |result|
         voter_name = DanbooruRo::User.find(result.user_id).name
