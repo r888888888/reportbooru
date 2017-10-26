@@ -1,5 +1,11 @@
+env "MAILTO", "r888888888@gmail.com"
+
 every 1.day do
   runner "HitCounter.new.prune!"
+end
+
+every 1.day do
+	runner "Archive::PostVersion.export_missing(30.hours.ago)"
 end
 
 every :sunday, :at => "1:00 am" do

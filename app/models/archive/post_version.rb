@@ -12,8 +12,9 @@ module Archive
       end
     end
 
-    def self.export_missing
-      client = BigQuery::PostVersion.new(4.months.ago)
+    def self.export_missing(start_time)
+      client = BigQuery::PostVersion.new(start_time)
+      Google::Apis.logger.level = Logger::ERROR
       calculate_diff = lambda do |older, newer|
         if older
           older_tags = older.tags.scan(/\S+/)
@@ -38,7 +39,7 @@ module Archive
         }
       end
 
-      where("updated_at >= ? and id >= ?", 4.months.ago, 19328134).find_each do |version|
+      where("updated_at >= ? and updated_at < ?", start_time, 70.minutes.ago).find_each do |version|
         batch = []
         begin
           if !client.post_version_exists?(version.version, version.post_id)
