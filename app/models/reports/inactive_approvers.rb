@@ -5,7 +5,7 @@ module Reports
     end
 
     def version
-      3
+      4
     end
 
     def html_template
@@ -14,6 +14,7 @@ module Reports
   %head
     %title Inactive Approver Report
     %meta{:name => "viewport", :content => "width=device-width, initial-scale=1"}
+    %meta{:charset => "UTF-8"}
     %script{:src => "/user-reports/assets/jquery-3.1.1.slim.min.js"}
     %script{:src => "/user-reports/assets/jquery.tablesorter.min.js"}
     %link{:rel => "stylesheet", :href => "/user-reports/assets/pure.css"}
@@ -49,7 +50,7 @@ EOS
       users = DanbooruRo::User.where("bit_prefs::bit(32) & #{can_approve_bit}::bit(32) = #{can_approve_bit}::bit(32)")
       users.select do |user|
         DanbooruRo::PostApproval.where("created_at > ? and user_id = ?", date_window, user.id).count + DanbooruRo::PostDisapproval.where("created_at > ? and user_id = ?", date_window, user.id).count < max_approvals
-      end
+      end.map(:id)
     end
 
     def report_name
