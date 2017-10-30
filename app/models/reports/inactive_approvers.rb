@@ -50,7 +50,7 @@ EOS
       users = DanbooruRo::User.where("bit_prefs::bit(32) & #{can_approve_bit}::bit(32) = #{can_approve_bit}::bit(32)")
       users.select do |user|
         DanbooruRo::PostApproval.where("created_at > ? and user_id = ?", date_window, user.id).count + DanbooruRo::PostDisapproval.where("created_at > ? and user_id = ?", date_window, user.id).count < max_approvals
-      end.map(:id)
+      end.map(&:id)
     end
 
     def report_name
