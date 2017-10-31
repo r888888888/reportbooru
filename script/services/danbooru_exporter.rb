@@ -731,18 +731,10 @@ end
 
 while $running
   begin
-    NoteExporter.new(REDIS, LOGGER, GBQ).execute
-    exit unless $running
-    FlatPostVersionExporter.new(REDIS, LOGGER, GBQ).execute
-    exit unless $running
-    PostVersionExporter.new(REDIS, LOGGER, GBQ).execute
-    exit unless $running
-    WikiPageExporter.new(REDIS, LOGGER, GBQ).execute
-    exit unless $running
-    ArtistVersionExporter.new(REDIS, LOGGER, GBQ).execute
-    exit unless $running
-    PostVoteExporter.new(REDIS, LOGGER, GBQ).execute
-    exit unless $running
+    [NoteExporter, FlatPostVersionExporter, PostVersionExporter, WikiPageExporter, ArtistVersionExporter, PostVoteExporter].each do |exporter|
+      exporter.new(REDIS, LOGGER, GBQ).execute
+      exit unless $running
+    end
   rescue Exception => e
     LOGGER.error("error: #{e}")
   end

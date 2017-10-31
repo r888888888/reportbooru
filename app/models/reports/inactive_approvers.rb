@@ -5,7 +5,7 @@ module Reports
     end
 
     def version
-      4
+      5
     end
 
     def html_template
@@ -46,7 +46,7 @@ EOS
     end
 
     def candidates
-      can_approve_bit = (1 << 14)
+      can_approve_bit = (1 << 13)
       users = DanbooruRo::User.where("bit_prefs::bit(32) & #{can_approve_bit}::bit(32) = #{can_approve_bit}::bit(32)")
       users.select do |user|
         DanbooruRo::PostApproval.where("created_at > ? and user_id = ?", date_window, user.id).count + DanbooruRo::PostDisapproval.where("created_at > ? and user_id = ?", date_window, user.id).count < max_approvals
