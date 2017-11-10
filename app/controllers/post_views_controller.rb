@@ -32,7 +32,7 @@ class PostViewsController < ApplicationController
 protected
 
   def verify_msg(msg)
-    verifier = ActiveSupport::MessageVerifier.new(ENV["DANBOORU_SHARED_REMOTE_KEY"], digest: "SHA256")
+    verifier = ActiveSupport::MessageVerifier.new(ENV["DANBOORU_SHARED_REMOTE_KEY"], serializer: JSON, digest: "SHA256")
     res = verifier.verify(msg)
     post_id, session_id = res.split(/,/)
     [post_id.to_i, session_id]
