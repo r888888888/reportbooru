@@ -100,7 +100,6 @@ class ViewCounter
     redis.zincrby(key, 1, post_id)
     redis.expire(key, redis_expiry)
     update_dynamodb_rank(date_key, get_rank(date_key, 50).to_json) if redis.get("udb-rank").nil?
-    redis.setex("udb-rank", 60, "1")
   end
 
   def get_rank(date, limit)
@@ -122,6 +121,7 @@ class ViewCounter
       "data" => jsons
     }
     dynamodb.put_item(table_name: "post_view_summaries_#{Rails.env}", item: item)
+    redis.setex("udb-rank", 60, "1")
   end
 
   def fetch_rank(date)
