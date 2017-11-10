@@ -6,8 +6,8 @@ class PostViewsController < ApplicationController
 
   def create
     if params[:msg]
-      post_id, user_id = verify_msg(params[:msg])
-      ViewCounter.new.count!(post_id, user_id)
+      post_id, session_id = verify_msg(params[:msg])
+      ViewCounter.new.count!(post_id, session_id)
       render nothing: true
     else
       render nothing: true, status: 422
@@ -34,6 +34,7 @@ protected
   def verify_msg(msg)
     verifier = ActiveSupport::MessageVerifier.new(ENV["DANBOORU_SHARED_REMOTE_KEY"], digest: "SHA256")
     res = verifier.verify(msg)
-    res.split(/,/)
+    post_id, session_id = res.split(/,/)
+    [post_id.to_i, session_id]
   end
 end

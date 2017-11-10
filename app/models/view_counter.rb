@@ -5,12 +5,11 @@
 # - all counts are for a unique session
 # - every time a user visits a post in a day, count that as one view
 # - get a count of unique visitors for a post for a day
-#   - key: phc-ps-hll-$POSTID-$DATE (expires in 1 day)
-#   - key: phc-ps-day-$POSTID-$DATE (expires in 1 day, backed by dynamodb)
+#   - key: hll-$POSTID-$DATE (expires in 1 day)
 # - get a count of unique visitors for a post for all time
-#   - key: phc-ps-all-$POSTID (expires in 1 day, backed by dynamodb)
+#   - key: vc-$POSTID (expires in 1 day, backed by dynamodb)
 # - get the most viewed posts on a given day
-#   - key: phc-ps-rank-day-$DATE (expires in 1 day, backed by dynamodb)
+#   - key: vc-rank-$DATE (expires in 1 day, backed by dynamodb)
 
 require 'memoist'
 
@@ -25,13 +24,13 @@ class ViewCounter
 
   def get_count(post_id)
     key = "vc-#{post_id}"
-    redis.get(key) || fetch_post_view_count(post_id)
+    (redis.get(key) || fetch_post_view_count(post_id)).to_i
   end
 
-  def count!(post_id, user_id)
+  def count!(post_id, session_id)
     full_key = "vc-#{post_id}"
-    if unique?(post_id, user_id)
-      val = increment_redis_count(post_id, user_id)
+    if unique?(post_id, session_id)
+      val = increment_redis_count(post_id)
       add_rank(post_id)
       redis.setex("udb-#{post_id}", 10, "1")
       val
@@ -40,7 +39,7 @@ class ViewCounter
     end
   end
 
-  def increment_redis_count(post_id, user_id)
+  def increment_redis_count(post_id)
     key = "vc-#{post_id}"
     if redis.exists(key)
       val = redis.incr(key)
@@ -86,9 +85,9 @@ class ViewCounter
 
   memoize :date_key
 
-  def unique?(post_id, user_id)
+  def unique?(post_id, session_id)
     key = "hll-#{date_key}-#{post_id}"
-    if redis.pfadd(key, user_id)
+    if redis.pfadd(key, session_id)
       redis.expire(key, redis_expiry)
       return true
     else
