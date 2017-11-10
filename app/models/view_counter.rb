@@ -99,7 +99,8 @@ class ViewCounter
     key = "vc-rank-#{date_key}"
     redis.zincrby(key, 1, post_id)
     redis.expire(key, redis_expiry)
-    update_dynamodb_rank(date_key, get_rank(date_key, 50).to_json) if update_dynamodb?(post_id)
+    update_dynamodb_rank(date_key, get_rank(date_key, 50).to_json) if redis.get("udb-rank").nil?
+    redis.setex("udb-rank", 60, "1")
   end
 
   def get_rank(date, limit)
