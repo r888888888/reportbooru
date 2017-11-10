@@ -19,9 +19,6 @@ class HitsController < ApplicationController
     when "day"
       render text: to_text(HitCounter.new.post_search_rank_day(@date, HitCounter::LIMIT))
 
-    when "month"
-      render text: to_text(HitCounter.new.post_search_rank_month(@date, HitCounter::LIMIT))
-
     else
       render nothing: true, status: 422
     end

@@ -99,7 +99,7 @@ class ViewCounter
     key = "vc-rank-#{date_key}"
     redis.zincrby(key, 1, post_id)
     redis.expire(key, redis_expiry)
-    update_dynamodb_rank(date_key, get_rank(date_key, 50).to_json) if redis.get("udb-rank").nil?
+    update_dynamodb_rank(date_key, get_rank(date_key, 100).to_json) if redis.get("udb-rank").nil?
   end
 
   def get_rank(date, limit)
@@ -142,7 +142,7 @@ class ViewCounter
   end
 
   def dynamodb
-    @client ||= Aws::DynamoDB::Client.new(region: "us-west-1")
+    Aws::DynamoDB::Client.new(region: "us-west-1")
   end
 
   memoize :dynamodb
