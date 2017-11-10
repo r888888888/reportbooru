@@ -276,6 +276,7 @@ DEPENDENCIES
   jbuilder (~> 2.0)
   jquery-rails
   lru_redux
+  memoist
   pg
   pony
   postgresql_cursor

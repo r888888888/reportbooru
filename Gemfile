@@ -39,6 +39,7 @@ gem 'google-api-client'
 gem 'haml'
 gem 'statistics2'
 gem 'cityhash'
+gem 'memoist'
 
 group :production do
   gem 'unicorn', :platforms => :ruby
