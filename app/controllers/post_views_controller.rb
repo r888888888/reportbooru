@@ -15,10 +15,9 @@ class PostViewsController < ApplicationController
   end
 
   def show
-    @date = Date.parse(params[:date]).to_s
-
     case params[:id]
     when "rank"
+      @date = Date.parse(params[:date]).to_s
       render text: ViewCounter.new.get_rank(@date, HitCounter::LIMIT).to_json
 
     when /\d+/

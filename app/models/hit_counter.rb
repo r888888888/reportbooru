@@ -15,6 +15,9 @@ class HitCounter
     redis.scan_each(match: "ps-month-*") do |key|
       redis.del(key)
     end
+    redis.scan_each(match: "psu-*") do |key|
+      redis.del(key)
+    end
   end
 
   def post_search_rank_day(date, limit)
