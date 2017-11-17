@@ -1,2 +1,2 @@
 redis: redis-server
-web: bundle exec unicorn
+web: bundle exec unicorn -p 3001

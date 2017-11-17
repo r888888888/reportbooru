@@ -103,16 +103,17 @@ class ViewCounter
   end
 
   def get_rank(date, limit)
-    key = "vc-rank-#{date}"
-    if redis.exists(key)
-      redis.zrevrange(key, 0, limit, with_scores: true)
+    if redis.exists("vc-rank-json-#{date}")
+      return JSON.parse(redis.get("vc-rank-json-#{date}"))
+    elsif redis.exists("vc-rank-#{date}")
+      redis.zrevrange("vc-rank-#{date}", 0, limit, with_scores: true)
     else
       fetch_rank(date)
     end
   end
 
   def assign_redis_rank(date, jsons)
-    redis.setex("vc-rank-#{date}", redis_expiry, jsons)
+    redis.setex("vc-rank-json-#{date}", redis_expiry, jsons)
   end
 
   def update_dynamodb_rank(date, jsons)
