@@ -8,11 +8,16 @@ module MessagedReports
       15.days.ago
     end
 
+    def metatags
+      @metatags ||= DanbooruRo::Tag.where(category: 5).pluck(:name)
+    end
+
     def send_messages
       candidates.each do |user_id|
         post_ids = post_ids_for(user_id)
         bq = BigQuery::PostVersion.new(date_window)
         missing = bq.aggregate_missing_tags(user_id, post_ids)
+        missing = missing.reject {|x| metatags.include?(x[0])} if missing
 
         if missing
           title = "You have tags that are underused on your uploads"
