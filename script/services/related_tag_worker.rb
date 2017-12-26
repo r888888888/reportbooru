@@ -36,7 +36,7 @@ REDIS = Redis.new
 SQS_QUEUE_URL = ENV["aws_sqs_related_tag_queue_url"]
 SQS_CLIENT = Aws::SQS::Client.new
 SQS_POLLER = Aws::SQS::QueuePoller.new(SQS_QUEUE_URL, client: SQS_CLIENT)
-CACHE = LruRedux::Cache.new(200)
+CACHE = LruRedux::TTL::Cache.new(200, 5 * 60)
 
 File.open($options[:pidfile], "w") do |f|
   f.write(Process.pid)
