@@ -1,5 +1,5 @@
 module Exports
-  class NoteExporter
+  class Note
     BATCH_SIZE = 1000
     SCHEMA = {
       version_id: {type: "INTEGER"},
