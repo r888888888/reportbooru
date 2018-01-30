@@ -44,7 +44,7 @@ module Reports
             %td= datum[:age]
             %td= datum[:change]
             %td= datum[:count]
-    %p= "Since \#{date_window.utc} to \#{Time.now.utc}. Users are basic members who have fewer than 100 changes before the period. Only changes that removed a tag are counted."
+    %p= "Since \#{date_window.utc} to \#{Time.now.utc}. Users are non-builder members who have fewer than 100 changes before the period. Only changes that removed a tag are counted."
 EOS
     end
 
@@ -54,7 +54,7 @@ EOS
 
     def calculate_data(user_id)
       user = DanbooruRo::User.find(user_id)
-      return nil unless user.level == 20
+      return nil unless user.level < DanbooruRo::User::Levels::BUILDER
       counts = Hash.new {|h, k| h[k] = 0}
 
       Archive::PostVersion.where(updater_id: user_id).where("updated_at > ?", date_window).find_each do |version|
@@ -89,7 +89,8 @@ EOS
     end
 
     def candidates
-      ids = Archive::PostVersion.where("post_versions.updated_at > ?", date_window).group("post_versions.updater_id").having("count(*) > ?", min_changes).pluck(:updater_id)
+      builders = DanbooruRo::User.where("level >= ?", DanbooruRo::User::Levels::BUILDER).pluck(:id)
+      ids = Archive::PostVersion.where("post_versions.updated_at > ? and post_versions.updater_id not in (?)", date_window, builders).group("post_versions.updater_id").having("count(*) > ?", min_changes).pluck(:updater_id)
       ids.select do |user_id|
         Archive::PostVersion.where("updated_at < ? and updated_at > ? and updater_id = ?", date_window, 1.year.ago, user_id).count < 100
       end
