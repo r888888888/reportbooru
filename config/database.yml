@@ -20,9 +20,10 @@ danbooru_development:
 danbooru_production:
   adapter: postgresql
   database: danbooru2
-  username: danbooru_ro
+  username: replication
   host: yukinoshita
   password: <%= ENV["DANBOORU_RO_PASSWORD"] %>
+  port: 5433
 
 archive_development:
   adapter: postgresql
