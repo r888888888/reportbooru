@@ -16,11 +16,15 @@ module Reports
       :total
     end
 
+    def title
+      "Post Change"
+    end
+
     def html_template
       return <<-EOS
 %html
   %head
-    %title Post Change Report
+    %title= "#{title} Report"
     %meta{:name => "viewport", :content => "width=device-width, initial-scale=1"}
     %script{:src => "/user-reports/assets/jquery-3.1.1.slim.min.js"}
     %script{:src => "/user-reports/assets/jquery.tablesorter.min.js"}
@@ -91,7 +95,8 @@ EOS
         artist: artist,
         character: character,
         copyright: copyright,
-        general: general
+        general: general,
+        title: title
       }
     end
 
