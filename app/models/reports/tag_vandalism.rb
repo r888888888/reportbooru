@@ -1,7 +1,7 @@
 module Reports
   class TagVandalism < Base
     def version
-      1
+      2
     end
 
     def min_changes
