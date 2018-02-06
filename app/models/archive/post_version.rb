@@ -39,7 +39,7 @@ module Archive
         }
       end
 
-      where("updated_at >= ? and updated_at < ?", start_time, 70.minutes.ago).find_each do |version|
+      where("updated_at >= ? and updated_at < ?", start_time, 24.hours.ago).find_each do |version|
         batch = []
         begin
           if !client.post_version_exists?(version.version, version.post_id)
