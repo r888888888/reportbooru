@@ -75,6 +75,7 @@ while $running
     end
   rescue PG::ConnectionBad => e
     LOGGER.error "error: #{e}"
+    sleep(10)
     DanbooruRo::Base.connection.reconnect!
   rescue Exception => e
     LOGGER.error e.message
