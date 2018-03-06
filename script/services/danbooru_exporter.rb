@@ -62,6 +62,10 @@ while $running
       exporter.new(REDIS, LOGGER, GBQ).execute
       exit unless $running
     end
+  rescue PG::ConnectionBad, PG::UnableToSend => e
+    LOGGER.error "error: #{e}"
+    sleep 30
+    DanbooruRo::Base.connection.reconnect!
   rescue Exception => e
     LOGGER.error("error: #{e}")
   end

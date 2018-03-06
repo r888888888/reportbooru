@@ -63,7 +63,7 @@ while $running
         LOGGER.error "unknown message: #{msg.body}"
       end
     end
-  rescue PG::ConnectionBad => e
+  rescue PG::ConnectionBad, PG::UnableToSend => e
     LOGGER.error "error: #{e}"
     DanbooruRo::Base.connection.reconnect!
   rescue Exception => e
