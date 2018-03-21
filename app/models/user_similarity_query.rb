@@ -33,9 +33,11 @@ class UserSimilarityQuery
   def calculate
     return if redis.zcard(redis_key) > 0
 
-    posts0 = DanbooruRo::Favorite.for_user(user_id).pluck_rows(:post_id)
+    min_post_id = DanbooruRo::Post.estimate_post_id(1.year.ago.to_date)
+
+    posts0 = DanbooruRo::Favorite.for_user(user_id).where("post_id > ?", min_post_id).pluck_rows(:post_id)
     DanbooruRo::User.where("id <> ? and favorite_count > ? and last_logged_in_at >= ?", user_id, MIN_FAV_COUNT, 1.year.ago).pluck_rows(:id).each do |user_id|
-      posts1 = DanbooruRo::Favorite.for_user(user_id).pluck_rows(:post_id)
+      posts1 = DanbooruRo::Favorite.for_user(user_id).where("post_id > ?", min_post_id).pluck_rows(:post_id)
       redis.zadd(redis_key, calculate_with_weighted_cosine(posts0, posts1), user_id)
     end
     redis.zremrangebyrank(redis_key, 0, -13)
