@@ -120,6 +120,7 @@ GEM
       signet (~> 0.7)
     haml (4.0.7)
       tilt
+    highline (1.7.10)
     httpclient (2.8.2.4)
     hurley (0.2)
     i18n (0.7.0)
@@ -272,6 +273,7 @@ DEPENDENCIES
   dotenv-rails
   google-api-client
   haml
+  highline
   httpclient
   jbuilder (~> 2.0)
   jquery-rails
@@ -294,4 +296,4 @@ DEPENDENCIES
   whenever
 
 BUNDLED WITH
-   1.13.3
+   1.16.1

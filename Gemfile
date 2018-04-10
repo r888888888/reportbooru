@@ -40,6 +40,7 @@ gem 'haml'
 gem 'statistics2'
 gem 'cityhash'
 gem 'memoist'
+gem 'highline'
 
 group :production do
   gem 'unicorn', :platforms => :ruby
