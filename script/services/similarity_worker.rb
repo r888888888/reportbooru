@@ -55,12 +55,12 @@ while $running
     SQS_POLLER.poll do |msg|
       if msg.body =~ /simusers-(\d+)/
         user_id = $1
-        LOGGER.info "processing #{user_id}"
+        LOGGER.info "processing users for #{user_id}"
         query = UserSimilarityQuery.new(user_id)
         query.calculate
       elsif msg.body =~ /simpvotes-(\d+)/
         user_id = $1
-        LOGGER.info "processing #{user_id}"
+        LOGGER.info "processing votes for #{user_id}"
         query = PostVoteSimilarityQuery.new(user_id)
         query.calculate
       elsif msg.body =~ /targetedpostdownvoting-(\d+)-(\d+)/
