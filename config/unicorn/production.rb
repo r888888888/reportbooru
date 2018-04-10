@@ -18,7 +18,7 @@ working_directory app_path
 ENV['RAILS_ENV'] = 'production'
 
 # Log everything to one file
-stderr_path "/dev/null"
+stderr_path "/var/log/reportbooru/unicorn.log"
 stdout_path "/dev/null"
 
 # Set master PID location
