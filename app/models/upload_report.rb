@@ -37,9 +37,14 @@ class UploadReport
   end
 
   def validate_key(sig)
-    digest = OpenSSL::Digest.new("sha256")
-    string = "#{min_date},#{max_date},#{queries.join(',')}"
-    calc_sig = OpenSSL::HMAC.hexdigest(digest, ENV["DANBOORU_SHARED_REMOTE_KEY"], string)
+    if sig =~ /--/
+      verifier = ActiveSupport::MessageVerifier.new(ENV["DANBOORU_SHARED_REMOTE_KEY"], serializer: JSON, digest: "SHA256")
+      calc_sig = verifier.generate("#{min_date},#{max_date},#{queries.join(',')}")
+    else
+      digest = OpenSSL::Digest.new("sha256")
+      string = "#{min_date},#{max_date},#{queries.join(',')}"
+      calc_sig = OpenSSL::HMAC.hexdigest(digest, , string)
+    end
 
     if calc_sig != sig
       raise VerificationError.new

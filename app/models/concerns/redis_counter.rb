@@ -15,8 +15,13 @@ module Concerns
     end
 
     def validate!(key, value, sig)
-      digest = OpenSSL::Digest.new("sha256")
-      calc_sig = OpenSSL::HMAC.hexdigest(digest, ENV["DANBOORU_SHARED_REMOTE_KEY"], "#{key},#{value}")
+      if sig =~ /--/
+        verifier = ActiveSupport::MessageVerifier.new(ENV["DANBOORU_SHARED_REMOTE_KEY"], serializer: JSON, digest: "SHA256")
+        calc_sig = verifier.generate("#{key},#{value}")
+      else
+        digest = OpenSSL::Digest.new("sha256")
+        calc_sig = OpenSSL::HMAC.hexdigest(digest, ENV["DANBOORU_SHARED_REMOTE_KEY"], "#{key},#{value}")
+      end
 
       if calc_sig != sig
         raise VerificationError.new
