@@ -13,8 +13,7 @@ class MissedSearchCounter
     client.zrevrange("msc-all", 0, LIMIT, with_scores: true)
   end
 
-  def count!(tags, session_id, sig)
-    validate!(nil, session_id, sig)
+  def count!(tags, session_id)
     tags = normalize_tags(tags)
     code = hash(tags)
     today = Time.now.strftime("%Y%m%d")

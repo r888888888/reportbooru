@@ -2,10 +2,12 @@ class MissedSearchesController < ApplicationController
   skip_before_filter :verify_authenticity_token
   before_filter :enable_cors
   rescue_from Concerns::RedisCounter::VerificationError, :with => :render_verification_error
+  rescue_from ActiveSupport::MessageVerifier::InvalidSignature, with: :render_verification_error
 
   def create
-    if params[:tags] && params[:session_id] && params[:sig]
-      MissedSearchCounter.new.count!(params[:tags], params[:session_id], params[:sig])
+    if params[:msg]
+      tags, session_id = verify_msg(params[:msg])
+      MissedSearchCounter.new.count!(tags, session_id)
       render nothing: true
     else
       render nothing: true, status: 422
@@ -18,6 +20,13 @@ class MissedSearchesController < ApplicationController
   end
 
 protected
+  def verify_msg(msg)
+    verifier = ActiveSupport::MessageVerifier.new(ENV["DANBOORU_SHARED_REMOTE_KEY"], serializer: JSON, digest: "SHA256")
+    res = verifier.verify(msg)
+    tags, session_id = res.split(/,/)
+    [tags, session_id]
+  end
+
   def render_verification_error
     render :text => "provided signature is invalid", :status => :forbidden
   end
