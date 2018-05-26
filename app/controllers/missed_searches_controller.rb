@@ -5,8 +5,8 @@ class MissedSearchesController < ApplicationController
   rescue_from ActiveSupport::MessageVerifier::InvalidSignature, with: :render_verification_error
 
   def create
-    if params[:msg]
-      tags, session_id = verify_msg(params[:msg])
+    if params[:sig]
+      tags, session_id = verify_msg(params[:sig])
       MissedSearchCounter.new.count!(tags, session_id)
       render nothing: true
     else

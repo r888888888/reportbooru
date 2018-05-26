@@ -31,8 +31,6 @@ class SearchCounter
   end
 
   def count!(key, value)
-    validate!(key, value, sig)
-
     case key
     when /^ps-(.+)/
       increment_post_search_count($1, value)
