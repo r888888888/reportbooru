@@ -19,7 +19,7 @@ class SearchCounter
     end
   end
 
-  def post_search_rank_day(date, limit)
+  def get_rank(date, limit)
     key = "ps-day-#{date.strftime('%Y%m%d')}"
     client.zrevrange(key, 0, limit, with_scores: true)
   end
