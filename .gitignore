@@ -21,3 +21,4 @@ config/unicorn/production.rb
 .env
 
 dump.rdb
+script/scratch.rb

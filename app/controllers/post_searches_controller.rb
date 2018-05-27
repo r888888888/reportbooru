@@ -16,7 +16,7 @@ class PostSearchesController < ApplicationController
 
   def show
     if params[:id] == "rank"
-      @date = Date.parse(params[:date]).to_s
+      @date = Date.parse(params[:date])
       render text: SearchCounter.new.get_rank(@date, HitCounter::LIMIT).to_json
     end
   end
