@@ -44,8 +44,8 @@ module Reports
         %tr
           %th User
           %th Down Votes
-          %th Targeted Uploaders
-          %th Similar Voters
+          %th{:title => "Sorted by percentage"} Targeted Uploaders
+          %th{:title => "Across all down votes, not just this user, scored using Jaccard index"} Similar Voters
       %tbody
         - data.each do |datum|
           %tr
