@@ -74,7 +74,7 @@ EOS
       mapping = mapping.to_a.map do |uploader_id, count|
         [uploader_id, 100 * count.to_f / total]
       end
-      mapping = mapping.sort_by {|x| x[1]}.last(5)
+      mapping = mapping.sort_by {|x| x[1]}.last(3).reverse
     end
 
     def similar(user_id)
@@ -88,7 +88,7 @@ EOS
         jaccard_index = 100 * (intersection.size.to_f) / (user_votes.size + candidate_votes.size - intersection.size).to_f
         scores[candidate_id] = jaccard_index
       end
-      scores.to_a.sort_by {|x| x[1]}.last(3)
+      scores.to_a.sort_by {|x| x[1]}.last(3).reverse
     end
 
     def calculate_data(user_id)
