@@ -1,6 +1,6 @@
 module Reports
   def generate_all
-    [AddRequestTags, Approvers, ArtistCommentaries, Artists, BulkUpdateRequests, Comments, ContributorUploads, ForumPosts, ForumTopics, InactiveApprovers, MemberUploads, Pools, PostAppeals, PostChanges, PostFlags, PostReplacements, Notes, SuperVoters, TagAliases, TagImplications, Taggers, TagVandalism, TranslatorTags, WikiPages].each do |model|
+    [AddRequestTags, Approvers, ArtistCommentaries, Artists, BulkUpdateRequests, Comments, ContributorUploads, DownVotes, ForumPosts, ForumTopics, InactiveApprovers, MemberUploads, Pools, PostAppeals, PostChanges, PostFlags, PostReplacements, Notes, SuperVoters, TagAliases, TagImplications, Taggers, TagVandalism, TranslatorTags, WikiPages].each do |model|
     	begin
 	      model.new.generate
 	    rescue => e
