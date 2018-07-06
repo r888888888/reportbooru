@@ -21,7 +21,7 @@ module Reports
     end
 
     def sort_key
-      :total
+      :down_votes
     end
     
     def html_template
@@ -57,13 +57,13 @@ module Reports
                 - datum[:targets].each do |target_id, score|
                   %li
                     = DanbooruRo::User.find(target_id).name
-                    = ": " + ("%0.2f" % score)
+                    = ": " + ("%0.0f%" % score)
             %td
               %ul
                 - datum[:similar].each do |user_id, score|
                   %li
                     = DanbooruRo::User.find(user_id).name
-                    = ": " + ("%0.2f" % score)
+                    = ": " + ("%0.0f%" % score)
     %p= "Since \#{date_window.utc} to \#{Time.now.utc}"
 EOS
     end
@@ -72,7 +72,7 @@ EOS
       mapping = DanbooruRo::Post.where("post_votes.created_at > ? AND post_votes.user_id = ? AND post_votes.score < 0", date_window, voter_id).joins("JOIN post_votes ON posts.id = post_votes.post_id").group("posts.uploader_id").having("count(*) > 1").count
       total = DanbooruRo::PostVote.where("created_at > ? and user_id = ? and score < 0", date_window, voter_id).count.to_f
       mapping = mapping.to_a.map do |uploader_id, count|
-        [uploader_id, count.to_f / total]
+        [uploader_id, 100 * count.to_f / total]
       end
       mapping = mapping.sort_by {|x| x[1]}.last(5)
     end
@@ -84,9 +84,8 @@ EOS
         next if candidate_id == user_id
 
         candidate_votes = Set.new(DanbooruRo::PostVote.where("created_at > ? and score < 0 and user_id = ?", date_window, candidate_id).pluck(:post_id))
-        union = user_votes | candidate_votes
         intersection = user_votes & candidate_votes
-        jaccard_index = (union.size.to_f) / (user_votes.size + candidate_votes.size - intersection.size).to_f
+        jaccard_index = 100 * (intersection.size.to_f) / (user_votes.size + candidate_votes.size - intersection.size).to_f
         scores[candidate_id] = jaccard_index
       end
       scores.to_a.sort_by {|x| x[1]}.last(3)
