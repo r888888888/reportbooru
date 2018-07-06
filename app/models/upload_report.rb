@@ -43,7 +43,7 @@ class UploadReport
     else
       digest = OpenSSL::Digest.new("sha256")
       string = "#{min_date},#{max_date},#{queries.join(',')}"
-      calc_sig = OpenSSL::HMAC.hexdigest(digest, , string)
+      calc_sig = OpenSSL::HMAC.hexdigest(digest, ENV["DANBOORU_SHARED_REMOTE_KEY"], string)
     end
 
     if calc_sig != sig
