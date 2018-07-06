@@ -54,30 +54,32 @@ module Reports
             %td= datum[:down_votes]
             %td
               %ul
-                - datum[:targets].each do |target_id, count|
+                - datum[:targets].each do |target_id, score|
                   %li
                     = DanbooruRo::User.find(target_id).name
-                    :
-                    = count
+                    = ": " + ("%0.2f" % score)
             %td
               %ul
                 - datum[:similar].each do |user_id, score|
                   %li
                     = DanbooruRo::User.find(user_id).name
-                    :
-                    = score
+                    = ": " + ("%0.2f" % score)
     %p= "Since \#{date_window.utc} to \#{Time.now.utc}"
 EOS
     end
 
     def targets(voter_id)
       mapping = DanbooruRo::Post.where("post_votes.created_at > ? AND post_votes.user_id = ? AND post_votes.score < 0", date_window, voter_id).joins("JOIN post_votes ON posts.id = post_votes.post_id").group("posts.uploader_id").having("count(*) > 1").count
-      mapping = mapping.to_a.sort_by {|x| x[1]}.last(5).to_h
+      total = DanbooruRo::PostVote.where("created_at > ? and user_id = ? and score < 0", date_window, voter_id).count.to_f
+      mapping = mapping.to_a.map do |uploader_id, count|
+        [uploader_id, count.to_f / total]
+      end
+      mapping = mapping.sort_by {|x| x[1]}.last(5)
     end
 
-    def similiar(user_id, candidates)
+    def similar(user_id)
       scores = {}
-      user_votes = Set.new(DanbooruRo::PostVote.where("created_at > ? and score < 0 and user_id = ?", user_id).pluck(:post_id))
+      user_votes = Set.new(DanbooruRo::PostVote.where("created_at > ? and score < 0 and user_id = ?", date_window, user_id).pluck(:post_id))
       @candidates.each do |candidate_id|
         next if candidate_id == user_id
 
@@ -96,7 +98,7 @@ EOS
       return {
         id: user.id,
         name: user.name,
-        down_votes: DanbooruRo::PostVote.where("created_at > ? and score < 0 and user_id = ?", user.id).count,
+        down_votes: DanbooruRo::PostVote.where("created_at > ? and score < 0 and user_id = ?", date_window, user.id).count,
         targets: targets(user_id),
         similar: similar(user_id)
       }
