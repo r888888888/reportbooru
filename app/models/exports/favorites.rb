@@ -34,7 +34,8 @@ module Exports
         next_id = last_id + BATCH_SIZE
         store_id = last_id
         batch = []
-        DanbooruRo::Favorite.where("id > ? and id <= ?", last_id, next_id).find_each do |fav|
+        post_id = DanbooruRo::Post.where("created_at > ?", 1.year.ago).minimum(:id)
+        DanbooruRo::Favorite.where("post_id >= ? and id > ? and id <= ?", post_id, last_id, next_id).find_each do |fav|
           batch << {id: fav.id, user_id: fav.user_id, post_id: fav.post_id}
 
           if fav.id > store_id
