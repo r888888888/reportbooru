@@ -58,7 +58,7 @@ end
 
 while $running
   begin
-    [Exports::Note, Exports::FlatPostVersion, Exports::PostVersion, Exports::WikiPage, Exports::ArtistVersion, Exports::PostVote].each do |exporter|
+    [Exports::Note, Exports::FlatPostVersion, Exports::PostVersion, Exports::WikiPage, Exports::ArtistVersion, Exports::PostVote, Exports::Favorites].each do |exporter|
       exporter.new(REDIS, LOGGER, GBQ).execute
       exit unless $running
     end
