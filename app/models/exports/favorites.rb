@@ -1,5 +1,5 @@
 module Exports
-  class PostVote
+  class Favorites
     BATCH_SIZE = 1000
     SCHEMA = {
       id: {type: "INTEGER"},
