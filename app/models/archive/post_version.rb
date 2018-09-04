@@ -86,7 +86,7 @@ module Archive
             end
 
             partition_timestamp = batch[0]["updated_at"].strftime("%Y%m%d")
-            puts "inserting #{version.id} (#{version.post_id}.#{version.version})"
+            Rails.logger.info "inserting #{version.id} (#{version.post_id}.#{version.version})"
             result = client.client.insert("post_versions_flat_part$#{partition_timestamp}", batch)
           end
         rescue Exception => e
