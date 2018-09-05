@@ -51,12 +51,41 @@ class TagSimilarityCalculator
     @results = convert_hash_to_array(similar_counts)
   end
 
+  def real_post_count
+    DanbooruRo::Post.raw_tag_match(tag_name).count
+  end
+
+  def update_count?
+    count = DanbooruRo::Tag.find_by_name(tag_name)
+
+    if count.nil?
+      return false
+    end
+
+    if count <= 0
+      return true
+    end
+
+    max_count = DanbooruRo::Tag.maximum(:post_count) || 1
+
+    if rand() >= Math.log(count) / Math.log(max_count)
+      return true
+    end
+
+    return false
+  end
+
   def update_danbooru
     params = {
       "key" => ENV["DANBOORU_SHARED_REMOTE_KEY"],
       "name" => tag_name,
       "related_tags" => results.join(" ")
     }
+
+    if update_count?
+      params["post_count"] = real_post_count
+    end
+
     uri = URI.parse("https://danbooru.donmai.us/related_tag")
 
     Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.is_a?(URI::HTTPS)) do |http|
