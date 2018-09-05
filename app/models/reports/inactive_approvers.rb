@@ -5,7 +5,7 @@ module Reports
     end
 
     def version
-      5
+      6
     end
 
     def html_template
@@ -58,7 +58,7 @@ EOS
     end
 
     def max_approvals
-      30
+      50
     end
 
     def sort(data)
