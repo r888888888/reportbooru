@@ -1,7 +1,7 @@
 module Reports
 	class Taggers < Base
 		def version
-			1
+			2
 		end
 
     def report_name
@@ -70,7 +70,7 @@ EOS
     end
 
 		def min_uploads
-			50
+			49
 		end
 
 		def candidates
