@@ -36,7 +36,7 @@ module MessagedReports
     end
 
     def candidates
-      DanbooruRo::Post.where("created_at >= ? ", date_window).group("uploader_id").having("count(*) > ?", min_uploads).pluck("uploader_id")
+      DanbooruRo::Post.where("created_at >= ? ", date_window).group("uploader_id").having("count(*) >= ?", min_uploads).pluck("uploader_id")
     end
   end
 end

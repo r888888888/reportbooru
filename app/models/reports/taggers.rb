@@ -70,11 +70,11 @@ EOS
     end
 
 		def min_uploads
-			49
+			50
 		end
 
 		def candidates
-			DanbooruRo::Post.where("posts.created_at > ?", date_window).group("posts.uploader_id").having("count(*) > ?", min_uploads).pluck("posts.uploader_id")
+			DanbooruRo::Post.where("posts.created_at > ?", date_window).group("posts.uploader_id").having("count(*) >= ?", min_uploads).pluck("posts.uploader_id")
  		end
 	end
 end

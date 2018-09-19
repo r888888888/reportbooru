@@ -1,7 +1,7 @@
 module Reports
   class PostChanges < Base
     def version
-      1
+      2
     end
 
     def min_changes
@@ -101,7 +101,7 @@ EOS
     end
 
     def candidates
-      Archive::PostVersion.where("updated_at > ?", date_window).group("updater_id").having("count(*) > ?", min_changes).pluck(:updater_id)
+      Archive::PostVersion.where("updated_at > ?", date_window).group("updater_id").having("count(*) >= ?", min_changes).pluck(:updater_id)
     end
   end
 end

@@ -13,7 +13,7 @@ Other: no changes, i.e. none of the conditions above are true
 module Reports
 	class WikiPages < Base
 		def version
-			1
+			2
 		end
 
     def report_name
@@ -91,7 +91,7 @@ EOS
     end
 
 		def candidates
-			DanbooruRo::WikiPageVersion.where("updated_at > ?", date_window).group("updater_id").having("count(*) > ?", min_changes).pluck("updater_id")
+			DanbooruRo::WikiPageVersion.where("updated_at > ?", date_window).group("updater_id").having("count(*) >= ?", min_changes).pluck("updater_id")
 		end
 	end
 end

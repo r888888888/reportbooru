@@ -5,7 +5,7 @@ module Reports
     end
 
     def version
-      1
+      2
     end
 
     def min_votes
@@ -104,7 +104,7 @@ EOS
     end
     
     def candidates
-      DanbooruRo::PostVote.where("created_at > ? and score < 0", date_window).group("user_id").having("count(*) > ?", min_votes).pluck(:user_id)
+      DanbooruRo::PostVote.where("created_at > ? and score < 0", date_window).group("user_id").having("count(*) >= ?", min_votes).pluck(:user_id)
     end
   end
 end

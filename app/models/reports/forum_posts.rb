@@ -8,7 +8,7 @@ Updates: total of forum posts where 'created_at' != 'updated_at'
 module Reports
 	class ForumPosts < Base
     def version
-      1
+      2
     end
 
     def min_changes
@@ -71,7 +71,7 @@ EOS
     end
 		
 		def candidates
-			DanbooruRo::ForumPost.where("created_at > ?", date_window).group("creator_id").having("count(*) > ?", min_changes).pluck(:creator_id)
+			DanbooruRo::ForumPost.where("created_at > ?", date_window).group("creator_id").having("count(*) >= ?", min_changes).pluck(:creator_id)
 		end
 	end
 end

@@ -4,7 +4,7 @@ module DanbooruRo
     belongs_to :post
 
     def self.unique_user_ids
-      select_values_sql("select user_id from post_votes where score > 0 group by user_id having count(*) > 100")
+      select_values_sql("select user_id from post_votes where score > 0 group by user_id having count(*) >= 100")
     end
 
     def self.positive_post_ids(user_id)

@@ -8,11 +8,11 @@ Replies: cumulative total of 'response_count'
 module Reports
 	class ForumTopics < Base
     def version
-      1
+      2
     end
 
     def min_changes
-      1
+      2
     end
 
     def report_name
@@ -74,7 +74,7 @@ EOS
     end
 		
 		def candidates
-			DanbooruRo::ForumTopic.where("created_at > ?", date_window).group("creator_id").having("count(*) > ?", min_changes).pluck(:creator_id)
+			DanbooruRo::ForumTopic.where("created_at > ?", date_window).group("creator_id").having("count(*) >= ?", min_changes).pluck(:creator_id)
 		end
 	end
 end

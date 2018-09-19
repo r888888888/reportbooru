@@ -12,7 +12,7 @@ Score: cumulative score for all comments
 module Reports
 	class Comments < Base
     def version
-      1
+      2
     end
 
     def min_changes
@@ -84,7 +84,7 @@ EOS
     end
 
 		def candidates
-			DanbooruRo::Comment.where("created_at > ?", date_window).group("creator_id").having("count(*) > ?", min_changes).pluck(:creator_id)
+			DanbooruRo::Comment.where("created_at > ?", date_window).group("creator_id").having("count(*) >= ?", min_changes).pluck(:creator_id)
 		end
 	end
 end

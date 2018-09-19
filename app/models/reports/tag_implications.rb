@@ -8,11 +8,11 @@ Approved: total where 'status' == 'active'
 module Reports
 	class TagImplications < Base
     def version
-      1
+      2
     end
 
     def min_changes
-      1
+      2
     end
 
     def report_name
@@ -74,7 +74,7 @@ EOS
     end
 
 		def candidates
-			DanbooruRo::TagImplication.where("updated_at > ?", date_window).group("creator_id").having("count(*) > ?", min_changes).pluck(:creator_id)
+			DanbooruRo::TagImplication.where("updated_at > ?", date_window).group("creator_id").having("count(*) >= ?", min_changes).pluck(:creator_id)
 		end
 	end
 end

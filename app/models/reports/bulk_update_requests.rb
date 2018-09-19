@@ -9,11 +9,11 @@ Rejected: total where 'rejected' == 'rejected'
 module Reports
 	class BulkUpdateRequests < Base
     def version
-      1
+      2
     end
 
     def min_changes
-      1
+      2
     end
 
     def report_name
@@ -75,7 +75,7 @@ EOS
     end
 
 		def candidates
-			DanbooruRo::BulkUpdateRequest.where("updated_at > ?", date_window).group("user_id").having("count(*) > ?", min_changes).pluck(:user_id)
+			DanbooruRo::BulkUpdateRequest.where("updated_at > ?", date_window).group("user_id").having("count(*) >= ?", min_changes).pluck(:user_id)
 		end
 	end
 end

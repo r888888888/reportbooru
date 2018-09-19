@@ -22,7 +22,7 @@ Wiki:
 module Reports
   class Artists < Base
     def version
-      1
+      2
     end
 
     def min_changes
@@ -116,7 +116,7 @@ EOS
     end
 
     def candidates
-      DanbooruRo::ArtistVersion.where("updated_at > ?", date_window).group("updater_id").having("count(*) > ?", min_changes).pluck(:updater_id)
+      DanbooruRo::ArtistVersion.where("updated_at > ?", date_window).group("updater_id").having("count(*) >= ?", min_changes).pluck(:updater_id)
     end
   end
 end

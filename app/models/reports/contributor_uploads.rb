@@ -1,7 +1,7 @@
 module Reports
   class ContributorUploads < Uploads
     def version
-      5
+      6
     end
 
     def html_template
@@ -69,7 +69,7 @@ EOS
     end
 
     def candidates
-      DanbooruRo::User.joins("join posts on posts.uploader_id = users.id").where("posts.created_at >= ? and users.bit_prefs & ? > 0", date_window, 1 << 14).group("users.id").having("count(*) > ?", min_uploads).pluck("distinct(users.id)")
+      DanbooruRo::User.joins("join posts on posts.uploader_id = users.id").where("posts.created_at >= ? and users.bit_prefs & ? > 0", date_window, 1 << 14).group("users.id").having("count(*) >= ?", min_uploads).pluck("distinct(users.id)")
     end
 
     def report_name
