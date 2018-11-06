@@ -1,4 +1,21 @@
-#!/home/danbooru/.rbenv/shims/ruby
+#!/usr/bin/env ruby
+
+=begin
+[Unit]
+Description=Reportbooru Similarity Worker
+
+[Service]
+Type=simple
+User=danbooru
+Restart=always
+WorkingDirectory=/var/www/reportbooru/current
+ExecStart=/bin/bash -lc 'bundle exec ruby script/services/similarity_worker.rb'
+TimeoutSec=30
+RestartSec=15s
+
+[Install]
+WantedBy=multi-user.target
+=end
 
 require "redis"
 require "logger"
@@ -9,20 +26,12 @@ require File.expand_path("../../../config/environment", __FILE__)
 # your environment should set AWS_REGION, AWS_ACCESS_KEY, and 
 # AWS_SECRET_ACCESS_KEY
 
-Process.daemon
-# Process.setpriority(Process::PRIO_USER, 0, 10)
-
 $running = true
 $options = {
-  pidfile: "/var/run/reportbooru/similarity_worker.pid",
   logfile: "/var/log/reportbooru/similarity_worker.log"
 }
 
 OptionParser.new do |opts|
-  opts.on("--pidfile=PIDFILE") do |pidfile|
-    $options[:pidfile] = pidfile
-  end
-
   opts.on("--logfile=LOGFILE") do |logfile|
     $options[:logfile] = logfile
   end
@@ -35,10 +44,6 @@ REDIS = Redis.new
 SQS_QUEUE_URL = ENV["aws_sqs_similarity_queue_url"]
 SQS_CLIENT = Aws::SQS::Client.new
 SQS_POLLER = Aws::SQS::QueuePoller.new(SQS_QUEUE_URL, client: SQS_CLIENT)
-
-File.open($options[:pidfile], "w") do |f|
-  f.write(Process.pid)
-end
 
 Signal.trap("TERM") do
   $running = false
@@ -75,12 +80,11 @@ while $running
     end
   rescue PG::ConnectionBad, PG::UnableToSend => e
     LOGGER.error "error: #{e}"
-    sleep(30)
     DanbooruRo::Base.connection.reconnect!
   rescue Exception => e
     LOGGER.error e.message
     LOGGER.error e.backtrace.join("\n")
-    60.times do
+    30.times do
       sleep(1)
       exit unless $running
     end

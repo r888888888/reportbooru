@@ -1,5 +1,22 @@
 #!/usr/bin/env ruby
 
+=begin
+[Unit]
+Description=Reportbooru Exporter
+
+[Service]
+Type=simple
+User=danbooru
+Restart=always
+WorkingDirectory=/var/www/reportbooru/current
+ExecStart=/bin/bash -lc 'bundle exec ruby script/services/danbooru_exporter.rb'
+TimeoutSec=30
+RestartSec=15s
+
+[Install]
+WantedBy=multi-user.target
+=end
+
 require "dotenv"
 Dotenv.load
 
@@ -11,22 +28,14 @@ require "big_query"
 require "aws-sdk"
 require File.expand_path("../../../config/environment", __FILE__)
 
-Process.daemon
-Process.setpriority(Process::PRIO_USER, 0, 10)
-
 $running = true
 $options = {
-  pidfile: "/var/run/reportbooru/danbooru_exporter.pid",
   logfile: "/var/log/reportbooru/danbooru_exporter.log",
   google_key_path: ENV["google_api_key_path"],
   google_data_set: "danbooru_#{Rails.env}"
 }
 
 OptionParser.new do |opts|
-  opts.on("--pidfile=PIDFILE") do |pidfile|
-    $options[:pidfile] = pidfile
-  end
-
   opts.on("--logfile=LOGFILE") do |logfile|
     $options[:logfile] = logfile
   end
@@ -48,10 +57,6 @@ GBQ = BigQuery::Client.new(
   "dataset" => $options[:google_data_set]
 )
 
-File.open($options[:pidfile], "w") do |f|
-  f.write(Process.pid)
-end
-
 Signal.trap("TERM") do
   $running = false
 end
@@ -64,7 +69,6 @@ while $running
     end
   rescue PG::ConnectionBad, PG::UnableToSend => e
     LOGGER.error "error: #{e}"
-    sleep 30
     DanbooruRo::Base.connection.reconnect!
   rescue Exception => e
     LOGGER.error("error: #{e}")

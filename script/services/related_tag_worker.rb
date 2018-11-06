@@ -1,4 +1,21 @@
-#!/home/danbooru/.rbenv/shims/ruby
+#!/usr/bin/env ruby
+
+=begin
+[Unit]
+Description=Reportbooru Related Tag Worker
+
+[Service]
+Type=simple
+User=danbooru
+Restart=always
+WorkingDirectory=/var/www/reportbooru/current
+ExecStart=/bin/bash -lc 'bundle exec ruby script/services/related_tag_worker.rb'
+TimeoutSec=30
+RestartSec=15s
+
+[Install]
+WantedBy=multi-user.target
+=end
 
 require "redis"
 require "logger"
@@ -10,20 +27,12 @@ require 'lru_redux'
 # your environment should set AWS_REGION, AWS_ACCESS_KEY, and 
 # AWS_SECRET_ACCESS_KEY
 
-Process.daemon
-# Process.setpriority(Process::PRIO_USER, 0, 10)
-
 $running = true
 $options = {
-  pidfile: "/var/run/reportbooru/related_tag_worker.pid",
   logfile: "/var/log/reportbooru/related_tag_worker.log"
 }
 
 OptionParser.new do |opts|
-  opts.on("--pidfile=PIDFILE") do |pidfile|
-    $options[:pidfile] = pidfile
-  end
-
   opts.on("--logfile=LOGFILE") do |logfile|
     $options[:logfile] = logfile
   end
@@ -37,10 +46,6 @@ SQS_QUEUE_URL = ENV["aws_sqs_related_tag_queue_url"]
 SQS_CLIENT = Aws::SQS::Client.new
 SQS_POLLER = Aws::SQS::QueuePoller.new(SQS_QUEUE_URL, client: SQS_CLIENT)
 CACHE = LruRedux::TTL::Cache.new(200, 5 * 60)
-
-File.open($options[:pidfile], "w") do |f|
-  f.write(Process.pid)
-end
 
 Signal.trap("TERM") do
   $running = false
@@ -83,11 +88,10 @@ while $running
     end
   rescue PG::ConnectionBad, PG::UnableToSend => e
     LOGGER.error "error: #{e}"
-    sleep 30
     DanbooruRo::Base.connection.reconnect!
   rescue Exception => e
     LOGGER.error "error: #{e}"
-    60.times do
+    30.times do
       sleep(1)
       exit unless $running
     end
