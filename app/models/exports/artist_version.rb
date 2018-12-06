@@ -56,8 +56,8 @@ module Exports
         changes[:group_name] = b.group_name
       end
 
-      if a.nil? || a.url_string != b.url_string
-        changes[:url_string] = b.url_string
+      if a.nil? || a.urls != b.urls
+        changes[:url_string] = b.urls.join("\n")
       end
 
       if a.nil? || a.is_banned != b.is_banned
