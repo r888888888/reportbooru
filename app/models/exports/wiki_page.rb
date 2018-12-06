@@ -63,7 +63,7 @@ module Exports
       end
 
       if a.nil? || a.other_names != b.other_names
-        changes[:other_names] = b.other_names
+        changes[:other_names] = b.other_names.join("\n")
       end
 
       return changes
