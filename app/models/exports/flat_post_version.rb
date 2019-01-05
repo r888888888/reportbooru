@@ -129,11 +129,9 @@ module Exports
             redis.set("flat-post-version-exporter-id-part", store_id)
           end
         end
+      rescue PG::ConnectionBad, PG::UnableToSend
+        raise
       rescue Exception => e
-        if e.to_s =~ /execution expired/
-          Archive::PostVersion.connection.reconnect!
-        end
-
         logger.error "#{e.class}"
         logger.error "error: #{e.to_s}"
         e.backtrace.each do |line|

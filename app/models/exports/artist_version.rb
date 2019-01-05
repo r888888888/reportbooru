@@ -111,6 +111,8 @@ module Exports
           end
         end
 
+      rescue PG::ConnectionBad, PG::UnableToSend
+        raise
       rescue Exception => e
         logger.error "error: #{e}"
       end

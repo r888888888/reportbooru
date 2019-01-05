@@ -70,6 +70,7 @@ while $running
   rescue PG::ConnectionBad, PG::UnableToSend => e
     LOGGER.error "error: #{e}"
     DanbooruRo::Base.connection.reconnect!
+    Archive::PostVersion.connection.reconnect!
   rescue Exception => e
     LOGGER.error("error: #{e}")
   end
