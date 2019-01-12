@@ -68,7 +68,7 @@ while $running
       exit unless $running
     end
   rescue PG::ConnectionBad, PG::UnableToSend => e
-    LOGGER.error "error: #{e}"
+    LOGGER.error "danbooru exporter - pg error: #{e}"
     DanbooruRo::ArtistVersion.connection.reconnect!
     DanbooruRo::Favorite.connection.reconnect!
     DanbooruRo::NoteVersion.connection.reconnect!
@@ -77,7 +77,7 @@ while $running
     Archive::PostVersion.connection.reconnect!
     Archive::PoolVersion.connection.reconnect!
   rescue Exception => e
-    LOGGER.error("error: #{e}")
+    LOGGER.error("danbooru exporter - error: #{e}")
     LOGGER.error e.backtrace.join("\n")
   end
 

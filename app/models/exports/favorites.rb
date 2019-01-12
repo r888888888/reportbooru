@@ -56,7 +56,7 @@ module Exports
       rescue PG::ConnectionBad, PG::UnableToSend
         raise
       rescue Exception => e
-        logger.error "error: #{e}"
+        logger.error "favorites - error: #{e}"
       end
     end
   end
