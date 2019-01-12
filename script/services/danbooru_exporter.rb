@@ -78,6 +78,7 @@ while $running
     Archive::PoolVersion.connection.reconnect!
   rescue Exception => e
     LOGGER.error("error: #{e}")
+    LOGGER.error e.backtrace.join("\n")
   end
 
   10.times do

@@ -109,6 +109,7 @@ module Exports
         raise
       rescue Exception => e
         logger.error "error: #{e}"
+        logger.error e.backtrace.join("\n")
       end
     end
   end
