@@ -70,46 +70,38 @@ module Exports
     end
 
     def execute
-      begin
-        create_table
+      create_table
 
-        last_id = get_last_exported_id
-        next_id = last_id + BATCH_SIZE
-        store_id = last_id
-        batch = []
-        DanbooruRo::WikiPageVersion.where("id > ? and id <= ? and updated_at < ?", last_id, next_id, 70.minutes.ago).find_each do |version|
-          previous = find_previous(version)
-          diff = calculate_diff(previous, version)
-          diff[:version_id] = version.id
-          diff[:version] = find_version_number(version)
-          diff[:created_at] = version.created_at
-          diff[:updated_at] = version.updated_at
-          diff[:wiki_page_id] = version.wiki_page_id
-          diff[:updater_id] = version.updater_id
-          diff[:updater_ip_addr] = version.updater_ip_addr.to_s
-          batch << diff
+      last_id = get_last_exported_id
+      next_id = last_id + BATCH_SIZE
+      store_id = last_id
+      batch = []
+      DanbooruRo::WikiPageVersion.where("id > ? and id <= ? and updated_at < ?", last_id, next_id, 70.minutes.ago).find_each do |version|
+        previous = find_previous(version)
+        diff = calculate_diff(previous, version)
+        diff[:version_id] = version.id
+        diff[:version] = find_version_number(version)
+        diff[:created_at] = version.created_at
+        diff[:updated_at] = version.updated_at
+        diff[:wiki_page_id] = version.wiki_page_id
+        diff[:updater_id] = version.updater_id
+        diff[:updater_ip_addr] = version.updater_ip_addr.to_s
+        batch << diff
 
-          if version.id > store_id
-            store_id = version.id
-          end
+        if version.id > store_id
+          store_id = version.id
         end
+      end
 
-        if batch.any?
-          logger.info "wiki: inserting #{last_id}..#{store_id}"
-          partition_timestamp = batch[0][:updated_at].strftime("%Y%m%d")
-          result = gbq.insert("wiki_page_versions_part$#{partition_timestamp}", batch)
-          if result["insertErrors"]
-            logger.error result.inspect
-          else
-            redis.set("wiki-exporter-id-part", store_id)
-          end
+      if batch.any?
+        logger.info "wiki: inserting #{last_id}..#{store_id}"
+        partition_timestamp = batch[0][:updated_at].strftime("%Y%m%d")
+        result = gbq.insert("wiki_page_versions_part$#{partition_timestamp}", batch)
+        if result["insertErrors"]
+          logger.error result.inspect
+        else
+          redis.set("wiki-exporter-id-part", store_id)
         end
-
-      rescue PG::ConnectionBad, PG::UnableToSend
-        raise
-      rescue Exception => e
-        logger.error "error: #{e}"
-        logger.error e.backtrace.join("\n")
       end
     end
   end

@@ -74,45 +74,38 @@ module Exports
     def execute
       create_table
 
-      begin
-        last_id = get_last_exported_id
-        next_id = last_id + BATCH_SIZE
-        store_id = last_id
-        batch = []
-        DanbooruRo::NoteVersion.where("id > ? and id <= ? and updated_at < ?", last_id, next_id, 70.minutes.ago).find_each do |version|
-          previous = find_previous(version)
-          diff = calculate_diff(previous, version)
-          diff[:version_id] = version.id
-          diff[:version] = version.version
-          diff[:created_at] = version.created_at
-          diff[:updated_at] = version.updated_at
-          diff[:post_id] = version.post_id
-          diff[:note_id] = version.note_id
-          diff[:updater_id] = version.updater_id
-          diff[:updater_ip_addr] = version.updater_ip_addr.to_s
+      last_id = get_last_exported_id
+      next_id = last_id + BATCH_SIZE
+      store_id = last_id
+      batch = []
+      DanbooruRo::NoteVersion.where("id > ? and id <= ? and updated_at < ?", last_id, next_id, 70.minutes.ago).find_each do |version|
+        previous = find_previous(version)
+        diff = calculate_diff(previous, version)
+        diff[:version_id] = version.id
+        diff[:version] = version.version
+        diff[:created_at] = version.created_at
+        diff[:updated_at] = version.updated_at
+        diff[:post_id] = version.post_id
+        diff[:note_id] = version.note_id
+        diff[:updater_id] = version.updater_id
+        diff[:updater_ip_addr] = version.updater_ip_addr.to_s
 
-          batch << diff
+        batch << diff
 
-          if version.id > store_id
-            store_id = version.id
-          end
+        if version.id > store_id
+          store_id = version.id
         end
+      end
 
-        if batch.any?
-          logger.info "note versions: inserting #{last_id}..#{store_id}"
-          partition_timestamp = batch[0][:updated_at].strftime("%Y%m%d")
-          result = gbq.insert("note_versions_flat_part$#{partition_timestamp}", batch)
-          if result["insertErrors"]
-            logger.error result.inspect
-          else
-            redis.set("flat-note-version-exporter-id-part", store_id)
-          end
+      if batch.any?
+        logger.info "note versions: inserting #{last_id}..#{store_id}"
+        partition_timestamp = batch[0][:updated_at].strftime("%Y%m%d")
+        result = gbq.insert("note_versions_flat_part$#{partition_timestamp}", batch)
+        if result["insertErrors"]
+          logger.error result.inspect
+        else
+          redis.set("flat-note-version-exporter-id-part", store_id)
         end
-
-      rescue PG::ConnectionBad, PG::UnableToSend
-        raise
-      rescue Exception => e
-        logger.error "error: #{e}"
       end
     end
   end

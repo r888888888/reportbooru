@@ -27,36 +27,29 @@ module Exports
     end
 
     def execute
-      begin
-        create_table
+      create_table
 
-        last_id = get_last_exported_id
-        next_id = last_id + BATCH_SIZE
-        store_id = last_id
-        batch = []
-        DanbooruRo::Favorite.where("id > ? and id <= ?", last_id, next_id).find_each do |fav|
-          batch << {id: fav.id, user_id: fav.user_id, post_id: fav.post_id}
+      last_id = get_last_exported_id
+      next_id = last_id + BATCH_SIZE
+      store_id = last_id
+      batch = []
+      DanbooruRo::Favorite.where("id > ? and id <= ?", last_id, next_id).find_each do |fav|
+        batch << {id: fav.id, user_id: fav.user_id, post_id: fav.post_id}
 
-          if fav.id > store_id
-            store_id = fav.id
-          end
+        if fav.id > store_id
+          store_id = fav.id
         end
+      end
 
-        if batch.any?
-          logger.info "favorite: inserting #{last_id}..#{store_id}"
-          partition_timestamp = Time.now.strftime("%Y%m%d")
-          result = gbq.insert("favorites$#{partition_timestamp}", batch)
-          if result["insertErrors"]
-            logger.error result.inspect
-          else
-            redis.set("favorites-id", store_id)
-          end
+      if batch.any?
+        logger.info "favorite: inserting #{last_id}..#{store_id}"
+        partition_timestamp = Time.now.strftime("%Y%m%d")
+        result = gbq.insert("favorites$#{partition_timestamp}", batch)
+        if result["insertErrors"]
+          logger.error result.inspect
+        else
+          redis.set("favorites-id", store_id)
         end
-
-      rescue PG::ConnectionBad, PG::UnableToSend
-        raise
-      rescue Exception => e
-        logger.error "favorites - error: #{e}"
       end
     end
   end

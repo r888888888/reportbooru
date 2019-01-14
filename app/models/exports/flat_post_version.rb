@@ -66,78 +66,67 @@ module Exports
     def execute
       create_table
 
-      begin
-        last_id = get_last_exported_id
-        next_id = last_id + BATCH_SIZE
-        store_id = last_id
-        batch = []
-        Archive::PostVersion.where("id > ? and id <= ? and updated_at < ?", last_id, next_id, 70.minutes.ago).find_each do |version|
-          previous = find_previous(version)
-          diff = calculate_diff(previous, version)
-          vnum = find_version_number(version)
-          
-          diff[:added_tags].each do |added_tag|
-            hash = {
-              "version_id" => version.id,
-              "version" => vnum,
-              "updated_at" => version.updated_at,
-              "post_id" => version.post_id,
-              "added_tag" => added_tag,
-              "updater_id" => version.updater_id,
-              "updater_ip_addr" => version.updater_ip_addr.to_s
-            }
-            batch << hash
-          end
-
-          diff[:removed_tags].each do |removed_tag|
-            hash = {
-              "version_id" => version.id,
-              "version" => vnum,
-              "updated_at" => version.updated_at,
-              "post_id" => version.post_id,
-              "removed_tag" => removed_tag,
-              "updater_id" => version.updater_id,
-              "updater_ip_addr" => version.updater_ip_addr.to_s
-            }
-            batch << hash
-          end
-
-          if diff[:added_tags].empty? && diff[:removed_tags].empty?
-            hash = {
-              "version_id" => version.id,
-              "version" => vnum,
-              "updated_at" => version.updated_at,
-              "post_id" => version.post_id,
-              "updater_id" => version.updater_id,
-              "updater_ip_addr" => version.updater_ip_addr.to_s
-            }
-            batch << hash
-          end
-
-          if version.id > store_id
-            store_id = version.id
-          end
+      last_id = get_last_exported_id
+      next_id = last_id + BATCH_SIZE
+      store_id = last_id
+      batch = []
+      Archive::PostVersion.where("id > ? and id <= ? and updated_at < ?", last_id, next_id, 70.minutes.ago).find_each do |version|
+        previous = find_previous(version)
+        diff = calculate_diff(previous, version)
+        vnum = find_version_number(version)
+        
+        diff[:added_tags].each do |added_tag|
+          hash = {
+            "version_id" => version.id,
+            "version" => vnum,
+            "updated_at" => version.updated_at,
+            "post_id" => version.post_id,
+            "added_tag" => added_tag,
+            "updater_id" => version.updater_id,
+            "updater_ip_addr" => version.updater_ip_addr.to_s
+          }
+          batch << hash
         end
 
-        if batch.any?
-          logger.info "flat post versions: inserting #{last_id}..#{store_id}"
-          partition_timestamp = batch[0]["updated_at"].strftime("%Y%m%d")
-          result = gbq.insert("post_versions_flat_part$#{partition_timestamp}", batch)
-          if result["insertErrors"]
-            logger.error result.inspect
-          else
-            redis.set("flat-post-version-exporter-id-part", store_id)
-          end
-        end
-      rescue PG::ConnectionBad, PG::UnableToSend
-        raise
-      rescue Exception => e
-        logger.error "#{e.class}"
-        logger.error "error: #{e.to_s}"
-        e.backtrace.each do |line|
-          logger.error line
+        diff[:removed_tags].each do |removed_tag|
+          hash = {
+            "version_id" => version.id,
+            "version" => vnum,
+            "updated_at" => version.updated_at,
+            "post_id" => version.post_id,
+            "removed_tag" => removed_tag,
+            "updater_id" => version.updater_id,
+            "updater_ip_addr" => version.updater_ip_addr.to_s
+          }
+          batch << hash
         end
 
+        if diff[:added_tags].empty? && diff[:removed_tags].empty?
+          hash = {
+            "version_id" => version.id,
+            "version" => vnum,
+            "updated_at" => version.updated_at,
+            "post_id" => version.post_id,
+            "updater_id" => version.updater_id,
+            "updater_ip_addr" => version.updater_ip_addr.to_s
+          }
+          batch << hash
+        end
+
+        if version.id > store_id
+          store_id = version.id
+        end
+      end
+
+      if batch.any?
+        logger.info "flat post versions: inserting #{last_id}..#{store_id}"
+        partition_timestamp = batch[0]["updated_at"].strftime("%Y%m%d")
+        result = gbq.insert("post_versions_flat_part$#{partition_timestamp}", batch)
+        if result["insertErrors"]
+          logger.error result.inspect
+        else
+          redis.set("flat-post-version-exporter-id-part", store_id)
+        end
       end
     end
   end
