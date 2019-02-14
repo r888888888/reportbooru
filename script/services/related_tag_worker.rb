@@ -88,7 +88,13 @@ while $running
     end
   rescue PG::ConnectionBad, PG::UnableToSend => e
     LOGGER.error "error: #{e}"
-    DanbooruRo::Base.connection.reconnect!
+    DanbooruRo::ArtistVersion.connection.reconnect!
+    DanbooruRo::Favorite.connection.reconnect!
+    DanbooruRo::NoteVersion.connection.reconnect!
+    DanbooruRo::PostVote.connection.reconnect!
+    DanbooruRo::WikiPageVersion.connection.reconnect!
+    Archive::PostVersion.connection.reconnect!
+    Archive::PoolVersion.connection.reconnect!
   rescue Exception => e
     LOGGER.error "error: #{e}"
     30.times do
