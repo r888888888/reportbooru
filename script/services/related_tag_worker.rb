@@ -93,6 +93,7 @@ while $running
     DanbooruRo::NoteVersion.connection.reconnect!
     DanbooruRo::PostVote.connection.reconnect!
     DanbooruRo::WikiPageVersion.connection.reconnect!
+    DanbooruRo::Tag.connection.reconnect!
     Archive::PostVersion.connection.reconnect!
     Archive::PoolVersion.connection.reconnect!
   rescue Exception => e
