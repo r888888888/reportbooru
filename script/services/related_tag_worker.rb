@@ -86,9 +86,10 @@ while $running
         LOGGER.error "unknown message: #{msg.body}"
       end
     end
-  rescue PG::ConnectionBad, PG::UnableToSend => e
-    LOGGER.error "error 1: #{e}"
+  rescue Exception => e
+    LOGGER.error "error: #{e}"
     LOGGER.error e.backtrace.join("\n")
+
     DanbooruRo::ArtistVersion.connection.reconnect!
     DanbooruRo::Favorite.connection.reconnect!
     DanbooruRo::NoteVersion.connection.reconnect!
@@ -97,9 +98,7 @@ while $running
     DanbooruRo::Tag.connection.reconnect!
     Archive::PostVersion.connection.reconnect!
     Archive::PoolVersion.connection.reconnect!
-  rescue Exception => e
-    LOGGER.error "error 2: #{e}"
-    LOGGER.error e.backtrace.join("\n")
+    
     30.times do
       sleep(1)
       exit unless $running
