@@ -118,7 +118,8 @@ GEM
       multi_json (~> 1.11)
       os (~> 0.9)
       signet (~> 0.7)
-    haml (4.0.7)
+    haml (5.0.0)
+      temple (>= 0.8.0)
       tilt
     highline (1.7.10)
     httpclient (2.8.2.4)
@@ -230,12 +231,13 @@ GEM
       net-scp (>= 1.1.2)
       net-ssh (>= 2.8.0)
     statistics2 (0.54)
+    temple (0.8.2)
     therubyracer (0.12.2)
       libv8 (~> 3.16.14.0)
       ref
     thor (0.19.1)
     thread_safe (0.3.5)
-    tilt (2.0.5)
+    tilt (2.0.10)
     turbolinks (2.5.3)
       coffee-rails
     tzinfo (1.2.2)
