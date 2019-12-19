@@ -167,7 +167,7 @@ GEM
     postgresql_cursor (0.6.0)
       activerecord (>= 3.1.0)
     public_suffix (2.0.4)
-    rack (1.6.5)
+    rack (1.6.12)
     rack-test (0.6.3)
       rack (>= 1.0)
     rails (4.2.7.1)
